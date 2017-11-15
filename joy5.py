@@ -1,21 +1,35 @@
-import   struct
+import struct
+import os.path
+import time
 import DalekV2DriveV2
 import RPi.GPIO as GPIO  # Import GPIO divers
 
+###
+### SETUP
+###
 
 GPIO.setwarnings(False) 
 
+
+# wait until the joystick is paired...
+fn = '/dev/input/js0'
+print('Testing for joystick: %s...' % fn)
+
+fexists = False
+while fexists:
+ 
+  fexists = os.path.isfile(fn)
+  print ('joystick not paired.')
+  time.sleep(3)
+
+
+jsdev = open(fn, 'rb')
+print ('Joystick paired. Ok \n')
+
+
+
 DalekV2DriveV2.init() 
 speed = 90
-
-
-fn = '/dev/input/js1'
-print('Opening %s...' % fn)
-jsdev = open(fn, 'rb')
-
-print ('file opened')
-
-
 
 buttonPressed = 0
 axisX = 0
@@ -112,7 +126,8 @@ def paddleControl(aX, aY,minusX, minusY):
       print ('turn right') 
 #=====================================================
     
-   
+def dPadPressed(number): 
+
 
 
 #============================
@@ -120,6 +135,7 @@ def paddleControl(aX, aY,minusX, minusY):
 #============================
 
 while True:
+  #read 8 bits from the event buffer.
   evbuf = jsdev.read(8)
   if evbuf:
       time, value, type, number = struct.unpack('IhBB', evbuf)

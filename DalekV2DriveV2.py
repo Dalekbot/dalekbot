@@ -20,29 +20,7 @@ pinMotorBLSpeed = 22
 pinMotorBLForwards = 24
 pinMotorBLBackwards = 26
 
-
-
-
-
-# pinMotorFRSpeed=11
-# pinMotorFRForwards=15
-# pinMotorFRBackwards=13
-
-# pinMotorFLSpeed=22
-# pinMotorFLForwards=26
-# pinMotorFLBackwards=24
-
-# pinMotorBRSpeed =19
-# pinMotorBRForwards = 23
-# pinMotorBRBackwards = 21
-
-# pinMotorBLSpeed = 8
-# pinMotorBLForwards = 10
-# pinMotorBLBackwards = 12
-
-
-
-# Cosmo's settings
+# Cosma's settings
 # pinMotorFRSpeed=11
 # pinMotorFRForwards=15
 # pinMotorFRBackwards=13
