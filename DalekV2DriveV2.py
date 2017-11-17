@@ -311,6 +311,25 @@ def paddleBackward(leftSpeed, rightSpeed):
     pwmMotorBLSpeed.ChangeDutyCycle(leftSpeed)
     GPIO.output(pinMotorBLForwards, GPIO.LOW)
     GPIO.output(pinMotorBLBackwards, GPIO.HIGH)  
+
+# def axisOnRightBackWheel(leftSpeed, rightSpeed):
+#     pwmMotorFRSpeed.ChangeDutyCycle(leftSpeed/2)
+#     GPIO.output(pinMotorFRForwards, GPIO.HIGH)
+#     GPIO.output(pinMotorFRBackwards, GPIO.LOW)
+    
+#     pwmMotorFLSpeed.ChangeDutyCycle(leftSpeed)
+#     GPIO.output(pinMotorFLForwards, GPIO.HIGH)
+#     GPIO.output(pinMotorFLBackwards, GPIO.LOW)
+	
+#     pwmMotorBRSpeed.ChangeDutyCycle(leftSpeed)
+#     GPIO.output(pinMotorBRForwards, GPIO.HIGH)
+#     GPIO.output(pinMotorBRBackwards, GPIO.LOW)
+    
+#     pwmMotorBLSpeed.ChangeDutyCycle(0)
+#     GPIO.output(pinMotorBLForwards, GPIO.HIGH)
+#     GPIO.output(pinMotorBLBackwards, GPIO.LOW)
+
+
 # End of Motor Functions
 #======================================================================	
 
