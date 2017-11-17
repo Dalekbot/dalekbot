@@ -15,11 +15,11 @@ GPIO.setwarnings(False)
 fn = '/dev/input/js0'
 print('Testing for joystick: %s...' % fn)
 
-fexists = False
-while fexists:
+file_exists = False
+while file_exists == False:
  
-  fexists = os.path.isfile(fn)
-  print ('joystick not paired.')
+  file_exists = os.path.exists(fn)
+  print ('joystick paired: {} '.format(os.path.exists(fn)))
   time.sleep(3)
 
 
@@ -29,14 +29,19 @@ print ('Joystick paired. Ok \n')
 
 
 DalekV2DriveV2.init() 
-speed = 90
+speed = 50
 
-buttonPressed = 0
+# Ps3 controller settings.
+joystickD_padCurrentButton = 0
+ps3_ControllerMode=2
+
 axisX = 0
 axisY = 0
 minusX= False
 minusY=False
 
+leftPaddle = 0
+rightPaddle = 0
 
 
 def paddleControl(aX, aY,minusX, minusY):
@@ -126,10 +131,61 @@ def paddleControl(aX, aY,minusX, minusY):
       print ('turn right') 
 #=====================================================
     
-def dPadPressed(number): 
+def dPadPressed(value,number, _joystickD_padCurrentButton):
+  print( "value:{} number:{} currentButton:{} " .format(value,number, _joystickD_padCurrentButton ))
+  
+  if (value==0) and (number == _joystickD_padCurrentButton):
+    DalekV2DriveV2.stop()
+    print('#Stop()')
+  #Up button
+  else:
+    if number == 4:
+      if value: # value is 1 for pressed 0 for released.
+        print('forward')
+        DalekV2DriveV2.forward(speed)
+  
+    #Right button
+    elif number == 5:
+      if value:
+        print('\nRight spin')
+        DalekV2DriveV2.spinRight(speed)
+    
+    # Down button
+    elif number == 6:
+      if value:
+        print('\nBackwards')
+        DalekV2DriveV2.backward(speed)
+    
+    # Left button
+    elif number == 7: 
+      if value:
+        print('Left spin')
+        DalekV2DriveV2.spinLeft(speed)
+
+def tankMode( _leftPaddle, _rightPaddle):
+
+  print("left: {}  Right: {} ".format(_leftPaddle,_rightPaddle))
+  
+  if (_leftPaddle == 0) and (_rightPaddle == 0):
+    DalekV2DriveV2.stop()
+  elif (_leftPaddle < 0) and (_rightPaddle < 0):
+    DalekV2DriveV2.paddleForward(- _leftPaddle, - _rightPaddle)
+    print("forwards")
+  elif (_leftPaddle > 0) and (_rightPaddle > 0):
+    DalekV2DriveV2.paddleBackward( _leftPaddle, _rightPaddle)
+    print("Backwards")
+  elif (_leftPaddle <= 0) and (_rightPaddle >= 0):
+    DalekV2DriveV2.turnForwardRight(- _leftPaddle,  _rightPaddle)
+    print("spinright")
+  # elif (_leftPaddle > 0) and (_rightPaddle == 0):
+  #   DalekV2DriveV2.axisOnRightBackWheel(  _leftPaddle,- _rightPaddle)
+  #   print("spin left")
+  elif (_leftPaddle >= 0) and (_rightPaddle <= 0):
+    DalekV2DriveV2.turnForwardLeft(  _leftPaddle,- _rightPaddle)
+    print("spin left")
 
 
-
+  
 #============================
 # Main loop
 #============================
@@ -139,79 +195,85 @@ while True:
   evbuf = jsdev.read(8)
   if evbuf:
       time, value, type, number = struct.unpack('IhBB', evbuf)
-      # if type & 0x80:
-      #        print ("(initial)")
+      
+      #  Button pressed event
       if type & 0x01:
         
-        #
-        if number == 4:
-
-          print ('button still pressed %s' % buttonPressed)
+        # D-Pad pressed
+        if (number >=4 ) and (number <= 7):
+          dPadPressed(value,number,joystickD_padCurrentButton )
+          
+          #only change current button when it is pressed not released
           if value:
-            print('forward')
-            DalekV2DriveV2.forward(speed)
-            buttonPressed=4
-          elif buttonPressed == 4:
-            print('forward stop')
-            DalekV2DriveV2.stop()
-          # elif value == False & buttonStillPressed == False:
-
-
-        elif number == 5:
-          if value:
-            print('Right spin')
-            DalekV2DriveV2.spinRight(speed)
-            buttonPressed = 5
-          elif buttonPressed == 5:
-            print('stop')
-            DalekV2DriveV2.stop()
-
-        elif number == 6:
-          if value:
-            print('Backwards')
-            DalekV2DriveV2.backward(speed)
-            buttonPressed = 6
-          elif  buttonPressed == 6:
-            print('stop')
-            DalekV2DriveV2.stop()
-
-
-        elif number == 7: 
-          if value:
-            print('Left spin')
-            DalekV2DriveV2.spinLeft(speed)
-            buttonPressed = 7
-          elif  buttonPressed == 7:
-            print('stop')
-            DalekV2DriveV2.stop()
-
-        # if value:
-        #   print ('pressed')
-        # else:
-        #   print ('released')
-
-      
-      # paddle moved
-      if type & 0x02:
+            joystickD_padCurrentButton = number
         
-        if number == 0:
-           # paddle up is -100 
-           # paddle right is 100 
-           # paddle left is -100 
-           # paddle down is 100 
-          axisX = int(value / 327.67)
-          if axisX < 0:
-            axisX = -axisX
-            minusX = True
-          else:
-            minusX = False
-          paddleControl(axisX, axisY,minusX, minusY)
+        elif number == 0:
+          
+          if value: # dont increment on release.
+            if ps3_ControllerMode <= 2:
+              ps3_ControllerMode += 1
+            else :
+              ps3_ControllerMode = 1
+            print("You are in Mode {}" .format(ps3_ControllerMode))
 
-        if number == 1:
-          axisY =int( value / 327.67)
-          if axisY < 0:
-            minusY = True
-            axisY = -axisY
-          else:
-            minusY = False
-          paddleControl(axisX, axisY,minusX, minusY)
+        else :
+          print("you pressed {}" .format(number))
+
+      # Axis movement event
+      elif type & 0x02:
+        #print('number{}'.format(number))
+        
+        # Left Thumbstick x axis.
+        #normal mode
+        if ps3_ControllerMode ==1 :
+          if number == 0:
+             # paddle up is -100 
+             # paddle right is 100 
+             # paddle left is -100 
+             # paddle down is 100 
+            axisX = int(value / 327.67)
+            if axisX < 0:
+              axisX = -axisX
+              minusX = True
+            else:
+              minusX = False
+            paddleControl(axisX, axisY,minusX, minusY)
+          
+          # Left Thumbstick Y axis
+          elif number == 1:
+            axisY =int( value / 327.67)
+            if axisY < 0:
+              minusY = True
+              axisY = -axisY
+            else:
+              minusY = False
+            paddleControl(axisX, axisY,minusX, minusY)
+          
+          # Right Thumbstick X Axis
+          # elif number == 2:
+          #   axisY =int( value / 655.4)
+            
+          #   print("right X:{}".format(axisY))
+          
+          # Right Thumbstick Y Axis
+          elif number == 3:
+            
+             axisY =int( value / 655.4)
+             speed = 50 - axisY
+             print("right y:{}  speed: {} ".format(axisY , speed))
+        
+        #Tank mode
+        elif ps3_ControllerMode == 2:
+          
+          if number == 1:
+             #print("left side {}  {} ".format(leftPaddle , rightPaddle))
+           
+             leftPaddle= int( value / 327.67)
+             
+             tankMode(leftPaddle , rightPaddle)
+            
+          
+          elif number == 3:
+            # print("right side..")
+            rightPaddle= int( value / 327.67)
+            tankMode(leftPaddle , rightPaddle)
