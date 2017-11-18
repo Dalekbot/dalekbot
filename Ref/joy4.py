@@ -5,7 +5,7 @@ for fn in os.listdir('/dev/input'):
     if fn.startswith('js'):
         print('  /dev/input/%s' % (fn))
 
-fn = '/dev/input/js1'
+fn = '/dev/input/js0'
 print('Opening %s...' % fn)
 jsdev = open(fn, 'rb')
 # We'll store the states here.

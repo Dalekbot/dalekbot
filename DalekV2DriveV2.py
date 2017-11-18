@@ -20,29 +20,7 @@ pinMotorBLSpeed = 22
 pinMotorBLForwards = 24
 pinMotorBLBackwards = 26
 
-
-
-
-
-# pinMotorFRSpeed=11
-# pinMotorFRForwards=15
-# pinMotorFRBackwards=13
-
-# pinMotorFLSpeed=22
-# pinMotorFLForwards=26
-# pinMotorFLBackwards=24
-
-# pinMotorBRSpeed =19
-# pinMotorBRForwards = 23
-# pinMotorBRBackwards = 21
-
-# pinMotorBLSpeed = 8
-# pinMotorBLForwards = 10
-# pinMotorBLBackwards = 12
-
-
-
-# Cosmo's settings
+# Cosma's settings
 # pinMotorFRSpeed=11
 # pinMotorFRForwards=15
 # pinMotorFRBackwards=13
@@ -73,7 +51,7 @@ def init():
     # How long the pin stays on each cycle, as a percent (here, it's 50%) - AKA Speed
     print ('Set DutyCycle')
     DutyCycle = 50
-	# Settng the duty cycle to 0 means the motors will not turn
+	# Setting the duty cycle to 0 means the motors will not turn
     print ('Set Stop')
     Stop = 0
 
@@ -190,7 +168,7 @@ def backward(Speed):
     GPIO.output(pinMotorBLBackwards, GPIO.HIGH)
 
 # The theory for the next 4 is that by setting the inside wheels backward and putting a small value there it will 
-# act like a braake and cause the Bot to turn rather than just spinning.
+# act like a brake and cause the Bot to turn rather than just spinning.
     
 # turnForwardRight(leftSpeed, rightSpeed): Moves forwards in an arc by setting Left forward and Right backward
 def turnForwardRight(leftSpeed, rightSpeed):
@@ -299,6 +277,7 @@ def spinRight(Speed):
     pwmMotorBRSpeed.ChangeDutyCycle(Speed)
     GPIO.output(pinMotorBRForwards, GPIO.LOW)
     GPIO.output(pinMotorBRBackwards, GPIO.HIGH)
+    
 # use the ps3 controller  
 def paddleForward(leftSpeed, rightSpeed):
     pwmMotorFRSpeed.ChangeDutyCycle(rightSpeed)
@@ -333,6 +312,10 @@ def paddleBackward(leftSpeed, rightSpeed):
     pwmMotorBLSpeed.ChangeDutyCycle(leftSpeed)
     GPIO.output(pinMotorBLForwards, GPIO.LOW)
     GPIO.output(pinMotorBLBackwards, GPIO.HIGH)  
+
+
+
+
 # End of Motor Functions
 #======================================================================	
 
