@@ -177,9 +177,6 @@ def tankMode( _leftPaddle, _rightPaddle):
   elif (_leftPaddle <= 0) and (_rightPaddle >= 0):
     DalekV2DriveV2.turnForwardRight(- _leftPaddle,  _rightPaddle)
     print("spinright")
-  # elif (_leftPaddle > 0) and (_rightPaddle == 0):
-  #   DalekV2DriveV2.axisOnRightBackWheel(  _leftPaddle,- _rightPaddle)
-  #   print("spin left")
   elif (_leftPaddle >= 0) and (_rightPaddle <= 0):
     DalekV2DriveV2.turnForwardLeft(  _leftPaddle,- _rightPaddle)
     print("spin left")

@@ -1,19 +1,33 @@
+#!/usr/bin/env python
+
 import smbus
 import time
-from enum import Enum
-
 bus = smbus.SMBus(1)
 
-#this is the address of the arduino
+###
+### this module should be imported 
+### Set the i2cMode that best suits your task
+### Switching i2cMode is takes time as you have to wait for the request response then request data 
+###  it is better to get more data than required and throw it away. 
+###
+
+#this is the address of the Arduino
 address = 0x04
 
 
-class i2cMode(Enum):
+class i2cMode(object):
   ALL = 1
   ULTRASONIC = 2
+  MAGNETOMETER = 3
 
 #set default mode to receive all
-currenti2cMode = i2cMode.ALL
+currentI2cMode = i2cMode.ALL
+
+
+def init():
+  currentI2cMode = i2cMode.ALL
+
+
 
 def writeNumber(value):
     bus.write_byte(address,value)
@@ -23,50 +37,31 @@ def readNumber():
   return number
 
 #Set the mode on the slave device.
-def setMode(i2cmode):
-  if currenti2cMode != i2cmode:
-    writeNumber(i2cmode)
+def setMode(i2cMode):
+  if currentI2cMode != i2cMode:
+    writeNumber(i2cMode)
     time.sleep(.5)
+
+def getAll():
+  global i2cMode,  currentI2cMode
+  # timestart = time.time()
+  if currentI2cMode != i2cMode.ALL:
+    setMode(i2cMode.ALL)
+    currentI2cMode = i2cMode.ALL
+    
+  right = readNumber()
+  behind = readNumber()
+  forward = readNumber()
+  left = readNumber()
+  #calculate the time it takes to get all data.
+  # taken = time.time() - timestart
+  print ("Data:(forwards: {},left: {},right: {},behind: {})".format(forward,left, right, behind))
+    
 
 
 while True:
-  var =int(input("Enter a number between 1 and 9"))
-  if not var:
-    continue
-  if var == 5:
-    #start timer
-    timestart = time.time()
+  getAll()
+  time.sleep(.02)
+
+    
    
-    setMode(i2cMode.ALL)
-    
-    left = readNumber()
-
-    
-    forward = readNumber()
-
-    
-    right = readNumber()
-
-    
-    behind = readNumber()
-
-    #calculate the time it takes to get all data.
-    taken = time.time() - timestart
-    print ("data back in {} seconds.  Data:(Forward: {},Right: {},Behind: {},Left: {})".format(taken,left,forward, right, behind))
- 
-    # timeent= time.time()
-    # taken = timeent - timestart
-    # print ("Arduino, hey  RPI, i received a digit: {} in {} seconds").format(number,taken)
-  else:
-    
-
-
-
-    writeNumber(var)
-    print("RPI: hi Arduino, I sent you a digit {}".format(var))
-    
-  
-    time.sleep(1)
-  
-    number = readNumber()
-    print ("Arduino, hey  RPI, i received a digit: {} in ".format(number))

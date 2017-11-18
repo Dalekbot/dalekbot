@@ -51,7 +51,7 @@ def init():
     # How long the pin stays on each cycle, as a percent (here, it's 50%) - AKA Speed
     print ('Set DutyCycle')
     DutyCycle = 50
-	# Settng the duty cycle to 0 means the motors will not turn
+	# Setting the duty cycle to 0 means the motors will not turn
     print ('Set Stop')
     Stop = 0
 
@@ -168,7 +168,7 @@ def backward(Speed):
     GPIO.output(pinMotorBLBackwards, GPIO.HIGH)
 
 # The theory for the next 4 is that by setting the inside wheels backward and putting a small value there it will 
-# act like a braake and cause the Bot to turn rather than just spinning.
+# act like a brake and cause the Bot to turn rather than just spinning.
     
 # turnForwardRight(leftSpeed, rightSpeed): Moves forwards in an arc by setting Left forward and Right backward
 def turnForwardRight(leftSpeed, rightSpeed):
@@ -277,6 +277,7 @@ def spinRight(Speed):
     pwmMotorBRSpeed.ChangeDutyCycle(Speed)
     GPIO.output(pinMotorBRForwards, GPIO.LOW)
     GPIO.output(pinMotorBRBackwards, GPIO.HIGH)
+    
 # use the ps3 controller  
 def paddleForward(leftSpeed, rightSpeed):
     pwmMotorFRSpeed.ChangeDutyCycle(rightSpeed)
@@ -312,22 +313,7 @@ def paddleBackward(leftSpeed, rightSpeed):
     GPIO.output(pinMotorBLForwards, GPIO.LOW)
     GPIO.output(pinMotorBLBackwards, GPIO.HIGH)  
 
-# def axisOnRightBackWheel(leftSpeed, rightSpeed):
-#     pwmMotorFRSpeed.ChangeDutyCycle(leftSpeed/2)
-#     GPIO.output(pinMotorFRForwards, GPIO.HIGH)
-#     GPIO.output(pinMotorFRBackwards, GPIO.LOW)
-    
-#     pwmMotorFLSpeed.ChangeDutyCycle(leftSpeed)
-#     GPIO.output(pinMotorFLForwards, GPIO.HIGH)
-#     GPIO.output(pinMotorFLBackwards, GPIO.LOW)
-	
-#     pwmMotorBRSpeed.ChangeDutyCycle(leftSpeed)
-#     GPIO.output(pinMotorBRForwards, GPIO.HIGH)
-#     GPIO.output(pinMotorBRBackwards, GPIO.LOW)
-    
-#     pwmMotorBLSpeed.ChangeDutyCycle(0)
-#     GPIO.output(pinMotorBLForwards, GPIO.HIGH)
-#     GPIO.output(pinMotorBLBackwards, GPIO.LOW)
+
 
 
 # End of Motor Functions
