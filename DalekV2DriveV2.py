@@ -39,7 +39,7 @@ pinMotorBLBackwards = 26
 
 #======================================================================
 # General Functions
-#
+# 
 
 # init(). Initialises GPIO pins, switches motors and LEDs Off, etc
 def init():
@@ -69,9 +69,9 @@ def init():
     GPIO.setup(pinMotorFRSpeed, GPIO.OUT)
     GPIO.setup(pinMotorFRForwards, GPIO.OUT)
     GPIO.setup(pinMotorFRBackwards, GPIO.OUT)
-
+ 
     print ('Set the GPIO to software PWM at ' + str(Frequency) + ' Hertz - Motor FR')
-    pwmMotorFRSpeed = GPIO.PWM(pinMotorFRSpeed, Frequency)
+    pwmMotorFRSpeed = GPIO.PWM(pinMotorFRSpeed, Frequency) 
 
     print ('Start the software PWM with a duty cycle of 0 (i.e. not moving) - Moter FR')
     pwmMotorFRSpeed.start(Stop)

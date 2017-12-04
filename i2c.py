@@ -12,7 +12,7 @@ bus = smbus.SMBus(1)
 ###
 
 #this is the address of the Arduino
-address = 0x04
+address = 0x05
 
 
 class i2cMode(object):
@@ -23,13 +23,15 @@ class i2cMode(object):
 #set default mode to receive all
 currentI2cMode = i2cMode.ALL
 
-
+#TODO send sensor number then data from the arduino.
+## at the moment you get  different results each time it boots
+## check the arduino is working properly...
 def init():
   currentI2cMode = i2cMode.ALL
 
 
 
-def writeNumber(value):
+def writeNumber(value): 
     bus.write_byte(address,value)
 
 def readNumber():
@@ -61,7 +63,7 @@ def getAll():
 
 while True:
   getAll()
-  time.sleep(.02)
+  time.sleep(1) 
 
     
    
