@@ -2,6 +2,8 @@ import struct
 import os.path
 import time
 import DalekV2DriveV2
+# import DalekMag
+import AutoDrive2 
 import RPi.GPIO as GPIO  # Import GPIO divers
 
 ###
@@ -28,7 +30,7 @@ print ('Joystick paired. Ok \n')
 
 
 
-DalekV2DriveV2.init() 
+DalekV2DriveV2.init()  
 speed = 50
 
 # Ps3 controller settings.
@@ -148,7 +150,8 @@ def dPadPressed(value,number, _joystickD_padCurrentButton):
     elif number == 5:
       if value:
         print('\nRight spin')
-        DalekV2DriveV2.spinRight(speed)
+        # DalekV2DriveV2.spinRight(speed)
+        AutoDrive2.DalekTurn(45) 
     
     # Down button
     elif number == 6:
@@ -242,7 +245,7 @@ while True:
             if axisY < 0:
               minusY = True
               axisY = -axisY
-            else:
+            else:   
               minusY = False
             paddleControl(axisX, axisY,minusX, minusY)
           
