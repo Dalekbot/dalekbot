@@ -2,8 +2,8 @@ import struct
 import os.path
 import time
 import DalekV2DriveV2
-# import DalekMag
-import AutoDrive2 
+import DalekSpi 
+import autoDrive
 import RPi.GPIO as GPIO  # Import GPIO divers
 
 ###
@@ -12,6 +12,9 @@ import RPi.GPIO as GPIO  # Import GPIO divers
 
 GPIO.setwarnings(False) 
 
+# the '/dev/input/js0' file is in the sudo root of the file system.
+# it only apears once the device has paired.
+# use the setup guide from https://www.piborg.org/blog/rpi-ps3-help
 
 # wait until the joystick is paired...
 fn = '/dev/input/js0'
@@ -151,7 +154,7 @@ def dPadPressed(value,number, _joystickD_padCurrentButton):
       if value:
         print('\nRight spin')
         # DalekV2DriveV2.spinRight(speed)
-        AutoDrive2.DalekTurn(45) 
+        autoDrive.DalekTurn(45) 
     
     # Down button
     elif number == 6:
@@ -163,11 +166,13 @@ def dPadPressed(value,number, _joystickD_padCurrentButton):
     elif number == 7: 
       if value:
         print('Left spin')
-        DalekV2DriveV2.spinLeft(speed)
+        autoDrive.DalekTurn(-45) 
 
 def tankMode( _leftPaddle, _rightPaddle):
 
-  print("left: {}  Right: {} ".format(_leftPaddle,_rightPaddle))
+  # this mag reading is just for debug at the moment
+  mag =DalekSpi.getMag()
+  print("left: {}  Right: {} mag:{}".format(_leftPaddle,_rightPaddle ,mag))
   
   if (_leftPaddle == 0) and (_rightPaddle == 0):
     DalekV2DriveV2.stop()
@@ -188,6 +193,7 @@ def tankMode( _leftPaddle, _rightPaddle):
   
 #============================
 # Main loop
+# this is where we read the data from the joystick file/device
 #============================
 
 while True:
@@ -215,6 +221,29 @@ while True:
             else :
               ps3_ControllerMode = 1
             print("You are in Mode {}" .format(ps3_ControllerMode))
+        # L2 button
+        elif number == 8:
+          if value:
+            AutoDrive2.DalekTurn(-180)    
+        
+         # R2 button
+        elif number == 9:
+          if value:
+            AutoDrive2.DalekTurn(180)
+
+           # L1 button
+        elif number == 10:
+          if value:
+            AutoDrive2.DalekTurn(-90)
+        # R1 button
+        elif number == 11:
+          if value:
+            AutoDrive2.DalekTurn(90)
+        # circle button
+        elif number == 13:
+          if value:
+            mag =DalekSpi.getMag()
+            print("mag:{}".format(mag))
 
         else :
           print("you pressed {}" .format(number))

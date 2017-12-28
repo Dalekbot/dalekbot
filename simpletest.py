@@ -1,6 +1,11 @@
 import time
 import math
 
+
+# this is based on the Adafruit libray code
+# it is not used anyware but left in for testing things work.
+
+
 # Import the LSM303 module.
 import Adafruit_LSM303
 
