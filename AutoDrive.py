@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 import time
 import DalekV2DriveV2
 import DalekSpi
@@ -42,7 +41,6 @@ DalekTurnSettings= {
 # 'BotMoveTimeNormal': 0.4, 
 # 'BotMoveTimeSlow':0.2, 
 # 'BotMoveTimeFinal':0.2}
-
 
 
 def DalekTurn(degreesToTurn):
