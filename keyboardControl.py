@@ -1,7 +1,7 @@
 import RPi.GPIO as GPIO  # Import GPIO divers
 import DalekV2DriveV2      # Import my 4 Motor controller
 import time   
-
+import DalekSpi 
 import curses
 
 screen = curses.initscr()
@@ -24,8 +24,8 @@ video_capture = 0        # Create WebCam Object
 soundvolume = 100     
 GPIO.setwarnings(False) 
 
-DalekV2DriveV2.init() 
-
+DalekV2DriveV2.init()     
+DalekSpi.init()
 # DalekV2DriveV2.forward(10)
 
 # time.sleep(2)
@@ -51,16 +51,20 @@ try:
     if char == ord('q'):
       break
     elif char == curses.KEY_UP:
-      DalekV2DriveV2.forward(speed)
+      # DalekV2DriveV2.forward(speed)
       # print "UP"
+      mag = DalekSpi.getMag()
+      print("Mag:{}\n".format(mag))
+
     elif char == curses.KEY_DOWN:
-      DalekV2DriveV2.backward(speed)
-      # print("DOWN")
+      # DalekV2DriveV2.backward(speed)
+      print("DOWN")
+
     elif char == curses.KEY_RIGHT:
-      DalekV2DriveV2.spinRight(speed*2)
-      # print("RIGHT")
+      # DalekV2DriveV2.spinRight(speed*2)
+      print("RIGHT")
     elif char == curses.KEY_LEFT:
-      DalekV2DriveV2.spinLeft(speed*2)
+      # DalekV2DriveV2.spinLeft(speed*2)
       print("LEFT")
     elif char == 10:
       DalekV2DriveV2.stop()
