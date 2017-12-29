@@ -4,6 +4,8 @@ import DalekV2DriveV2
 import DalekSpi
 import RPi.GPIO as GPIO  # Import GPIO divers
 
+from DalekDebug import DalekPrint, DalekDebugOn , DalekDebugSetOutputDevice
+
 GPIO.setwarnings(False)
 DalekV2DriveV2.init()
 DalekSpi.init()
@@ -20,7 +22,7 @@ DalekSpi.init()
 
 # Carpet settings
 DalekTurnSettings= {
-  'sleepTime': 0.3, 
+  'sleepTime': 0.4, 
   'TurnSpeedFast': 70, 
   'TurnSpeedNormal': 50,
   'TurnSpeedSlow': 40,
@@ -271,6 +273,53 @@ def calibrateAndTest():
   gotoHeading(d4)
   gotoHeading(d2)
 
+# TODO add mode for different surfaces
+def CalculateSpeedToDrive(pingDistance, finalDistance):
+    howClose =   pingDistance - finalDistance
+    dalekSpeed=0
+    if howClose > 41:
+      dalekSpeed = 35
+    elif howClose > 21:
+      dalekSpeed = 30
+    elif howClose > 12:
+      dalekSpeed = 20
+    elif howClose > 6:
+      dalekSpeed = 14
+    else:
+      dalekSpeed = 11
+    return dalekSpeed
+
+def driveForwardsToDistance(distance):
+  
+  DalekPrint("driveForwards()")
+  dalekData = DalekSpi.readDevice1Data()
+  while dalekData['frontPing'] != distance:
+   
+    dalekSpeed = CalculateSpeedToDrive(dalekData['frontPing'],distance)
+
+    if dalekData['frontPing'] <= distance:
+      DalekV2DriveV2.backward(dalekSpeed)
+    else:
+      DalekV2DriveV2.forward(dalekSpeed)
+    dalekData = DalekSpi.readDevice1Data()
+
+def driveBackwardsToDistance(distance):
+  
+  DalekPrint("driveBackwards()")
+  dalekData = DalekSpi.readDevice1Data()
+  
+  while dalekData['rearPing'] != distance:
+    dalekSpeed = CalculateSpeedToDrive(dalekData['rearPing'],distance)
+    
+
+    if dalekData['rearPing'] <= distance:
+      DalekV2DriveV2.forward(dalekSpeed)
+    else:
+      DalekV2DriveV2.backward(dalekSpeed)
+    dalekData = DalekSpi.readDevice1Data()
+
+def dispose():
+    DalekV2DriveV2.cleanup()
 
 # TEST
 # DalekTurn(-361)

@@ -30,7 +30,7 @@ def init(speed=None):
 
     if speed != None:
       try:
-        spi.max_speed_hz = 61000
+        spi.max_speed_hz = speed
         SpiSetup = True
       except expression as identifier:
           pass
@@ -45,9 +45,13 @@ def init(speed=None):
 def getSensorData(_sensorNumber):
     global spi
     dataToSend = [_sensorNumber, 200, 201, 255]
-    receivedBytes = spi.xfer(dataToSend)
-    sensorValue = (receivedBytes[2] << 8) + receivedBytes[3]
-    return sensorValue
+    try:
+        
+        receivedBytes = spi.xfer(dataToSend)
+        sensorValue = (receivedBytes[2] << 8) + receivedBytes[3]
+        return sensorValue
+    except expression as identifier:
+        print("error geting data from Arduino via spi bus")
 
 def getMag():
     return getSensorData(4)
@@ -77,11 +81,11 @@ def readDevice1Data():
     if receivedBytes[1] == 0:  # frontPing
         piSensors['frontPing'] = sensorValue
     elif receivedBytes[1] == 1:  # rearPing
-        piSensors['rearPing'] = sensorValue
-    elif receivedBytes[1] == 2:  # leftPing 
         piSensors['leftPing'] = sensorValue
-    elif receivedBytes[1] == 3:  # rightPing
+    elif receivedBytes[1] == 2:  # leftPing 
         piSensors['rightPing'] = sensorValue
+    elif receivedBytes[1] == 3:  # rightPing
+        piSensors['rearPing'] = sensorValue
     elif receivedBytes[1] == 4:  # compass
         piSensors['compass'] = sensorValue
     else:
@@ -89,7 +93,7 @@ def readDevice1Data():
             receivedBytes[1], sensorValue))
     if i == 4:
         count = 0
-        print(piSensors)
+        # print(piSensors)
     # change this if you get errors.
     time.sleep(.00001)
   return piSensors
