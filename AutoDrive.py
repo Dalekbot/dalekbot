@@ -7,7 +7,7 @@ import RPi.GPIO as GPIO  # Import GPIO divers
 from DalekDebug import DalekPrint, DalekDebugOn , DalekDebugSetOutputDevice
 
 GPIO.setwarnings(False)
-DalekV2DriveV2.init()
+# DalekV2DriveV2.init()
 DalekSpi.init()
 
 #TODO # needs kill switch

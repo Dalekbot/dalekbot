@@ -1,5 +1,5 @@
 import time
-import DalekV2DriveV2
+# import DalekV2DriveV2
 import autoDrive
 import DalekSpi
 import RPi.GPIO as GPIO  # Import GPIO divers
