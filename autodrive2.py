@@ -1,14 +1,14 @@
 import time
 # import DalekV2DriveV2
 import autoDrive
-import DalekSpi
+# import DalekSpi
 import RPi.GPIO as GPIO  # Import GPIO divers
 from DalekDebug import DalekPrint, DalekDebugOn , DalekDebugSetOutputDevice
 
  
 GPIO.setwarnings(False)
 # DalekV2DriveV2.init()
-DalekSpi.init()
+# DalekSpi.init()
 DalekDebugOn()
 
 # dalekSpeed = 40
@@ -56,38 +56,95 @@ DalekDebugOn()
     
 #     # time.sleep(.1)
 #     dalekData = DalekSpi.readDevice1Data()
- 
+
+#  MIMIMAL MAZE
+# __________________________________   7 stop    
+# |                                 |         |
+# |      1                    2     |         |
+# |                                 |         |
+# |           __________            |         |
+# |          /                      |         |
+# |         /     4         3       |         |
+# |         |                      /          |
+# |         |            _________/           |
+# |         |                                 |
+# |         |     5                      6    |    
+# |         |                                 |   
+# |         |_________________________________| 
     
-  
-head =90
-# autoDrive.gotoHeading(108)
+#  MIMIMAL MAZE drive
+ 
+# # goto waypoint one
+# autoDrive.driveParallelToWallsInCenterToFrontPingDistance()
+# autoDrive.DalekTurn(90)
 
-DalekPrint(autoDrive.getMag())
-# time.sleep(.5)
+# # goto waypoint two
+# autoDrive.driveParallelToLeftWall()
+# #  check for clearing of wall to right and save frontPing distance. 
+# #  you should know when you are in the right place to turn
+# autoDrive.DalekTurn(90)
 
-autoDrive.gotoHeading(180)
-autoDrive.gotoHeading(head)
-autoDrive.driveForwardsToDistance(10)
-autoDrive.DalekTurn(90)
-autoDrive.DalekTurn(-90)
-DalekPrint("Heading:{}".format(autoDrive.getMag()))
-autoDrive.driveBackwardsToDistance(10)
+# # goto waypoint three
+# autoDrive.driveForwardsToDistance(10)
+# autoDrive.DalekTurn(90)
 
-DalekPrint("Heading:{}".format(autoDrive.getMag()))
-# time.sleep(.5)
-autoDrive.gotoHeading(head)
-autoDrive.gotoHeading(180)
-autoDrive.gotoHeading(head)
-autoDrive.driveForwardsToDistance(10)
-DalekPrint("Heading:{}".format(autoDrive.getMag()))
-autoDrive.driveBackwardsToDistance(10)
+# # goto waypoint four
+# #  the wall in front might give false reading as its at 45deg
+# #  unless you are down enough. so measure the left 
+# #  and right wall distances to make sure. 
+# autoDrive.driveForwardsToDistance(10)
+# autoDrive.DalekTurn(-90)
 
-DalekPrint("Heading:{}".format(autoDrive.getMag()))
-# time.sleep(.5)
-autoDrive.gotoHeading(head)
-autoDrive.driveForwardsToDistance(10)
-autoDrive.driveBackwardsToDistance(10)
+# # goto waypoint five
+# autoDrive.driveForwardsToDistance(10)
+# autoDrive.DalekTurn(-90)
 
+# # goto waypoint six 
+# autoDrive.driveParallelToWallsInCenterToFrontPingDistance()
+
+
+# # goto waypoint seven
+# # this needs to be in autoDrivedriveParallelToWallsInCenterToFrontPingDistance()
+# # check if both left and right walls have disappeared. 
+
+
+
+
+## old test code
+
+# head =90
+# # autoDrive.gotoHeading(108)
+
+# DalekPrint(autoDrive.getMag())
+# # time.sleep(.5)
+
+# autoDrive.gotoHeading(180)
+# autoDrive.gotoHeading(head)
+# autoDrive.driveForwardsToDistance(10)
+# autoDrive.DalekTurn(90)
+# autoDrive.DalekTurn(-90)
+# DalekPrint("Heading:{}".format(autoDrive.getMag()))
+# autoDrive.driveBackwardsToDistance(10)
+
+# DalekPrint("Heading:{}".format(autoDrive.getMag()))
+# # time.sleep(.5)
+# autoDrive.gotoHeading(head)
+# autoDrive.gotoHeading(180)
+# autoDrive.gotoHeading(head)
+# autoDrive.driveForwardsToDistance(10)
+# DalekPrint("Heading:{}".format(autoDrive.getMag()))
+# autoDrive.driveBackwardsToDistance(10)
+
+# DalekPrint("Heading:{}".format(autoDrive.getMag()))
+# # time.sleep(.5)
+# autoDrive.gotoHeading(head)
+# autoDrive.driveForwardsToDistance(10)
+# autoDrive.driveBackwardsToDistance(10)
+
+
+
+
+autoDrive.driveForwardsToDistance(44)
 
 
 

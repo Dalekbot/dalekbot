@@ -1,7 +1,9 @@
 # This is an abstraction layer for our debuging
 # You can use the bash output window or plugin your own device.
 
-DalekDebugOn = False
+
+
+dalekDebugOn = False
 DalekDebugOutputDevice = 0
 
 def DalekDebugSetOutputDevice(_dalekDebugOutputDevice):
@@ -9,16 +11,16 @@ def DalekDebugSetOutputDevice(_dalekDebugOutputDevice):
   DalekDebugOutputDevice = _dalekDebugOutputDevice
 
 def DalekDebugOn():
-  global DalekDebugOn
-  DalekDebugOn = True
+  global dalekDebugOn
+  dalekDebugOn = True
 
 def DalekDebugOff():
-  global DalekDebugOn
-  DalekDebugOn = False
+  global dalekDebugOn
+  dalekDebugOn = False
 
 def DalekPrint(text):
  
-  if DalekDebugOn:
+  if dalekDebugOn:
     if DalekDebugOutputDevice == 0:
       print(text)
     elif DalekDebugOutputDevice == 1:
@@ -29,10 +31,10 @@ def DalekPrint(text):
 # off()
 # on()
 
-# dPrint("hello:{}".format(DalekDebugOn))
+  # print("hello:{}".format(DalekDebugOn))
 
 
 if __name__ == "__main__":
     print("\n\nDalekDebug.py cannot be run directly. It is intended to be imported\n\n")
-# else:
-#     print("\n\nImporting DalekDebug.py")
+else:
+    print("Importing DalekDebug.py")

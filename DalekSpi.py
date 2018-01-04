@@ -2,6 +2,10 @@
 
 import spidev
 import time
+from DalekDebug import DalekPrint
+
+# make sure you install spidev
+# http://www.takaitra.com/posts/492
 
 # SPEED	SPI.MAX_SPEED_HZ VALUE
 # 25.0 MHz  	125000000
@@ -40,7 +44,7 @@ def init(speed=None):
       SpiSetup = True
 
     spi.mode = 0b00  # another mode is spi.mode = 0b01
-    print("spi bus speed set to:{} spi mode {}" .format( spi.max_speed_hz, spi.mode))
+    DalekPrint("spi bus speed set to:{} spi mode {}" .format( spi.max_speed_hz, spi.mode))
 
 def getSensorData(_sensorNumber):
     global spi
@@ -51,7 +55,7 @@ def getSensorData(_sensorNumber):
         sensorValue = (receivedBytes[2] << 8) + receivedBytes[3]
         return sensorValue
     except expression as identifier:
-        print("error geting data from Arduino via spi bus")
+        DalekPrint("error geting data from Arduino via spi bus")
 
 def getMag():
     return getSensorData(4)
@@ -64,7 +68,7 @@ def readDevice1Data():
   piSensors = {'frontPing': 0, 'rearPing': 0,
                'leftPing': 0, 'rightPing': 0, 'compass': 0}
   if not SpiSetup :
-    print("\nYou need to initialize the SPI bus first use the use the init() function")
+    DalekPrint("\nYou need to initialize the SPI bus first use the use the init() function")
     return piSensors
   # dataToSend [ first bit= device that we want to read, 200 and 201 codes 
   # lets the remote device know that it needs to process the data , 255 is the end bit ]
@@ -89,11 +93,11 @@ def readDevice1Data():
     elif receivedBytes[1] == 4:  # compass
         piSensors['compass'] = sensorValue
     else:
-        print("Sensor Error. Remote Sensor:{} with value:{} not known" .format(
+        DalekPrint("Sensor Error. Remote Sensor:{} with value:{} not known" .format(
             receivedBytes[1], sensorValue))
     if i == 4:
         count = 0
-        # print(piSensors)
+        # DalekPrint(piSensors)
     # change this if you get errors.
     time.sleep(.00001)
   return piSensors
@@ -102,15 +106,15 @@ def test():
    T = time.time()
    readDevice1Data()
    T2 = time.time()
-   print("time taken {}" .format(T2 - T)) 
+   DalekPrint("time taken {}" .format(T2 - T)) 
 
 
 #======================================================================	   
     
 if __name__ == "__main__":
-    print("\n\nThis file 'DalekSpi.py' cannot be run directly. It is intended to be imported\n\n")
+    DalekPrint("\n\nThis file 'DalekSpi.py' cannot be run directly. It is intended to be imported\n\n")
 else:
-    print("\n\nImporting DalekSpi.py")
+    DalekPrint("Importing DalekSpi.py")
     
 # End of __main__ Code
 #======================================================================

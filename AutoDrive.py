@@ -4,13 +4,18 @@ import DalekV2DriveV2
 import DalekSpi
 import RPi.GPIO as GPIO  # Import GPIO divers
 
-from DalekDebug import DalekPrint, DalekDebugOn , DalekDebugSetOutputDevice
+from DalekDebug import DalekPrint
 
-GPIO.setwarnings(False)
-# DalekV2DriveV2.init()
+# GPIO.setwarnings(False) 
+DalekV2DriveV2.init()
 DalekSpi.init()
 
 #TODO # needs kill switch
+
+
+# this is the default distance the bot drives to the wall.
+DistanceToWall = 10
+
 
 # all these settings can be altered  depending on the surface you are driving on
 #-- sleepTime allows the bot to stop before a mag reading is taken 
@@ -32,17 +37,35 @@ DalekTurnSettings= {
   'BotMoveTimeSlow':0.4, 
   'BotMoveTimeFinal':0.2}
 
-# Wooden floor settings
-# DalekTurnSettings = {
-# 'sleepTime': 0.2, 
-# 'TurnSpeedFast': 60, 
-# 'TurnSpeedNormal': 40, 
-# 'TurnSpeedSlow': 20,
-# 'TurnSpeedFinal': 30, 
-# 'BotMoveTimeFast': .7, 
-# 'BotMoveTimeNormal': 0.4, 
-# 'BotMoveTimeSlow':0.2, 
-# 'BotMoveTimeFinal':0.2}
+
+def changeDalekTurnSettings(number=None):
+    global DalekTurnSettings
+    if number ==None:
+        # Carpet settings
+        DalekTurnSettings= {
+           'sleepTime': 0.4, 
+           'TurnSpeedFast': 70, 
+           'TurnSpeedNormal': 50,
+           'TurnSpeedSlow': 40,
+           'TurnSpeedFinal': 30, 
+           'BotMoveTimeFast': 1.0,
+           'BotMoveTimeNormal': 0.6,
+           'BotMoveTimeSlow':0.4, 
+           'BotMoveTimeFinal':0.2}
+    elif number==1:
+        # Wooden floor settings
+        DalekTurnSettings = {
+           'sleepTime': 0.2, 
+           'TurnSpeedFast': 60, 
+           'TurnSpeedNormal': 40, 
+           'TurnSpeedSlow': 20,
+           'TurnSpeedFinal': 30, 
+           'BotMoveTimeFast': .7, 
+           'BotMoveTimeNormal': 0.4, 
+           'BotMoveTimeSlow':0.2, 
+           'BotMoveTimeFinal':0.2}
+
+
 
 
 def DalekTurn(degreesToTurn):
@@ -204,7 +227,8 @@ def gotoHeading(theEndHeading):
     print("start {} end:{} change:{}".format(
         theStartHeading, theEndHeading, turn))
 
-
+# use this if you get non liner readings from your mag
+# you turn the bot when told and it gives you the readings you can use to drive it.
 def calibrate():
 
     print("starting calibration process...")
@@ -273,7 +297,14 @@ def calibrateAndTest():
   gotoHeading(d4)
   gotoHeading(d2)
 
-# TODO add mode for different surfaces
+
+##########################################################
+#          PING SENSOR FUNCTIONS
+##########################################################
+
+# TODO add mode for different surfaces if needed
+
+# this slows down the bot as it gets closer to an object
 def CalculateSpeedToDrive(pingDistance, finalDistance):
     howClose =   pingDistance - finalDistance
     dalekSpeed=0
@@ -289,10 +320,13 @@ def CalculateSpeedToDrive(pingDistance, finalDistance):
       dalekSpeed = 11
     return dalekSpeed
 
+
+# This uses the front ultrasonic sensor.
 def driveForwardsToDistance(distance):
   
   DalekPrint("driveForwards()")
   dalekData = DalekSpi.readDevice1Data()
+  DalekPrint(dalekData)
   while dalekData['frontPing'] != distance:
    
     dalekSpeed = CalculateSpeedToDrive(dalekData['frontPing'],distance)
@@ -303,6 +337,7 @@ def driveForwardsToDistance(distance):
       DalekV2DriveV2.forward(dalekSpeed)
     dalekData = DalekSpi.readDevice1Data()
 
+# this uses the Rear ultrasonic sensor.
 def driveBackwardsToDistance(distance):
   
   DalekPrint("driveBackwards()")
@@ -318,8 +353,29 @@ def driveBackwardsToDistance(distance):
       DalekV2DriveV2.backward(dalekSpeed)
     dalekData = DalekSpi.readDevice1Data()
 
+# drive parallel  to wall and if we are not within
+# the tolerance given we make the corrections.
+# when the wall disaperes we conclude it is time for the 
+# next waypoint
+def driveParallelToLeftWall(distanceToWall=None):
+    DalekPrint("driveParallelToLeftWall()")
+    dalekData = DalekSpi.readDevice1Data()
+    if distanceToWall == None:
+        distanceToWall = DistanceToWall
+    
+
+
+
+def driveParallelToRightWall(distanceToWall):
+    pass
+
+def driveParallelToWallsInCenterToFrontPingDistance(distanceToWall=None):
+    pass
+
+
 def dispose():
     DalekV2DriveV2.cleanup()
+    
 
 # TEST
 # DalekTurn(-361)
