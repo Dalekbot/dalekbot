@@ -47,7 +47,7 @@ def init(speed=None):
     DalekPrint("spi bus speed set to:{} spi mode {}" .format( spi.max_speed_hz, spi.mode))
 
 def getSensorData(_sensorNumber):
-    global spi
+    # global spi 
     dataToSend = [_sensorNumber, 200, 201, 255]
     try:
         
@@ -62,50 +62,29 @@ def getMag():
 
 
 def readDevice1Data():
-  global SpiSetup,spi
+#   global SpiSetup,spi
  
   # create the return data variable
   piSensors = {'frontPing': 0, 'rearPing': 0,
                'leftPing': 0, 'rightPing': 0, 'compass': 0}
-  if not SpiSetup :
-    DalekPrint("\nYou need to initialize the SPI bus first use the use the init() function")
-    return piSensors
-  # dataToSend [ first bit= device that we want to read, 200 and 201 codes 
-  # lets the remote device know that it needs to process the data , 255 is the end bit ]
-  dataToSend = [0, 200, 201, 255]
-  for i in range(5):
-    ## assign the sensor number
-    dataToSend[0] = i
-    # receivedBytes = [first bit is not used as it was set on previous request (always 0),
-    # device number, high bit shifted value, low bit shifted value]
-    receivedBytes = spi.xfer(dataToSend)
-    # shift our data back and add together for our sensor value.
-    # it is now a 16 bit int.
-    sensorValue = (receivedBytes[2] << 8) + receivedBytes[3]
-    if receivedBytes[1] == 0:  # frontPing
-        piSensors['frontPing'] = sensorValue
-    elif receivedBytes[1] == 1:  # rearPing
-        piSensors['leftPing'] = sensorValue
-    elif receivedBytes[1] == 2:  # leftPing 
-        piSensors['rightPing'] = sensorValue
-    elif receivedBytes[1] == 3:  # rightPing
-        piSensors['rearPing'] = sensorValue
-    elif receivedBytes[1] == 4:  # compass
-        piSensors['compass'] = sensorValue
-    else:
-        DalekPrint("Sensor Error. Remote Sensor:{} with value:{} not known" .format(
-            receivedBytes[1], sensorValue))
-    if i == 4:
-        count = 0
-        # DalekPrint(piSensors)
-    # change this if you get errors.
-    time.sleep(.00001)
+  piSensors['frontPing'] = getSensorData(0)
+  time.sleep(.00001)
+  piSensors['rearPing'] = getSensorData(3)
+  time.sleep(.00001)
+  piSensors['leftPing'] = getSensorData(1)
+  time.sleep(.00001)
+  piSensors['rightPing'] = getSensorData(2)
+  time.sleep(.00001)
+  piSensors['compass'] = getSensorData(4)
+
   return piSensors
 
 def test():
    T = time.time()
-   readDevice1Data()
+   data =readDevice1Data()
    T2 = time.time()
+   
+   DalekPrint( data) 
    DalekPrint("time taken {}" .format(T2 - T)) 
 
 

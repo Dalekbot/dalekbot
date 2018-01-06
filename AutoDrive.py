@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 import time
-import DalekV2DriveV2
+import DalekV2Drive
 import DalekSpi
 import RPi.GPIO as GPIO  # Import GPIO divers
 
 from DalekDebug import DalekPrint
 
-# GPIO.setwarnings(False) 
-DalekV2DriveV2.init()
+GPIO.setwarnings(False) 
+DalekV2Drive.init()
 DalekSpi.init()
 
 #TODO # needs kill switch
@@ -71,7 +71,7 @@ def changeDalekTurnSettings(number=None):
 def DalekTurn(degreesToTurn):
    
     def getMag():
-      DalekV2DriveV2.stop()
+      DalekV2Drive.stop()
       time.sleep(DalekTurnSettings['sleepTime']) 
       currentMag = -1
       # ensure we get a valid reading must be between 0 and 360
@@ -176,16 +176,16 @@ def DalekTurn(degreesToTurn):
             botCurrentHeading, finalHeading, botSpeed))
 
         if botTurnClockwise:
-            DalekV2DriveV2.spinRight(botSpeed)
+            DalekV2Drive.spinRight(botSpeed)
         else:
-            DalekV2DriveV2.spinLeft(botSpeed)
+            DalekV2Drive.spinLeft(botSpeed)
         time.sleep(botMoveTime)
-        # DalekV2DriveV2.stop()
+        # DalekV2Drive.stop()
         # time.sleep(.3)
         botTurnClockwise, botSpeed, botCurrentHeading, botMoveTime = calculateTurnDirection(
             finalHeading)
 
-    DalekV2DriveV2.stop()
+    DalekV2Drive.stop()
     time.sleep(.3)
     botCurrentHeading = getMag()
     print("\n--------------------\n  END \n    currentMag:{} ShouldBe:{} speed:{}".format(
@@ -193,7 +193,7 @@ def DalekTurn(degreesToTurn):
 
 
 def printMag():
-    DalekV2DriveV2.stop()
+    DalekV2Drive.stop()
     time.sleep(DalekTurnSettings['sleepTime'])
     currentMag = -1
     # ensure we get a valid reading must be between 0 and 360
@@ -205,7 +205,7 @@ def printMag():
 
 
 def getMag():
-    DalekV2DriveV2.stop()
+    DalekV2Drive.stop()
     time.sleep(DalekTurnSettings['sleepTime'])
     currentMag = -1
     # ensure we get a valid reading must be between 0 and 360
@@ -332,9 +332,9 @@ def driveForwardsToDistance(distance):
     dalekSpeed = CalculateSpeedToDrive(dalekData['frontPing'],distance)
 
     if dalekData['frontPing'] <= distance:
-      DalekV2DriveV2.backward(dalekSpeed)
+      DalekV2Drive.backward(dalekSpeed)
     else:
-      DalekV2DriveV2.forward(dalekSpeed)
+      DalekV2Drive.forward(dalekSpeed)
     dalekData = DalekSpi.readDevice1Data()
 
 # this uses the Rear ultrasonic sensor.
@@ -348,9 +348,9 @@ def driveBackwardsToDistance(distance):
     
 
     if dalekData['rearPing'] <= distance:
-      DalekV2DriveV2.forward(dalekSpeed)
+      DalekV2Drive.forward(dalekSpeed)
     else:
-      DalekV2DriveV2.backward(dalekSpeed)
+      DalekV2Drive.backward(dalekSpeed)
     dalekData = DalekSpi.readDevice1Data()
 
 # drive parallel  to wall and if we are not within
@@ -363,6 +363,29 @@ def driveParallelToLeftWall(distanceToWall=None):
     if distanceToWall == None:
         distanceToWall = DistanceToWall
     
+    initialSensorData = DalekSpi.readDevice1Data()
+    DalekPrint("initialSensorData:{}".format(initialSensorData))
+
+    if initialSensorData['leftPing'] >= distanceToWall:
+        pass
+
+
+
+     
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -374,7 +397,7 @@ def driveParallelToWallsInCenterToFrontPingDistance(distanceToWall=None):
 
 
 def dispose():
-    DalekV2DriveV2.cleanup()
+    DalekV2Drive.cleanup()
     
 
 # TEST
@@ -401,7 +424,7 @@ def dispose():
 # time.sleep(2)
 
 # DalekTurn(154)
-# DalekV2DriveV2.stop()
+# DalekV2Drive.stop()
 # DalekTurn(-154)
 # DalekTurn(355)
 # DalekTurn(90)
@@ -413,5 +436,5 @@ def dispose():
 # DalekTurn(-359)
 # DalekTurn(280)
 # time.sleep(.3)
-# DalekV2DriveV2.stop()
+# DalekV2Drive.stop()
 # printMag()

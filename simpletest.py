@@ -4,7 +4,7 @@ import math
 
 # this is based on the Adafruit libray code
 # it is not used anyware but left in for testing things work.
-
+# you will need to install the adafruit lib and connect up the i2c on the device.
 
 # Import the LSM303 module.
 import Adafruit_LSM303

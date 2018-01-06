@@ -1,40 +1,43 @@
 import struct
 import os.path
 import time
-import DalekV2DriveV2
+import DalekV2Drive
 import DalekSpi 
 import autoDrive
 import RPi.GPIO as GPIO  # Import GPIO divers
+from DalekDebug import DalekPrint, DalekDebugOn 
 
 ###
 ### SETUP
 ###
-
+GPIO.setmode(GPIO.BOARD)
 GPIO.setwarnings(False) 
+DalekDebugOn()
 
 # the '/dev/input/js0' file is in the sudo root of the file system.
 # it only apears once the device has paired.
 # use the setup guide from https://www.piborg.org/blog/rpi-ps3-help
 
 # wait until the joystick is paired...
+# def init():
 fn = '/dev/input/js0'
-print('Testing for joystick: %s...' % fn)
+DalekPrint("Testing for joystick: {}...".format(fn))
 
 file_exists = False
 while file_exists == False:
  
   file_exists = os.path.exists(fn)
-  print ('joystick paired: {} '.format(os.path.exists(fn)))
+  DalekPrint('joystick paired: {} '.format(os.path.exists(fn)))
   time.sleep(3)
 
 
 jsdev = open(fn, 'rb')
-print ('Joystick paired. Ok \n')
+DalekPrint('Joystick paired. Ok \n')
 
 
 
-DalekV2DriveV2.init()  
-speed = 50
+# DalekV2Drive.init()  # setup in main
+# speed = 50           # setup in main
 
 # Ps3 controller settings.
 joystickD_padCurrentButton = 0
@@ -66,128 +69,127 @@ def paddleControl(aX, aY,minusX, minusY):
     else:
       v_speed_3=1
   
-    print ( 'ax:{}  aY:{} v_speed{} v_speed2 {}' .format(aX,aY , v_speed, v_speed2) )
+    DalekPrint( 'ax:{}  aY:{} v_speed{} v_speed2 {}' .format(aX,aY , v_speed, v_speed2) )
 
-    print ('v_speed: %s' % v_speed )
+    DalekPrint('v_speed: %s' % v_speed )
    
    
     # Paddle moved center
     if aY == 0 and aX ==0:
-      DalekV2DriveV2.stop()
-      print ('stop')
+      DalekV2Drive.stop()
+      DalekPrint("Stop","STP")
     
     #-------------------------------------
     # up movements
 
     # Paddle moved up only
     elif minusY  and aX == 0: 
-      DalekV2DriveV2.forward(v_speed)
-      print ('forward')
+      DalekV2Drive.forward(v_speed)
+      DalekPrint("forward - {}".format(v_speed), "FW")
 
     # turnForwardRight
     elif minusY and minusX:
       
       if aY >50:
 
-        DalekV2DriveV2.paddleForward(v_speed2, v_speed)
-        # DalekV2DriveV2.turnForwardRight(v_speed,v_speed_3)
-        print ('paddleForward turn right')
+        DalekV2Drive.paddleForward(v_speed2, v_speed)
+        DalekPrint('paddleForward turn right', "PTR")
       else:
-        # DalekV2DriveV2.turnForwardLeft(v_speed, v_speed_3)
-        DalekV2DriveV2.paddleForward(v_speed_3, v_speed)
-        print ('paddleForward turn right')
+        # DalekV2Drive.turnForwardLeft(v_speed, v_speed_3)
+        DalekV2Drive.paddleForward(v_speed_3, v_speed)
+        DalekPrint('paddleForward turn right',"PTR")
     # turnForwardLeft
     elif minusY and minusX == False:
       
       if aY > 50:
-        DalekV2DriveV2.paddleForward( v_speed, v_speed2)
-        # DalekV2DriveV2.turnBackwardRight(v_speed_3,v_speed)
-        print ('turn right')
+        DalekV2Drive.paddleForward( v_speed, v_speed2)
+        # DalekV2Drive.turnBackwardRight(v_speed_3,v_speed)
+        DalekPrint('turn right',"TR")
       else:
-        DalekV2DriveV2.paddleForward( v_speed, v_speed_3)
-        # DalekV2DriveV2.turnForwardRight(v_speed_3,v_speed)
+        DalekV2Drive.paddleForward( v_speed, v_speed_3)
+        # DalekV2Drive.turnForwardRight(v_speed_3,v_speed)
 
     #-------------------------------------
     # spin movements
 
     #spin Left
     elif aY==0 and minusX :
-      DalekV2DriveV2.spinLeft(aX)
+      DalekV2Drive.spinLeft(aX)
     
     #spin Right
     elif aY==0 and minusX == False :
-      DalekV2DriveV2.spinRight(aX)
+      DalekV2Drive.spinRight(aX)
 #-------------------------------------
 # Down movements
     # Paddle moved down only
     elif minusY == False and aX == 0:
-      DalekV2DriveV2.backward(v_speed)
-      print ('backwards')
+      DalekV2Drive.backward(v_speed)
+      DalekPrint("backwards - {}".format(v_speed), "BW")
 
     # backwards right
     elif minusY== False and minusX == False:
       
-      DalekV2DriveV2.paddleBackward( v_speed, v_speed2)
-      print ('turn right')
+      DalekV2Drive.paddleBackward( v_speed, v_speed2)
+      DalekPrint('turn right', "TR")
     # backwards left 
     elif minusY== False and minusX == True:
      
-      DalekV2DriveV2.paddleBackward( v_speed2, v_speed)
-      print ('turn right') 
+      DalekV2Drive.paddleBackward( v_speed2, v_speed)
+      DalekPrint('turn right', "TR") 
 #=====================================================
     
 def dPadPressed(value,number, _joystickD_padCurrentButton):
-  print( "value:{} number:{} currentButton:{} " .format(value,number, _joystickD_padCurrentButton ))
+  DalekPrint( "value:{} number:{} currentButton:{} " .format(value,number, _joystickD_padCurrentButton ))
   
   if (value==0) and (number == _joystickD_padCurrentButton):
-    DalekV2DriveV2.stop()
-    print('#Stop()')
+    DalekV2Drive.stop()
+    DalekPrint('#Stop()',"STP")
   #Up button
   else:
     if number == 4:
       if value: # value is 1 for pressed 0 for released.
-        print('forward')
-        DalekV2DriveV2.forward(speed)
+        DalekPrint('forward')
+        DalekV2Drive.forward(speed)
   
     #Right button
     elif number == 5:
       if value:
-        print('\nRight spin')
-        # DalekV2DriveV2.spinRight(speed)
+        DalekPrint('\nRight spin')
+        # DalekV2Drive.spinRight(speed)
         autoDrive.DalekTurn(45) 
     
     # Down button
     elif number == 6:
       if value:
-        print('\nBackwards')
-        DalekV2DriveV2.backward(speed)
+        DalekPrint('\nBackwards')
+        DalekV2Drive.backward(speed)
     
     # Left button
     elif number == 7: 
       if value:
-        print('Left spin')
+        DalekPrint('Left spin')
         autoDrive.DalekTurn(-45) 
 
 def tankMode( _leftPaddle, _rightPaddle):
 
   # this mag reading is just for debug at the moment
   mag =DalekSpi.getMag()
-  print("left: {}  Right: {} mag:{}".format(_leftPaddle,_rightPaddle ,mag))
+  DalekPrint("left: {}  Right: {} mag:{}".format(_leftPaddle,_rightPaddle ,mag))
   
   if (_leftPaddle == 0) and (_rightPaddle == 0):
-    DalekV2DriveV2.stop()
+    DalekV2Drive.stop()
   elif (_leftPaddle < 0) and (_rightPaddle < 0):
-    DalekV2DriveV2.paddleForward(- _leftPaddle, - _rightPaddle)
-    print("forwards")
+    DalekV2Drive.paddleForward(- _leftPaddle, - _rightPaddle)
+    DalekPrint("forwards")
   elif (_leftPaddle > 0) and (_rightPaddle > 0):
-    DalekV2DriveV2.paddleBackward( _leftPaddle, _rightPaddle)
-    print("Backwards")
+    DalekV2Drive.paddleBackward( _leftPaddle, _rightPaddle)
+    DalekPrint("Backwards")
   elif (_leftPaddle <= 0) and (_rightPaddle >= 0):
-    DalekV2DriveV2.turnForwardRight(- _leftPaddle,  _rightPaddle)
-    print("spinright")
+    DalekV2Drive.turnForwardRight(- _leftPaddle,  _rightPaddle)
+    DalekPrint("spinright")
   elif (_leftPaddle >= 0) and (_rightPaddle <= 0):
-    DalekV2DriveV2.turnForwardLeft(  _leftPaddle,- _rightPaddle)
-    print("spin left")
+    DalekV2Drive.turnForwardLeft(  _leftPaddle,- _rightPaddle)
+    DalekPrint("spin left")
 
 
   
@@ -220,7 +222,8 @@ while True:
               ps3_ControllerMode += 1
             else :
               ps3_ControllerMode = 1
-            print("You are in Mode {}" .format(ps3_ControllerMode))
+            DalekPrint("You are in Mode {}" .format(ps3_ControllerMode))
+        
         # L2 button
         elif number == 8:
           if value:
@@ -243,14 +246,14 @@ while True:
         elif number == 13:
           if value:
             mag =DalekSpi.getMag()
-            print("mag:{}".format(mag))
+            DalekPrint("mag:{}".format(mag))
 
         else :
-          print("you pressed {}" .format(number))
+          DalekPrint("you pressed {}" .format(number))
 
       # Axis movement event
       elif type & 0x02:
-        #print('number{}'.format(number))
+        #DalekPrint('number{}'.format(number))
         
         # Left Thumbstick x axis.
         #normal mode
@@ -282,20 +285,20 @@ while True:
           # elif number == 2:
           #   axisY =int( value / 655.4)
             
-          #   print("right X:{}".format(axisY))
+          #   DalekPrint("right X:{}".format(axisY))
           
           # Right Thumbstick Y Axis
           elif number == 3:
             
              axisY =int( value / 655.4)
              speed = 50 - axisY
-             print("right y:{}  speed: {} ".format(axisY , speed))
+             DalekPrint("right y:{}  speed: {} ".format(axisY , speed))
         
         #Tank mode
         elif ps3_ControllerMode == 2:
           
           if number == 1:
-             #print("left side {}  {} ".format(leftPaddle , rightPaddle))
+             #DalekPrint("left side {}  {} ".format(leftPaddle , rightPaddle))
            
              leftPaddle= int( value / 327.67)
              
@@ -303,6 +306,6 @@ while True:
             
           
           elif number == 3:
-            # print("right side..")
+            # DalekPrint("right side..")
             rightPaddle= int( value / 327.67)
             tankMode(leftPaddle , rightPaddle)

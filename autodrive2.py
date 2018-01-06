@@ -2,15 +2,15 @@ import time
 # import DalekV2DriveV2
 import autoDrive
 # import DalekSpi
-import RPi.GPIO as GPIO  # Import GPIO divers
+# import RPi.GPIO as GPIO  # Import GPIO divers
 from DalekDebug import DalekPrint, DalekDebugOn , DalekDebugSetOutputDevice
 
  
-GPIO.setwarnings(False)
+# GPIO.setwarnings(False)
 # DalekV2DriveV2.init()
 # DalekSpi.init()
 DalekDebugOn()
-
+autoDrive.changeDalekTurnSettings() ## 1 for wooden floor
 # dalekSpeed = 40
 
 
@@ -124,12 +124,16 @@ DalekDebugOn()
 # autoDrive.DalekTurn(90)
 # autoDrive.DalekTurn(-90)
 # DalekPrint("Heading:{}".format(autoDrive.getMag()))
-# autoDrive.driveBackwardsToDistance(10)
+# while True:   
+  # autoDrive.gotoHeading(94)
+  # autoDrive.driveBackwardsToDistance(10)
+  
+autoDrive.driveParallelToLeftWall(10)
 
+  # autoDrive.DalekTurn(180)
 # DalekPrint("Heading:{}".format(autoDrive.getMag()))
 # # time.sleep(.5)
 # autoDrive.gotoHeading(head)
-# autoDrive.gotoHeading(180)
 # autoDrive.gotoHeading(head)
 # autoDrive.driveForwardsToDistance(10)
 # DalekPrint("Heading:{}".format(autoDrive.getMag()))
@@ -144,7 +148,6 @@ DalekDebugOn()
 
 
 
-autoDrive.driveForwardsToDistance(44)
 
 
 

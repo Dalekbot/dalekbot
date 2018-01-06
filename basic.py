@@ -4,18 +4,32 @@ import DalekSpi
 import RPi.GPIO as GPIO  # Import GPIO divers
 DalekSpi.init()
 
+
+#####################################################
+
+#     This is just for playing with the bits to see if it works :)
+#     do not leave code here that you need 
+
+#####################################################
 DalekDebugOn()
-DalekPrint("hello phil from the main module")
+# DalekDebugSetOutputDevice("scrollphat")
+# DalekPrint("hello phil from the main module")
 
-while True:
-  global SpiSetup,spi
-  # piSensors = DalekSpi.readDevice1Data() 
-  # DalekPrint(piSensors['frontPing'] )
-  # DalekPrint(piSensors['compass'] )
+DalekPrint("Spin Left 56","SL")
+DalekPrint("Spin Left {}".format(666),"KKK" )
+DalekPrint("Turn Right 56")
+DalekPrint("\n... Shutting Down...\n")
+DalekPrint("\n\nReturning to Main Menu\n\n", "HM")
+DalekPrint("","PSS")
+# while True:
+  
+#   # piSensors = DalekSpi.readDevice1Data() 
+#   # DalekPrint(piSensors['frontPing'] )
+#   # DalekPrint(piSensors['compass'] )
+#   DalekSpi.test()
 
-  mag = DalekSpi.getSensorData(4)
-  DalekPrint(mag)
-  time.sleep(1)
+#   # mag = DalekSpi.readDevice1Data()
+#   # DalekPrint(mag)
+#   time.sleep(.2)
 
  
-

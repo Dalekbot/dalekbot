@@ -1,35 +1,63 @@
 # This is an abstraction layer for our debuging
 # You can use the bash output window or plugin your own device.
 
-
+import scrollphat 
+import time
 
 dalekDebugOn = False
 DalekDebugOutputDevice = 0
 
+# sets the output device 
+# default is stout/command line only
+# scollphat adds the bots display as well as stout
 def DalekDebugSetOutputDevice(_dalekDebugOutputDevice):
   global DalekDebugOutputDevice
-  DalekDebugOutputDevice = _dalekDebugOutputDevice
+
+  if _dalekDebugOutputDevice == "scrollphat":
+    
+    scrollphat.clear()
+    scrollphat.write_string("BOT")
+    DalekDebugOutputDevice = 1
+    dalekDebugOn = True # assume that as it is set,  use it.
+  else:
+    DalekDebugOutputDevice = 0
 
 def DalekDebugOn():
   global dalekDebugOn
   dalekDebugOn = True
 
-def DalekDebugOff():
+def DalekDebugOff():  
   global dalekDebugOn
   dalekDebugOn = False
-
-def DalekPrint(text):
+# the text is the main bash output
+# the code is the output to the bots screen
+def DalekPrint(text, code=None):
  
   if dalekDebugOn:
     if DalekDebugOutputDevice == 0:
       print(text)
     elif DalekDebugOutputDevice == 1:
-      # put new device here
+      #scrollphat
+      print(text)
+      if code != None:
+        scrollphat.clear()
+        scrollphat.write_string(code)
       pass
 
-# on()
-# off()
-# on()
+def DalekDebugClear(timeToPause=None):
+  if DalekDebugOutputDevice == 1: # using the scrollphat
+    scrollphat.clear()
+  if timeToPause != None:
+    time.sleep(timeToPause)
+
+def DalekDebugSetBrightness(valueInt):
+  if DalekDebugOutputDevice == 1: # using the scrollphat
+    scrollphat.set_brightness(valueInt)
+  
+
+    
+
+
 
   # print("hello:{}".format(DalekDebugOn))
 
