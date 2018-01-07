@@ -7,7 +7,7 @@ def LineFollow(showcam):
     global minspeed            # Allow access to 'minspeed' constant
     global innerturnspeed      # Speed for Inner Wheels in a turn
     global outerturnspeed      # Speed for Outer Wheels in a turn
-    global wii                 # Allow access to 'Wii' constants
+ 
     global hRes                # Allow Access to Cam Horizontal Resolution
     global vRes                # Allow Access to Cam Vertical Resolution
     global video_capture       # Allow Access to WebCam Object

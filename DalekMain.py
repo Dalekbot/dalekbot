@@ -7,7 +7,7 @@
 #from __future__ import print_function
 
 import sys
-sys.settrace
+sys.settrace 
 #from glob import glob
 #import itertools as it
 import os
@@ -34,7 +34,8 @@ import numpy as np       # Import NumPy Array manipulation
 import cv2               # Import OpenCV Vision code
 import DalekV2Drive      # Import my 4 Motor controller
 import subprocess        # Import Modual to allow subprocess to be lunched
-from DalekDebug import DalekPrint, DalekDebugOn , DalekDebugSetOutputDevice, DalekDebugSetBrightness
+from DalekDebug import DalekPrint, DalekDebugOn , DalekDebugSetOutputDevice, DalekDebugSetBrightness, DalekDebugClear,DalekDebugDestroy
+import joystick          # Inport the PS3 controller
 
 # Main Imports and setup constants
 speed = 50               # 0 is stopped, 100 is fastest
@@ -49,12 +50,9 @@ vRes = 480               # PiCam Virtical Resolution
 camera = 0               # Create PiCamera Object
 video_capture = 0        # Create WebCam Object
 soundvolume = 100        # Set Default Sound Volume
-TrigPinLeft = 35         # Set the Trigger pin for Left Sensor
-EchoPinLeft = 37         # Set the Echo pin for Left Sensor
-TrigPinCenter = 33       # Set the Trigger pin for Right Sensor
-EchoPinCenter = 31       # Set the Echo pin for Center Sensor
-TrigPinRight = 29        # Set the Trigger pin for Right Sensor
-EchoPinRight = 32        # Set the Echo pin for Right Sensor
+
+currentMission = 1       # set the current mission we have selected
+
 
 # End of Main Imports and setup constants
 #======================================================================
@@ -72,6 +70,7 @@ def setup():                   # Setup GPIO and Initalise Imports
 
     DalekV2Drive.init()        # Initialise my software to control the motors
  
+    # this should not be needed as we are only using the value not rebinding a new value to it. 
     # initialize the camera and grab a reference to the raw camera capture
     global hRes                # Allow Access to PiCam Horizontal Resolution
     global vRes                # Allow Access to PiCam Vertical Resolution
@@ -81,6 +80,9 @@ def setup():                   # Setup GPIO and Initalise Imports
     video_capture = cv2.VideoCapture(0)
     video_capture.set(3, hRes)
     video_capture.set(4, vRes)
+    
+    
+    joystick.init()
   
 # End of Initialisation procedures
 #======================================================================
@@ -109,20 +111,16 @@ def destroy():                 # Shutdown GPIO and Cleanup modules
 
     global soundvolume         # Allow access to sound volume
         
-    DalekPrint( "\n... Shutting Down...\n")
-    scrollphat.clear()         # Shutdown Scroll pHat
-    scrollphat.write_string("Ext")
+    DalekPrint( "\n... Shutting Down...\n" ,"Ext")
+    
     DalekV2Drive.stop()        # Make sure Bot is not moving when program exits
     DalekV2Drive.cleanup()     # Shutdown all motor control
-    global wii                 # Allow access to the wii object
-    wii.rumble = 1
     time.sleep(0.5)
-    wii.rumble = 0
     cv2.destroyAllWindows()    # Shutdown any open windows
     volumesetting = '"--volume=' + str(soundvolume) +'"'
     subprocess.Popen(["mplayer",volumesetting, "Sound/Grow_stronger.mp3"], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     time.sleep(7)
-    scrollphat.clear()         # Clear Scroll pHat
+    DalekDebugDestroy()        # Clear Scroll pHat
     GPIO.cleanup()             # Release GPIO resource
     
 # End of Clean-up Procedures  
@@ -142,8 +140,13 @@ def destroy():                 # Shutdown GPIO and Cleanup modules
     
 def maincontrol(showcam):                  # Main Control Loop
 
-    
+    global currentMission
     global soundvolume              # Allow access to sound volume
+    global speed
+    DalekPrint("Main Menu","Mn")
+    # DalekPrint("currentMission",currentMission)
+    joystick.use(speed, currentMission)
+
 
    
 
@@ -222,14 +225,20 @@ if __name__ == '__main__': # The Program will start from here
     
 	
     try:
+        DalekPrint("OK 1")
         maincontrol(showcam)    # Call main loop
+        DalekPrint("OK 2")
+
         destroy()     # Shutdown
         DalekPrint( "\n\n................... Exit .......................\n\n")
         exit(0) # Exit Cleanly
     except KeyboardInterrupt:
         destroy()
-        DalekPrint( "\n\n................... Exit .......................\n\n")
+        DalekPrint( "\n\n............... Exit From KeYboard .......................\n\n")
         exit(0) # Exit Cleanly
+    except Exception as inst:
+        print(type(inst))
+        print("\n................SOMETHING WENT WRONG!..................\n")
         
 # End of __Main__ Startup Loop 
 #======================================================================

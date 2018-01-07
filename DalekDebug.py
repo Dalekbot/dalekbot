@@ -55,7 +55,8 @@ def DalekDebugSetBrightness(valueInt):
     scrollphat.set_brightness(valueInt)
   
 
-    
+def DalekDebugDestroy():
+  DalekDebugClear()
 
 
 
