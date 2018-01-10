@@ -14,7 +14,7 @@ test.py is end to end tests this MUST work on all bots.
 DalekPrint() takes one or two parameters the first one gets printed to stout and the other
 gets sent to the onboard device in your case, the scrollphat I intend to use one of my lcd screens.
 
-All the callenge_xxx files are the files that need to be changed so that DalekV2main works, and will be
+All the challenge_xxx files are the files that need to be changed so that DalekV2main works, and will be
 added back once updated.
 
 scrollphat.py and cwild.py are just so my code works. You can just delete them and use the proper one.

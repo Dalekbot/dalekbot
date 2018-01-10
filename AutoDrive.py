@@ -39,7 +39,7 @@ DalekTurnSettings= {
 
 
 def changeDalekTurnSettings(number=None):
-    global DalekTurnSettings
+    # global DalekTurnSettings
     if number ==None:
         # Carpet settings
         DalekTurnSettings= {

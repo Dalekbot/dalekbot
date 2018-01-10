@@ -29,12 +29,13 @@ import RPi.GPIO as GPIO  # Import GPIO divers
 import time              # Import the Time library
 #import cwiid             # Import WiiMote code
 import argparse          # Import Argument Parser
-import scrollphat        # Import Scroll pHat code
+# import scrollphat        # Import Scroll pHat code
 import numpy as np       # Import NumPy Array manipulation
 import cv2               # Import OpenCV Vision code
-import DalekV2Drive      # Import my 4 Motor controller
 import subprocess        # Import Modual to allow subprocess to be lunched
-from DalekDebug import DalekPrint, DalekDebugOn , DalekDebugSetOutputDevice, DalekDebugSetBrightness, DalekDebugClear,DalekDebugDestroy
+import DalekV2Drive      # Import my 4 Motor controller
+from   DalekDebug import DalekPrint, DalekDebugOn , DalekDebugSetOutputDevice, DalekDebugSetBrightness, DalekDebugClear,DalekDebugDestroy
+import DalekSpi
 import joystick          # Inport the PS3 controller
 
 # Main Imports and setup constants
@@ -51,7 +52,7 @@ camera = 0               # Create PiCamera Object
 video_capture = 0        # Create WebCam Object
 soundvolume = 100        # Set Default Sound Volume
 
-currentMission = 1       # set the current mission we have selected
+currentChallenge = 1       # set the current Challenge we have selected
 
 
 # End of Main Imports and setup constants
@@ -68,8 +69,10 @@ def setup():                   # Setup GPIO and Initalise Imports
     GPIO.setmode(GPIO.BOARD)   # Set the GPIO pins as numbering - Also set in DalekV2Drive.py
     GPIO.setwarnings(False)    # Turn GPIO warnings off - CAN ALSO BE Set in DalekV2Drive.py
 
-    DalekV2Drive.init()        # Initialise my software to control the motors
- 
+    DalekV2Drive.init()        # Initialise the software to control the motors
+    DalekSpi.init()            # Initialise my software for the MOSI/spi Bus
+    joystick.init()            # Initialise the Joystick software
+  
     # this should not be needed as we are only using the value not rebinding a new value to it. 
     # initialize the camera and grab a reference to the raw camera capture
     global hRes                # Allow Access to PiCam Horizontal Resolution
@@ -82,7 +85,6 @@ def setup():                   # Setup GPIO and Initalise Imports
     video_capture.set(4, vRes)
     
     
-    joystick.init()
   
 # End of Initialisation procedures
 #======================================================================
@@ -140,12 +142,15 @@ def destroy():                 # Shutdown GPIO and Cleanup modules
     
 def maincontrol(showcam):                  # Main Control Loop
 
-    global currentMission
+    global currentChallenge
     global soundvolume              # Allow access to sound volume
     global speed
-    DalekPrint("Main Menu","Mn")
-    # DalekPrint("currentMission",currentMission)
-    joystick.use(speed, currentMission)
+    
+    settings = {'speed': speed,
+                 'currentChallenge':currentChallenge,
+                 'soundVolume':soundvolume}
+    
+    joystick.use(settings)
 
 
    

@@ -3,7 +3,7 @@ import struct
 import time
 
 import autoDrive
-import DalekSpi
+# import DalekSpi
 import DalekV2Drive
 # import RPi.GPIO as GPIO  # Import GPIO divers
 from DalekDebug import DalekDebugClear, DalekDebugOn, DalekPrint
@@ -41,13 +41,13 @@ def init():
 # speed = 50           # setup in main
 
 # Ps3 controller settings.
-def use(_speed, _currentMission):
+def use(_settings):
   
   # use a dictionary so it can be python 2/3  compatable rather than nonlocal in  python 3
-  settings = { 'currentMission': _currentMission}
-  # global currentMission
+  settings = _settings
+  # global currentChallenge
   
-  speed = _speed # set in the calling file
+  speed = _settings['speed'] # set in the calling file
 
   # this is the joystick file we stream data from.
   jsdev = open("/dev/input/js0", 'rb')
@@ -159,21 +159,21 @@ def use(_speed, _currentMission):
   
   def missionSelect(value):
     numberOfMissions = 7
-    currentMission = settings['currentMission']
+    currentChallenge = settings['currentChallenge']
     
     if value == 0: #Up Button
-      if currentMission > 1:
-        currentMission -=1
+      if currentChallenge > 1:
+        currentChallenge -=1
       else:
-        currentMission = numberOfMissions
+        currentChallenge = numberOfMissions
     
     else:         #Down Button
-      if numberOfMissions >= (currentMission + 1): # so we dont exceed max number of missions
-        currentMission +=1
+      if numberOfMissions >= (currentChallenge + 1): # so we dont exceed max number of missions
+        currentChallenge +=1
       else:
-        currentMission = 1
+        currentChallenge = 1
  
-    settings['currentMission'] = currentMission
+    settings['currentChallenge'] = currentChallenge
     displaySelectedChallenge()
 
 
@@ -262,35 +262,35 @@ def use(_speed, _currentMission):
     
 
   def displaySelectedChallenge():
-    currentMission = settings['currentMission']
+    currentChallenge = settings['currentChallenge']
     os.system('clear')
     
     DalekPrint(colored("\n\n\n\n           Challenge Select \n", 'red'))
-    if currentMission == 1:
+    if currentChallenge == 1:
       DalekPrint(colored("        >>> Obstacle Course <<<",'green'))
     else:
       DalekPrint("           Obstacle Course")
-    if currentMission == 2:
+    if currentChallenge == 2:
       DalekPrint(colored("        >>> Straight-Line Speed Test <<<",'green'))
     else:
       DalekPrint("           Straight-Line Speed Test")
-    if currentMission == 3:
+    if currentChallenge == 3:
       DalekPrint(colored("        >>> Minimal Maze <<<",'green'))
     else:
       DalekPrint("           Minimal Maze")
-    if currentMission == 4:
+    if currentChallenge == 4:
       DalekPrint(colored("        >>> Somewhere Over The Rainbow <<<",'green'))
     else:
       DalekPrint("           Somewhere Over The Rainbow")
-    if currentMission == 5:
+    if currentChallenge == 5:
       DalekPrint(colored("        >>> PiNoon <<<",'green'))
     else:
       DalekPrint("           PiNoon")
-    if currentMission == 6:
+    if currentChallenge == 6:
       DalekPrint(colored("        >>> Duck Shoot <<<",'green'))
     else:
       DalekPrint("           Duck Shoot")
-    if currentMission == 7:
+    if currentChallenge == 7:
       DalekPrint(colored("        >>> Slightly Deranged Golf <<<",'green'))
     else:
       DalekPrint("           Slightly Deranged Golf")
@@ -298,19 +298,19 @@ def use(_speed, _currentMission):
 
     DalekPrint(colored("\n           Use UP and DOWN D-Pad Then Select",'yellow'))
 
-    if currentMission == 1:  ## output for onboard device
+    if currentChallenge == 1:  ## output for onboard device
       DalekPrint("","OC")
-    elif currentMission == 2: 
+    elif currentChallenge == 2: 
       DalekPrint("","StL")
-    elif currentMission == 3: 
+    elif currentChallenge == 3: 
       DalekPrint("","MM")
-    elif currentMission == 4: 
+    elif currentChallenge == 4: 
       DalekPrint("","OR")
-    elif currentMission == 5: 
+    elif currentChallenge == 5: 
       DalekPrint("","PN")
-    elif currentMission == 6: 
+    elif currentChallenge == 6: 
       DalekPrint("","DS")
-    elif currentMission == 7: 
+    elif currentChallenge == 7: 
       DalekPrint("","DG")
    
     
@@ -355,28 +355,28 @@ def use(_speed, _currentMission):
 
   def buttonSelect(_ps3_ControllerMode):
     if _ps3_ControllerMode == 2:
-      currentMission = settings['currentMission']
+      currentChallenge = settings['currentChallenge']
       os.system('clear')
       if _ps3_ControllerMode == 2: # Challenge Select Mode
-        if currentMission == 1:
+        if currentChallenge == 1:
           DalekPrint("You selected Obstacle Course", "OC")
-        elif currentMission == 2:
+        elif currentChallenge == 2:
           DalekPrint("You selected Straight-Line Speed Test", "StL")
-        elif currentMission == 3:
+        elif currentChallenge == 3:
           DalekPrint("You selected Minimal Maze", "MM")
-        elif currentMission == 4:
+        elif currentChallenge == 4:
           DalekPrint("You selected Somewhere Over The Rainbow", "OR")
-        elif currentMission == 5:
+        elif currentChallenge == 5:
           DalekPrint("You selected PiNoon", "PN")
-        elif currentMission == 6:
+        elif currentChallenge == 6:
           DalekPrint("You selected Duck Shoot", "DS")
-        elif currentMission == 7:
+        elif currentChallenge == 7:
           DalekPrint("You selected Slightly Deranged Golf", "DG")
         
         else:
           displaySelectedChallenge()      # nothing has been selected yet.
-      DalekPrint("got here")
-    return 1 # resets ps3_ControllerMode 
+  
+    return 1 # resets ps3_ControllerMode  to Drive Mode
       
     
  
