@@ -1,16 +1,23 @@
-# This is an abstraction layer for our debuging
-# You can use the bash output window or plugin your own device.
+#!/usr/bin/env python3
 
 import scrollphat 
 import time
 
+##################################################################
+# This is an abstraction layer for our debuging                  #
+# You can use the bash output window or plugin your own device.  #
+##################################################################
+
+
 dalekDebugOn = False
 DalekDebugOutputDevice = 0
 
-# sets the output device 
-# default is stout/command line only
-# scollphat adds the bots display as well as stout
 def DalekDebugSetOutputDevice(_dalekDebugOutputDevice):
+  """ 
+  sets the output device 
+  default is stout/command line only
+  "scollphat" adds the bots display as well as stout
+  """
   global DalekDebugOutputDevice
 
   if _dalekDebugOutputDevice == "scrollphat":
@@ -60,7 +67,6 @@ def DalekDebugDestroy():
 
 
 
-  # print("hello:{}".format(DalekDebugOn))
 
 
 if __name__ == "__main__":

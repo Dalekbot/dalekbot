@@ -1,3 +1,25 @@
+#from glob import glob
+#import itertools as it
+#import struct
+
+#from imutils.object_detection import non_max_suppression
+#from imutils import paths
+
+#======================================================================
+# Service Procedures
+def updateServoMotorPositions(pwm, panServoPosition, tiltServoPosition):
+    panDutyCycle = ((float(panServoPosition) * 0.3) + 15) * 10
+    tiltDutyCycle = ((float(tiltServoPosition) * 0.1555556) + 20) * 10
+    
+    #pwmPanObject.ChangeDutyCycle(panDutyCycle)
+    pwm.setPWM(servoHorizontalPort, 0, int(panDutyCycle))
+    #pwmTiltObject.ChangeDutyCycle(tiltDutyCycle)
+    pwm.setPWM(servoVerticalPort, 0, int(tiltDutyCycle))
+# end function
+    
+# End of Service Procedures    
+#======================================================================
+
 
 # use Arduino Instead 
 def getdistance(distance, TRIG, ECHO):

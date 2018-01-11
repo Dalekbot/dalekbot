@@ -1,44 +1,25 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 #style guide https://google.github.io/styleguide/pyguide.html
 
-#======================================================================
-# Place holders.  These may or may not be required
-
-# Python 2/3 compatibility
-#from __future__ import print_function
-
 import sys
 sys.settrace 
-#from glob import glob
-#import itertools as it
 import os
 from operator import itemgetter
-#import struct
-
-#from imutils.object_detection import non_max_suppression
-#from imutils import paths
-
-# End of Place holders
-#======================================================================
-
-
 #======================================================================
 # Start of Main Imports and setup constants
 
 # Module Imports
 import RPi.GPIO as GPIO  # Import GPIO divers
 import time              # Import the Time library
-#import cwiid             # Import WiiMote code
 import argparse          # Import Argument Parser
-# import scrollphat        # Import Scroll pHat code
 import numpy as np       # Import NumPy Array manipulation
 import cv2               # Import OpenCV Vision code
-import subprocess        # Import Modual to allow subprocess to be lunched
-import DalekV2Drive      # Import my 4 Motor controller
-from   DalekDebug import DalekPrint, DalekDebugOn , DalekDebugSetOutputDevice, DalekDebugSetBrightness, DalekDebugClear,DalekDebugDestroy
-import DalekSpi
-import joystick          # Inport the PS3 controller
+import dalek_drive      # Import my 4 Motor controller
+from   dalek_debug import DalekPrint, DalekDebugOn , DalekDebugSetOutputDevice, DalekDebugSetBrightness, DalekDebugClear,DalekDebugDestroy
+import dalek_spi
+import dalek_sound_player
+import ps3_controller          # Inport the PS3 controller
 
 # Main Imports and setup constants
 speed = 50               # 0 is stopped, 100 is fastest
@@ -52,9 +33,10 @@ hRes = 640               # PiCam Horizontal Resolution
 vRes = 480               # PiCam Virtical Resolution
 camera = 0               # Create PiCamera Object
 video_capture = 0        # Create WebCam Object
-soundvolume = 100        # Set Default Sound Volume
+soundvolume = 0        # Set Default Sound Volume
 
-currentChallenge = 1       # set the current Challenge we have selected
+
+dalek_sounds = dalek_sound_player.DalekSounds(True,soundvolume) # initialize the sound player
 
 
 # End of Main Imports and setup constants
@@ -67,13 +49,17 @@ def setup():                   # Setup GPIO and Initalise Imports
     
     DalekDebugOn()             # use the debug and turn on output 
     DalekDebugSetOutputDevice("scrollphat") # if left empty then default is just stout
+    dalek_sounds.set_volume_level(-5)
+    dalek_sounds.play_sound("Beginning")            # annoy someone
 
-    GPIO.setmode(GPIO.BOARD)   # Set the GPIO pins as numbering - Also set in DalekV2Drive.py
-    GPIO.setwarnings(False)    # Turn GPIO warnings off - CAN ALSO BE Set in DalekV2Drive.py
 
-    DalekV2Drive.init()        # Initialise the software to control the motors
-    DalekSpi.init()            # Initialise my software for the MOSI/spi Bus
-    joystick.init()            # Initialise the Joystick software
+    GPIO.setmode(GPIO.BOARD)   # Set the GPIO pins as numbering - Also set in dalek_drive.py
+    GPIO.setwarnings(False)    # Turn GPIO warnings off - CAN ALSO BE Set in dalek_drive.py
+
+    dalek_drive.init()        # Initialise the software to control the motors
+    dalek_spi.init()            # Initialise my software for the MOSI/spi Bus
+    ps3_controller.init()            # Initialise the Joystick software
+    
   
     # this should not be needed as we are only using the value not rebinding a new value to it. 
     # initialize the camera and grab a reference to the raw camera capture
@@ -90,40 +76,20 @@ def setup():                   # Setup GPIO and Initalise Imports
   
 # End of Initialisation procedures
 #======================================================================
-# Service Procedures
-   
-
-    
-#======================================================================
-def updateServoMotorPositions(pwm, panServoPosition, tiltServoPosition):
-    panDutyCycle = ((float(panServoPosition) * 0.3) + 15) * 10
-    tiltDutyCycle = ((float(tiltServoPosition) * 0.1555556) + 20) * 10
-    
-    #pwmPanObject.ChangeDutyCycle(panDutyCycle)
-    pwm.setPWM(servoHorizontalPort, 0, int(panDutyCycle))
-    #pwmTiltObject.ChangeDutyCycle(tiltDutyCycle)
-    pwm.setPWM(servoVerticalPort, 0, int(tiltDutyCycle))
-# end function
-    
-# End of Service Procedures    
-#======================================================================
-
-#======================================================================
 # Clean-up Procedures  
     
 def destroy():                 # Shutdown GPIO and Cleanup modules
 
-    global soundvolume         # Allow access to sound volume
+             # Allow access to sound volume
+    global dalek_sounds
         
     DalekPrint( "\n... Shutting Down...\n" ,"Ext")
-    
-    DalekV2Drive.stop()        # Make sure Bot is not moving when program exits
-    DalekV2Drive.cleanup()     # Shutdown all motor control
-    time.sleep(0.5)
+    dalek_sounds.play_sound("Grow_stronger")
+    dalek_drive.stop()        # Make sure Bot is not moving when program exits
+    dalek_drive.cleanup()     # Shutdown all motor control
+    time.sleep(2)
     cv2.destroyAllWindows()    # Shutdown any open windows
-    volumesetting = '"--volume=' + str(soundvolume) +'"'
-    subprocess.Popen(["mplayer",volumesetting, "Sound/Grow_stronger.mp3"], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    time.sleep(7)
+    time.sleep(1.5)
     DalekDebugDestroy()        # Clear Scroll pHat
     GPIO.cleanup()             # Release GPIO resource
     
@@ -144,15 +110,16 @@ def destroy():                 # Shutdown GPIO and Cleanup modules
     
 def maincontrol(showcam):                  # Main Control Loop
 
-    global currentChallenge
-    global soundvolume              # Allow access to sound volume
-    global speed
+    # current_challenge = 1       # set the current Challenge we have selected
     
-    settings = {'speed': speed,
-                 'currentChallenge':currentChallenge,
-                 'soundVolume':soundvolume}
+
+    # global speed
     
-    joystick.use(settings)
+    # settings = {'speed': speed,
+    #              'currentChallenge':current_challenge,
+    #              'soundVolume':soundvolume}
+    
+    ps3_controller.use(speed,dalek_sounds)
 
 
    
@@ -178,54 +145,44 @@ if __name__ == '__main__': # The Program will start from here
     args = parser.parse_args()
     
     if ((str(args.RightSpeed)) != 'None'):
-        # print '\nRight Speed - ',(str())
         DalekPrint("\nRight Speed - {}".format(args.RightSpeed))
         rightspeed = args.RightSpeed
 
     if ((str(args.LeftSpeed)) != 'None'):
-        # print 'Left Speed - ',(str(args.LeftSpeed))
         DalekPrint("\nLeft Speed - {}".format(args.LeftSpeed))
         leftspeed = args.LeftSpeed
 
     if ((str(args.Speed)) != 'None'):
-        # print '\nGeneral Speed - ',(str(args.Speed))
         DalekPrint("\nGeneral Speed - {}".format(args.Speed))
         speed = args.Speed
     
     if ((str(args.Brightness)) != 'None'):
-        # DalekPrint( '\nscrollpHat Brightness - ',(str(args.Brightness))
         DalekPrint("\nscrollpHat Brightness - {}".format(args.Brightness))
         DalekDebugSetBrightness(int(args.Brightness))
 
     if ((str(args.InnerTurnSpeed)) != 'None'):
-        # print '\nInner Turn Speed - ',(str(args.InnerTurnSpeed))
         DalekPrint("\nInner Turn Speed - {}".format(args.InnerTurnSpeed))
         innerturnspeed = args.InnerTurnSpeed
     
     if ((str(args.OuterTurnSpeed)) != 'None'):
-        # print '\nOuter Turn Speed - ',(str(args.OuterTurnSpeed))
         DalekPrint("\nOuter Turn Speed - {}".format(args.OuterTurnSpeed))
         outerturnspeed = args.OuterTurnSpeed
  
     if ((str(args.ShowCam)) != 'None'):
-        # print '\nShow Cam Image - ',(str(args.ShowCam))
         DalekPrint("\nShow Cam Image - {}".format(args.ShowCam))
         showcam = args.ShowCam
     else:
         showcam = False
 
     if ((str(args.SoundVolume)) != 'None'):
-        # print '\nSound Volume - ',(str(args.SoundVolume))
         DalekPrint("\nSound Volume - {}".format(args.SoundVolume))
         soundvolume = args.SoundVolume
     else:
-        soundvolume = 100
+        soundvolume = 0
     
     DalekPrint("\n\nSetting Up ...","Set")
     
     
-    volumesetting = '"--volume=' + str(soundvolume) +'"'
-    subprocess.Popen(["mplayer",volumesetting, "Sound/Beginning.mp3"], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     
     setup()           # Setup all motors 
     DalekPrint("\nGo ...\n\n","Go")
@@ -237,11 +194,11 @@ if __name__ == '__main__': # The Program will start from here
         DalekPrint("OK 2")
 
         destroy()     # Shutdown
-        DalekPrint( "\n\n................... Exit .......................\n\n")
+        print( "\n\n................... Exit .......................\n\n")
         exit(0) # Exit Cleanly
     except KeyboardInterrupt:
         destroy()
-        DalekPrint( "\n\n............... Exit From KeYboard .......................\n\n")
+        DalekPrint( "\n\n............... Exit From Keyboard .......................\n\n")
         exit(0) # Exit Cleanly
     except Exception as inst:
         print(type(inst))

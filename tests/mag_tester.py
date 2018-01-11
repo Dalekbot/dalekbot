@@ -1,8 +1,9 @@
 import time
-import DalekV2Drive
+import dalek_drive
 
-import DalekSpi 
+import dalek_spi 
 import RPi.GPIO as GPIO  # Import GPIO divers
+
 GPIO.setwarnings(False)
 
 
@@ -70,6 +71,3 @@ print("\nmag:{}   Speed:{}" .format(DalekSpi.getMag(),speed))
 DalekV2Drive.stop()
 time.sleep(0.5)
 print("\nEND mag:{}  Greatest mag:{}" .format(DalekSpi.getMag(),greatestMag))
-
-
-

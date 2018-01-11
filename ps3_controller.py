@@ -1,14 +1,10 @@
+#!/usr/bin/env python
 import os.path
 import struct
 import time
-
-import autoDrive
-# import DalekSpi
-import DalekV2Drive
-# import RPi.GPIO as GPIO  # Import GPIO divers
-from DalekDebug import DalekDebugClear, DalekDebugOn, DalekPrint
+import dalek_drive
+from dalek_debug import DalekDebugClear, DalekDebugOn, DalekPrint
 from termcolor import colored
-
 ###
 ### SETUP 
 ###
@@ -34,20 +30,13 @@ def init():
     jsdev = open(fn, 'rb')
     DalekPrint('Joystick paired. Ok \n', "Prd")
     
-
-
-
-# DalekV2Drive.init()  # setup in main
-# speed = 50           # setup in main
-
 # Ps3 controller settings.
-def use(_settings):
-  
-  # use a dictionary so it can be python 2/3  compatable rather than nonlocal in  python 3
-  settings = _settings
-  # global currentChallenge
-  
-  speed = _settings['speed'] # set in the calling file
+def use(speed, dalek_sounds):
+
+  dalek_sounds = dalek_sounds
+
+  current_challenge = 1
+  speed = speed # set in the calling file
 
   # this is the joystick file we stream data from.
   jsdev = open("/dev/input/js0", 'rb')
@@ -59,7 +48,6 @@ def use(_settings):
   # 2 Challenge Select Mode
   # 3 Exterminate Mode
   ps3_ControllerMode=1            
-  
 
   axisX = 0        # main  axis variables nomalized
   axisY = 0        # main  axis variables nomalized
@@ -69,97 +57,11 @@ def use(_settings):
   leftPaddle = 0   # raw axis data
   rightPaddle = 0  # raw axis data
   
-  ###############################################
-  ###  Main Paddle controls on ps3 controller  ##
-  ###############################################
-  def paddleControl(aX, aY,minusX, minusY):
-      
   
-      v_speed =  aY
-      alog1 = aX/10
-      if alog1>0:
-        v_speed2 = v_speed/alog1
-      else:
-        v_speed2=1
-      
-      v_speed_3= aY
-      alog2 = aX/5
-      if alog2 > 0:
-        v_speed_3 = alog2
-      else:
-        v_speed_3=1
-    
-      DalekPrint( 'ax:{}  aY:{} v_speed{} v_speed2 {}' .format(aX,aY , v_speed, v_speed2) )
-  
-      DalekPrint('v_speed: %s' % v_speed )
-     
-     
-      # Paddle moved center
-      if aY == 0 and aX ==0:
-        DalekV2Drive.stop()
-        DalekPrint("Stop","STP")
-      
-      #-------------------------------------
-      # up movements
-  
-      # Paddle moved up only
-      elif minusY  and aX == 0: 
-        DalekV2Drive.forward(v_speed)
-        DalekPrint("forward - {}".format(v_speed), "FW")
-  
-      # turnForwardRight
-      elif minusY and minusX:
-        
-        if aY >50:
-  
-          DalekV2Drive.paddleForward(v_speed2, v_speed)
-          DalekPrint('paddleForward turn right', "PTR")
-        else:
-          # DalekV2Drive.turnForwardLeft(v_speed, v_speed_3)
-          DalekV2Drive.paddleForward(v_speed_3, v_speed)
-          DalekPrint('paddleForward turn right',"PTR")
-      # turnForwardLeft
-      elif minusY and minusX == False:
-        
-        if aY > 50:
-          DalekV2Drive.paddleForward( v_speed, v_speed2)
-          # DalekV2Drive.turnBackwardRight(v_speed_3,v_speed)
-          DalekPrint('turn right',"TR")
-        else:
-          DalekV2Drive.paddleForward( v_speed, v_speed_3)
-          # DalekV2Drive.turnForwardRight(v_speed_3,v_speed)
-  
-      #-------------------------------------
-      # spin movements
-  
-      #spin Left
-      elif aY==0 and minusX :
-        DalekV2Drive.spinLeft(aX)
-      
-      #spin Right
-      elif aY==0 and minusX == False :
-        DalekV2Drive.spinRight(aX)
-  #-------------------------------------
-  # Down movements
-      # Paddle moved down only
-      elif minusY == False and aX == 0:
-        DalekV2Drive.backward(v_speed)
-        DalekPrint("backwards - {}".format(v_speed), "BW")
-  
-      # backwards right
-      elif minusY== False and minusX == False:
-        
-        DalekV2Drive.paddleBackward( v_speed, v_speed2)
-        DalekPrint('turn right', "TR")
-      # backwards left 
-      elif minusY== False and minusX == True:
-       
-        DalekV2Drive.paddleBackward( v_speed2, v_speed)
-        DalekPrint('turn right', "TR") 
-  
-  def missionSelect(value):
+  def challenge_select(value):
+    nonlocal current_challenge
     numberOfMissions = 7
-    currentChallenge = settings['currentChallenge']
+    currentChallenge = current_challenge
     
     if value == 0: #Up Button
       if currentChallenge > 1:
@@ -173,96 +75,90 @@ def use(_settings):
       else:
         currentChallenge = 1
  
-    settings['currentChallenge'] = currentChallenge
-    displaySelectedChallenge()
-
-
-
-   
+    current_challenge = currentChallenge
+    display_selected_challenge()
 
   ###########################################################
   ###  DPad Buttons on ps3 controller (Left hand buttons) ##
   ###########################################################
   
-  def buttonDpadUp():
+  def dpad_up_button_pressed():
     if ps3_ControllerMode == 2: # 2 Mission Select Mode
-      missionSelect(0) 
+      challenge_select(0) 
     else:
       DalekPrint('Forwards', "FW") 
-      DalekV2Drive.forward(speed)
+      dalek_drive.forward(speed)
 
-  def buttonDpadDown():
+  def dpad_down_button_pressed():
     if ps3_ControllerMode == 2: # 2 Mission Select Mode
-      missionSelect(1)
+      challenge_select(1)
     else:
       DalekPrint('Backwards', "BW")  
-      DalekV2Drive.backward(speed)
+      dalek_drive.backward(speed)
     
     
-  def buttonDpadRight():
+  def dpad_right_button_pressed():
     if ps3_ControllerMode != 2:
       DalekPrint('Spin Rigrt', "SR") 
-      DalekV2Drive.spinRight(speed)
+      dalek_drive.spinRight(speed)
 
 
-  def buttonDpadLeft():
+  def dpad_left_button_pressed():
     if ps3_ControllerMode != 2:
       DalekPrint('Spin Left', "SL") 
-      DalekV2Drive.spinLeft(speed)
+      dalek_drive.spinLeft(speed)
 
   
-  def dPadPressed(value,number, _joystickD_padCurrentButton):
+  def dpad_button_pressed(value,number, _joystickD_padCurrentButton):
     if (value==0) and (number == _joystickD_padCurrentButton):
-      DalekV2Drive.stop()
+      dalek_drive.stop()
       if ps3_ControllerMode ==1:
         DalekPrint("Stop", "SP")
     #Up button
     else:
       if number == 4:
         if value: # value is 1 for pressed 0 for released.
-          buttonDpadUp()
+          dpad_up_button_pressed()
     
       #Right button
       elif number == 5:
         if value:
-          buttonDpadRight()
+          dpad_right_button_pressed()
       
       # Down button
       elif number == 6:
         if value:
-          buttonDpadDown()
+          dpad_down_button_pressed()
       
       # Left button
       elif number == 7: 
         if value:
-          buttonDpadLeft()
+          dpad_left_button_pressed()
   
-  def tankMode( _leftPaddle, _rightPaddle):
-  
-    # this mag reading is just for debug at the moment
-    # mag =DalekSpi.getMag()
-    # DalekPrint("left: {}  Right: {} mag:{}".format(_leftPaddle,_rightPaddle ,mag))
+  def tank_drive_mode( _leftPaddle, _rightPaddle):
     DalekPrint("left: {}  Right: {}".format(_leftPaddle,_rightPaddle ))
     
     if (_leftPaddle == 0) and (_rightPaddle == 0):
-      DalekV2Drive.stop()
+      dalek_drive.stop()
       DalekDebugClear()
     elif (_leftPaddle < 0) and (_rightPaddle < 0):
-      DalekV2Drive.paddleForward(- _leftPaddle, - _rightPaddle)
+      dalek_drive.paddleForward(- _leftPaddle, - _rightPaddle)
       DalekPrint("forwards","Fw")
     elif (_leftPaddle > 0) and (_rightPaddle > 0):
-      DalekV2Drive.paddleBackward( _leftPaddle, _rightPaddle)
+      dalek_drive.paddleBackward( _leftPaddle, _rightPaddle)
       DalekPrint("Backwards", "Bw")
     elif (_leftPaddle <= 0) and (_rightPaddle >= 0):
-      DalekV2Drive.turnForwardRight(- _leftPaddle,  _rightPaddle)
+      dalek_drive.turnForwardRight(- _leftPaddle,  _rightPaddle)
       DalekPrint("Spin Right", "SR")
     elif (_leftPaddle >= 0) and (_rightPaddle <= 0):
-      DalekV2Drive.turnForwardLeft(  _leftPaddle,- _rightPaddle)
+      dalek_drive.turnForwardLeft(  _leftPaddle,- _rightPaddle)
       DalekPrint("Spin Left", "SL")
     
 
-  def displaySelectedChallenge():
-    currentChallenge = settings['currentChallenge']
+  def display_selected_challenge():
+    # Prints out the Challenge menu
+    # It is preformated.
+    currentChallenge = current_challenge
     os.system('clear')
     
     DalekPrint(colored("\n\n\n\n           Challenge Select \n", 'red'))
@@ -312,50 +208,46 @@ def use(_settings):
       DalekPrint("","DS")
     elif currentChallenge == 7: 
       DalekPrint("","DG")
-   
-    
-
-
-    
-     
-
-
 
   ###########################################################
   ###  Symbol Buttons on the Controller                    ##
   ###########################################################
-  def buttonCircle():
+  def button_circle():
+    dalek_sounds.play_sound("Must Survive")
     DalekPrint("Circle Button Pressed")
-  def buttonSquare():
+  def button_square():
+    dalek_sounds.play_sound("exterminate")
     DalekPrint("Exterminate...")
-  def buttonTriangle():
+  def button_triangle():
+    dalek_sounds.play_sound("Stay")
     DalekPrint("Triangle Button Pressed")
-  def buttonCross():
+  def button_cross():
+    dalek_sounds.play_sound("Time is right")
     DalekPrint("Cross Button Pressed")
   
   ###########################################################
   ###  Lower Butons on the Controller                      ##
   ###########################################################
-  def buttonL1():
+  def button_L1():
     DalekPrint("L1 Button Pressed", "L1")
    
-  def buttonL2():
+  def button_L2():
+    dalek_sounds.decreese_volume_level()
     DalekPrint("L2 Button Pressed" , "L2")
 
-  def buttonR1():
+  def button_R1():
     DalekPrint("R1 Button Pressed", "R1")
     
-  def buttonR2():
+  def button_R2():
+    dalek_sounds.increese_volume_level()
     DalekPrint("R2 Button Pressed", "R2" )
   ###########################################################
   ###  Main Buttons on the Controller                      ## 
   ###########################################################
 
-
-
-  def buttonSelect(_ps3_ControllerMode):
+  def button_select(_ps3_ControllerMode):
     if _ps3_ControllerMode == 2:
-      currentChallenge = settings['currentChallenge']
+      currentChallenge = current_challenge
       os.system('clear')
       if _ps3_ControllerMode == 2: # Challenge Select Mode
         if currentChallenge == 1:
@@ -374,16 +266,15 @@ def use(_settings):
           DalekPrint("You selected Slightly Deranged Golf", "DG")
         
         else:
-          displaySelectedChallenge()      # nothing has been selected yet.
+          display_selected_challenge()      # nothing has been selected yet.
   
     return 1 # resets ps3_ControllerMode  to Drive Mode
       
-    
  
-  def buttonStart():
+  def button_start():
     DalekPrint("Start Button Pressed")
   
-  def buttonPS3(_ps3_ControllerMode):
+  def button_PS3(_ps3_ControllerMode):
    
      # # change the controller Mode.
     _ps3_ControllerMode  +=1 
@@ -393,7 +284,7 @@ def use(_settings):
       DalekPrint("You are in Drive Mode" .format(_ps3_ControllerMode),"-D")
 
     elif _ps3_ControllerMode == 2:
-      displaySelectedChallenge()
+      display_selected_challenge()
 
       
     elif _ps3_ControllerMode == 3:
@@ -406,13 +297,12 @@ def use(_settings):
   ###########################################################
   ###  paddle Buttons on the Controller                    ##
   ###########################################################  
-  def buttonLeftPaddle():
+  def button_left_paddle():
     DalekPrint("Left Paddle Button Pressed")
 
-  def buttonRightPaddle():
+  def button_right_paddle():
     DalekPrint("Right Paddle Button Pressed")
 
-  
   #####################################################################
   ###                            Main loop                           ##
   ###  this is where we read the data from the joystick file/device  ##
@@ -430,7 +320,7 @@ def use(_settings):
           # D-Pad button pressed #
           ########################
           if (number >=4 ) and (number <= 7):
-            dPadPressed(value,number,joystickD_padCurrentButton )
+            dpad_button_pressed(value,number,joystickD_padCurrentButton )
                       
             #only change current button when it is pressed not released
             if value:
@@ -443,67 +333,67 @@ def use(_settings):
           elif number == 0:
             
             if value: # dont increment on release.
-              ps3_ControllerMode = buttonSelect(ps3_ControllerMode)
+              ps3_ControllerMode = button_select(ps3_ControllerMode)
               
            #  Right paddle button
           elif number == 1:
             if value:
-              buttonRightPaddle()
+              button_right_paddle()
 
           #  Left Paddle button
           elif number == 2:
             if value:
-              buttonLeftPaddle()
+              button_left_paddle()
 
           #  Start Paddle button
           elif number == 3:
             if value:
-              buttonStart()
+              button_start()
 
           # L2 button
           elif number == 8:
             if value:
-              buttonL2()   
+              button_L2()   
           
            # R2 button
           elif number == 9:
             if value:
-              buttonR2()
+              button_R2()
   
           # L1 button
           elif number == 10:
             if value:
-              buttonL1()
+              button_L1()
           # R1 button
           elif number == 11:
             if value:
-              buttonR1()
+              button_R1()
 
           # triangle button
           elif number == 12:
             if value:
-              buttonTriangle()
+              button_triangle()
 
           # circle button
           elif number == 13:
             if value:
-              buttonCircle()
+              button_circle()
 
           #  Cross button
           elif number == 15:
             if value:
-              buttonSquare()
+              button_square()
           
           #  Cross button
           elif number == 14:
             if value:
-              buttonCross()
+              button_cross()
 
           #  PS3  button
           elif number == 16:
             if value:
-              ps3_ControllerMode = buttonPS3(ps3_ControllerMode)
-
+              ps3_ControllerMode = button_PS3(ps3_ControllerMode)
+ 
          
           else :
             DalekPrint("you pressed {}" .format(number))
@@ -523,11 +413,26 @@ def use(_settings):
              
                leftPaddle= int( value / 327.67)
                
-               tankMode(leftPaddle , rightPaddle)
+               tank_drive_mode(leftPaddle , rightPaddle)
               
             
             elif number == 3:
               # DalekPrint("right side..")
               rightPaddle= int( value / 327.67)
-              tankMode(leftPaddle , rightPaddle)
+              tank_drive_mode(leftPaddle , rightPaddle)
   return speed
+ 
+
+def main():
+  pass
+
+  # import RPi.GPIO as GPIO 
+  # dalek_drive.init()
+  # GPIO.setmode(GPIO.BOARD)   # Set the GPIO pins as numbering - Also set in dalek_drive.py
+  # GPIO.setwarnings(False)    # Turn GPIO warnings off - CAN ALSO BE Set in dalek_drive.py
+  # init()
+  # use(50)
+
+if __name__ == '__main__':
+    import time 
+    main()

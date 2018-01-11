@@ -1,8 +1,8 @@
-from DalekDebug import DalekPrint, DalekDebugOn , DalekDebugSetOutputDevice
+from dalek_debug import DalekPrint, DalekDebugOn , DalekDebugSetOutputDevice
 import time
-import DalekSpi
+import dalek_spi
 import RPi.GPIO as GPIO  # Import GPIO divers
-DalekSpi.init()
+dalek_spi.init()
 
 
 #####################################################

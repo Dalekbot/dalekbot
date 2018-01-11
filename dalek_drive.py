@@ -21,23 +21,6 @@ pinMotorBLSpeed = 36
 pinMotorBLForwards = 38
 pinMotorBLBackwards = 40
 
-# Cosma's settings
-# pinMotorFRSpeed=11
-# pinMotorFRForwards=15
-# pinMotorFRBackwards=13
-
-# pinMotorFLSpeed=22
-# pinMotorFLForwards=26
-# pinMotorFLBackwards=24
-
-# pinMotorBRSpeed = 8
-# pinMotorBRForwards = 10
-# pinMotorBRBackwards = 12
-
-# pinMotorBLSpeed = 19
-# pinMotorBLForwards = 23
-# pinMotorBLBackwards = 21
-
 #======================================================================
 # General Functions
 # 

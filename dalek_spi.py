@@ -2,7 +2,7 @@
 
 import spidev
 import time
-from DalekDebug import DalekPrint
+from dalek_debug import DalekPrint
 
 # make sure you install spidev
 # http://www.takaitra.com/posts/492

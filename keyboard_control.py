@@ -1,7 +1,7 @@
 import RPi.GPIO as GPIO  # Import GPIO divers
-import DalekV2DriveV2      # Import my 4 Motor controller
+import dalek_drive      # Import my 4 Motor controller
 import time   
-import DalekSpi 
+import dalek_spi 
 import curses
 
 screen = curses.initscr()
@@ -24,26 +24,26 @@ video_capture = 0        # Create WebCam Object
 soundvolume = 100     
 GPIO.setwarnings(False) 
 
-DalekV2DriveV2.init()     
-DalekSpi.init()
-# DalekV2DriveV2.forward(10)
+dalek_drive.init()     
+dalek_spi.init()
+# dalek_drive.forward(10)
 
 # time.sleep(2)
-# DalekV2DriveV2.forward(20)
+# dalek_drive.forward(20)
 
 # time.sleep(2)
-# DalekV2DriveV2.forward(30)
+# dalek_drive.forward(30)
 
 # time.sleep(1)
 
-# DalekV2DriveV2.backward(15)
+# dalek_drive.backward(15)
 # time.sleep(3)
-# DalekV2DriveV2.backward(10)
+# dalek_drive.backward(10)
 # time.sleep(3)
-# DalekV2DriveV2.spinLeft(70)
+# dalek_drive.spinLeft(70)
 # time.sleep(5)
 
-# DalekV2DriveV2.spinRight(70)
+# dalek_drive.spinRight(70)
 # time.sleep(5)
 try:
   while True:
@@ -51,23 +51,23 @@ try:
     if char == ord('q'):
       break
     elif char == curses.KEY_UP:
-      # DalekV2DriveV2.forward(speed)
+      # dalek_drive.forward(speed)
       # print "UP"
-      mag = DalekSpi.getMag()
+      mag = dalek_spi.getMag()
       print("Mag:{}\n".format(mag))
 
     elif char == curses.KEY_DOWN:
-      # DalekV2DriveV2.backward(speed)
+      # dalek_drive.backward(speed)
       print("DOWN")
 
     elif char == curses.KEY_RIGHT:
-      # DalekV2DriveV2.spinRight(speed*2)
+      # dalek_drive.spinRight(speed*2)
       print("RIGHT")
     elif char == curses.KEY_LEFT:
-      # DalekV2DriveV2.spinLeft(speed*2)
+      # dalek_drive.spinLeft(speed*2)
       print("LEFT")
     elif char == 10:
-      DalekV2DriveV2.stop()
+      dalek_drive.stop()
     elif char == ord('a'):
       speed +=10 
       print (speed)
@@ -88,7 +88,7 @@ finally:
 
 
 
-  DalekV2DriveV2.cleanup()
+  dalek_drive.cleanup()
 
 
 
