@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+#style guide https://google.github.io/styleguide/pyguide.html
+
 #======================================================================
 # Place holders.  These may or may not be required
 
