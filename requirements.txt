@@ -1,0 +1,13 @@
+#
+###### requirements.txt ######
+#
+# usage: pip install -r requirements.txt
+# https://pip.pypa.io/en/stable/user_guide/#requirements-files
+
+numpy
+picamera
+RPi.GPIO
+setuptools
+spidev
+termcolor
+wheel

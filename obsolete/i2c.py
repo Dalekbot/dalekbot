@@ -3,7 +3,7 @@
 import smbus
 import time
 bus = smbus.SMBus(1)
-
+   
 ###
 ### this module should be imported 
 ### Set the i2cMode that best suits your task

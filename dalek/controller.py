@@ -2,9 +2,10 @@
 import os.path
 import struct
 import time
-import dalek_drive
-from dalek_debug import DalekDebugClear, DalekDebugOn, DalekPrint
-from termcolor import colored
+from dalek import drive 
+from dalek import debug
+from dalek import ui
+
 ###
 ### SETUP 
 ###
@@ -17,18 +18,18 @@ from termcolor import colored
 def init():
     fn = '/dev/input/js0'
     
-    DalekPrint("Testing for joystick: {}...".format(fn))
+    debug.print_to_all_devices("Testing for joystick: {}...".format(fn))
     
     file_exists = False
     while file_exists == False:
      
       file_exists = os.path.exists(fn)
-      DalekPrint('joystick paired: {} '.format(os.path.exists(fn)))
+      debug.print_to_all_devices('joystick paired: {} '.format(os.path.exists(fn)))
       time.sleep(3)
     
     
     jsdev = open(fn, 'rb')
-    DalekPrint('Joystick paired. Ok \n', "Prd")
+    debug.print_to_all_devices('Joystick paired. Ok \n', "Prd")
     
 # Ps3 controller settings.
 def use(speed, dalek_sounds):
@@ -76,7 +77,7 @@ def use(speed, dalek_sounds):
         currentChallenge = 1
  
     current_challenge = currentChallenge
-    display_selected_challenge()
+    ui.display_selected_challenge(current_challenge)
 
   ###########################################################
   ###  DPad Buttons on ps3 controller (Left hand buttons) ##
@@ -86,34 +87,34 @@ def use(speed, dalek_sounds):
     if ps3_ControllerMode == 2: # 2 Mission Select Mode
       challenge_select(0) 
     else:
-      DalekPrint('Forwards', "FW") 
-      dalek_drive.forward(speed)
+      debug.print_to_all_devices('Forwards', "FW") 
+      drive.forward(speed)
 
   def dpad_down_button_pressed():
     if ps3_ControllerMode == 2: # 2 Mission Select Mode
       challenge_select(1)
     else:
-      DalekPrint('Backwards', "BW")  
-      dalek_drive.backward(speed)
+      debug.print_to_all_devices('Backwards', "BW")  
+      drive.backward(speed)
     
     
   def dpad_right_button_pressed():
     if ps3_ControllerMode != 2:
-      DalekPrint('Spin Rigrt', "SR") 
-      dalek_drive.spinRight(speed)
+      debug.print_to_all_devices('Spin Rigrt', "SR") 
+      drive.spinRight(speed)
 
 
   def dpad_left_button_pressed():
     if ps3_ControllerMode != 2:
-      DalekPrint('Spin Left', "SL") 
-      dalek_drive.spinLeft(speed)
+      debug.print_to_all_devices('Spin Left', "SL") 
+      drive.spinLeft(speed)
 
   
   def dpad_button_pressed(value,number, _joystickD_padCurrentButton):
     if (value==0) and (number == _joystickD_padCurrentButton):
-      dalek_drive.stop()
+      drive.stop()
       if ps3_ControllerMode ==1:
-        DalekPrint("Stop", "SP")
+        debug.print_to_all_devices("Stop", "SP")
     #Up button
     else:
       if number == 4:
@@ -136,143 +137,72 @@ def use(speed, dalek_sounds):
           dpad_left_button_pressed()
   
   def tank_drive_mode( _leftPaddle, _rightPaddle):
-    DalekPrint("left: {}  Right: {}".format(_leftPaddle,_rightPaddle ))
+    debug.print_to_all_devices("left: {}  Right: {}".format(_leftPaddle,_rightPaddle ))
     
     if (_leftPaddle == 0) and (_rightPaddle == 0):
-      dalek_drive.stop()
-      DalekDebugClear()
+      drive.stop()
+      debug.clear()
     elif (_leftPaddle < 0) and (_rightPaddle < 0):
-      dalek_drive.paddleForward(- _leftPaddle, - _rightPaddle)
-      DalekPrint("forwards","Fw")
+      drive.paddleForward(- _leftPaddle, - _rightPaddle)
+      debug.print_to_all_devices("forwards","Fw")
     elif (_leftPaddle > 0) and (_rightPaddle > 0):
-      dalek_drive.paddleBackward( _leftPaddle, _rightPaddle)
-      DalekPrint("Backwards", "Bw")
+      drive.paddleBackward( _leftPaddle, _rightPaddle)
+      debug.print_to_all_devices("Backwards", "Bw")
     elif (_leftPaddle <= 0) and (_rightPaddle >= 0):
-      dalek_drive.turnForwardRight(- _leftPaddle,  _rightPaddle)
-      DalekPrint("Spin Right", "SR")
+      drive.turnForwardRight(- _leftPaddle,  _rightPaddle)
+      debug.print_to_all_devices("Spin Right", "SR")
     elif (_leftPaddle >= 0) and (_rightPaddle <= 0):
-      dalek_drive.turnForwardLeft(  _leftPaddle,- _rightPaddle)
-      DalekPrint("Spin Left", "SL")
-    
-
-  def display_selected_challenge():
-    # Prints out the Challenge menu
-    # It is preformated.
-    currentChallenge = current_challenge
-    os.system('clear')
-    
-    DalekPrint(colored("\n\n\n\n           Challenge Select \n", 'red'))
-    if currentChallenge == 1:
-      DalekPrint(colored("        >>> Obstacle Course <<<",'green'))
-    else:
-      DalekPrint("           Obstacle Course")
-    if currentChallenge == 2:
-      DalekPrint(colored("        >>> Straight-Line Speed Test <<<",'green'))
-    else:
-      DalekPrint("           Straight-Line Speed Test")
-    if currentChallenge == 3:
-      DalekPrint(colored("        >>> Minimal Maze <<<",'green'))
-    else:
-      DalekPrint("           Minimal Maze")
-    if currentChallenge == 4:
-      DalekPrint(colored("        >>> Somewhere Over The Rainbow <<<",'green'))
-    else:
-      DalekPrint("           Somewhere Over The Rainbow")
-    if currentChallenge == 5:
-      DalekPrint(colored("        >>> PiNoon <<<",'green'))
-    else:
-      DalekPrint("           PiNoon")
-    if currentChallenge == 6:
-      DalekPrint(colored("        >>> Duck Shoot <<<",'green'))
-    else:
-      DalekPrint("           Duck Shoot")
-    if currentChallenge == 7:
-      DalekPrint(colored("        >>> Slightly Deranged Golf <<<",'green'))
-    else:
-      DalekPrint("           Slightly Deranged Golf")
-   
-
-    DalekPrint(colored("\n           Use UP and DOWN D-Pad Then Select",'yellow'))
-
-    if currentChallenge == 1:  ## output for onboard device
-      DalekPrint("","OC")
-    elif currentChallenge == 2: 
-      DalekPrint("","StL")
-    elif currentChallenge == 3: 
-      DalekPrint("","MM")
-    elif currentChallenge == 4: 
-      DalekPrint("","OR")
-    elif currentChallenge == 5: 
-      DalekPrint("","PN")
-    elif currentChallenge == 6: 
-      DalekPrint("","DS")
-    elif currentChallenge == 7: 
-      DalekPrint("","DG")
+      drive.turnForwardLeft(  _leftPaddle,- _rightPaddle)
+      debug.print_to_all_devices("Spin Left", "SL")
 
   ###########################################################
   ###  Symbol Buttons on the Controller                    ##
   ###########################################################
   def button_circle():
     dalek_sounds.play_sound("Must Survive")
-    DalekPrint("Circle Button Pressed")
+    debug.print_to_all_devices("Circle Button Pressed")
   def button_square():
     dalek_sounds.play_sound("exterminate")
-    DalekPrint("Exterminate...")
+    debug.print_to_all_devices("Exterminate...")
   def button_triangle():
     dalek_sounds.play_sound("Stay")
-    DalekPrint("Triangle Button Pressed")
+    debug.print_to_all_devices("Triangle Button Pressed")
   def button_cross():
     dalek_sounds.play_sound("Time is right")
-    DalekPrint("Cross Button Pressed")
+    debug.print_to_all_devices("Cross Button Pressed")
   
   ###########################################################
   ###  Lower Butons on the Controller                      ##
   ###########################################################
   def button_L1():
-    DalekPrint("L1 Button Pressed", "L1")
+    debug.print_to_all_devices("L1 Button Pressed", "L1")
    
   def button_L2():
     dalek_sounds.decreese_volume_level()
-    DalekPrint("L2 Button Pressed" , "L2")
+    debug.print_to_all_devices("L2 Button Pressed" , "L2")
 
   def button_R1():
-    DalekPrint("R1 Button Pressed", "R1")
+    debug.print_to_all_devices("R1 Button Pressed", "R1")
     
   def button_R2():
     dalek_sounds.increese_volume_level()
-    DalekPrint("R2 Button Pressed", "R2" )
+    debug.print_to_all_devices("R2 Button Pressed", "R2" )
   ###########################################################
   ###  Main Buttons on the Controller                      ## 
   ###########################################################
 
-  def button_select(_ps3_ControllerMode):
-    if _ps3_ControllerMode == 2:
-      currentChallenge = current_challenge
+  def button_select(ps3_controller_mode):
+    if ps3_controller_mode == 2:
       os.system('clear')
-      if _ps3_ControllerMode == 2: # Challenge Select Mode
-        if currentChallenge == 1:
-          DalekPrint("You selected Obstacle Course", "OC")
-        elif currentChallenge == 2:
-          DalekPrint("You selected Straight-Line Speed Test", "StL")
-        elif currentChallenge == 3:
-          DalekPrint("You selected Minimal Maze", "MM")
-        elif currentChallenge == 4:
-          DalekPrint("You selected Somewhere Over The Rainbow", "OR")
-        elif currentChallenge == 5:
-          DalekPrint("You selected PiNoon", "PN")
-        elif currentChallenge == 6:
-          DalekPrint("You selected Duck Shoot", "DS")
-        elif currentChallenge == 7:
-          DalekPrint("You selected Slightly Deranged Golf", "DG")
-        
-        else:
-          display_selected_challenge()      # nothing has been selected yet.
+      if ps3_controller_mode == 2: # Challenge Select Mode
+          ui.you_selected_challenge(current_challenge)
+             # nothing has been selected yet.
   
     return 1 # resets ps3_ControllerMode  to Drive Mode
       
  
   def button_start():
-    DalekPrint("Start Button Pressed")
+    debug.print_to_all_devices("Start Button Pressed")
   
   def button_PS3(_ps3_ControllerMode):
    
@@ -281,16 +211,16 @@ def use(speed, dalek_sounds):
  
     if _ps3_ControllerMode == 1:
       os.system('clear')
-      DalekPrint("You are in Drive Mode" .format(_ps3_ControllerMode),"-D")
+      debug.print_to_all_devices("You are in Drive Mode" .format(_ps3_ControllerMode),"-D")
 
     elif _ps3_ControllerMode == 2:
-      display_selected_challenge()
+      ui.display_selected_challenge(current_challenge)
 
       
     elif _ps3_ControllerMode == 3:
       _ps3_ControllerMode = 0
       os.system('clear')
-      DalekPrint("You are in Exterminate Mode" .format(_ps3_ControllerMode),"-E")
+      debug.print_to_all_devices("You are in Exterminate Mode" .format(_ps3_ControllerMode),"-E")
 
     return _ps3_ControllerMode
 
@@ -298,10 +228,10 @@ def use(speed, dalek_sounds):
   ###  paddle Buttons on the Controller                    ##
   ###########################################################  
   def button_left_paddle():
-    DalekPrint("Left Paddle Button Pressed")
+    debug.print_to_all_devices("Left Paddle Button Pressed")
 
   def button_right_paddle():
-    DalekPrint("Right Paddle Button Pressed")
+    debug.print_to_all_devices("Right Paddle Button Pressed")
 
   #####################################################################
   ###                            Main loop                           ##
@@ -396,11 +326,11 @@ def use(speed, dalek_sounds):
  
          
           else :
-            DalekPrint("you pressed {}" .format(number))
+            debug.print_to_all_devices("you pressed {}" .format(number))
   
         # Axis movement event
         elif type & 0x02:
-          #DalekPrint('number{}'.format(number))
+          #debug.print_to_all_devices('number{}'.format(number))
           
           
          
@@ -409,7 +339,7 @@ def use(speed, dalek_sounds):
           if ps3_ControllerMode == 1:
             
             if number == 1:
-               #DalekPrint("left side {}  {} ".format(leftPaddle , rightPaddle))
+               #debug.print_to_all_devices("left side {}  {} ".format(leftPaddle , rightPaddle))
              
                leftPaddle= int( value / 327.67)
                
@@ -417,7 +347,7 @@ def use(speed, dalek_sounds):
               
             
             elif number == 3:
-              # DalekPrint("right side..")
+              # debug.print_to_all_devices("right side..")
               rightPaddle= int( value / 327.67)
               tank_drive_mode(leftPaddle , rightPaddle)
   return speed
@@ -426,12 +356,6 @@ def use(speed, dalek_sounds):
 def main():
   pass
 
-  # import RPi.GPIO as GPIO 
-  # dalek_drive.init()
-  # GPIO.setmode(GPIO.BOARD)   # Set the GPIO pins as numbering - Also set in dalek_drive.py
-  # GPIO.setwarnings(False)    # Turn GPIO warnings off - CAN ALSO BE Set in dalek_drive.py
-  # init()
-  # use(50)
 
 if __name__ == '__main__':
     import time 

@@ -4,7 +4,7 @@ import subprocess
 
 # uses MPlayer 1.3.0
 
-class DalekSounds(object):
+class Mp3Player(object):
     """
        Plays a sounds with  mplayer  (it needs to be installed
        on the device first.)
@@ -62,10 +62,14 @@ class DalekSounds(object):
     def play_sound(self,mp3_to_play):
         # omit the folder and .mp3 file type. The files should be in the Sounds folder
         volumesetting = "volume={}".format(self.volume_level)
-        file_to_play  = "./Sound/{}.mp3".format(mp3_to_play)
+        file_to_play  = "./sound/{}.mp3".format(mp3_to_play)
+        try:
+            subprocess.Popen(["mplayer",file_to_play, '-af', volumesetting],
+                stdin=subprocess.PIPE,stdout=subprocess.PIPE,  stderr=subprocess.PIPE)
+            
+        except expression as identifier:
+            print("sound player error.")
 
-        subprocess.Popen(["mplayer",file_to_play, '-af', volumesetting],
-                  stdin=subprocess.PIPE,stdout=subprocess.PIPE,  stderr=subprocess.PIPE)
     
     
     

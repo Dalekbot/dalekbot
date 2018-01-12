@@ -7,7 +7,7 @@ import RPi.GPIO as GPIO # Import the GPIO Library
 pinMotorBRSpeed =11
 pinMotorBRForwards = 13
 pinMotorBRBackwards = 15
-
+ 
 pinMotorFRSpeed=33
 pinMotorFRForwards=35
 pinMotorFRBackwards=37

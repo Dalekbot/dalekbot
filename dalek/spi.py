@@ -1,13 +1,12 @@
 #!/usr/bin/python
-
 import spidev
 import time
-from dalek_debug import DalekPrint
+from dalek import debug
 
 # make sure you install spidev
 # http://www.takaitra.com/posts/492
 
-# SPEED	SPI.MAX_SPEED_HZ VALUE
+# SPEED	SPI.MAX_SPEED_HZ VALUE 
 # 25.0 MHz  	125000000
 # 62.5 MHz	  62500000
 # 31.2 MHz   	31200000
@@ -44,9 +43,9 @@ def init(speed=None):
       SpiSetup = True
 
     spi.mode = 0b00  # another mode is spi.mode = 0b01
-    DalekPrint("spi bus speed set to:{} spi mode {}" .format( spi.max_speed_hz, spi.mode))
+    debug.print_to_all_devices("spi bus speed set to:{} spi mode {}" .format( spi.max_speed_hz, spi.mode))
 
-def getSensorData(_sensorNumber):
+def get_sensor_data(_sensorNumber):
     # global spi 
     dataToSend = [_sensorNumber, 200, 201, 255]
     try:
@@ -55,51 +54,55 @@ def getSensorData(_sensorNumber):
         sensorValue = (receivedBytes[2] << 8) + receivedBytes[3]
         return sensorValue
     except expression as identifier:
-        DalekPrint("error geting data from Arduino via spi bus")
+        debug.print_to_all_devices("error geting data from Arduino via spi bus")
 
-def getMag():
-    return getSensorData(4)
+def get_mag():
+    return get_sensor_data(4)
 
 
-def readDevice1Data():
+def read_device_1_data():
 #   global SpiSetup,spi
  
   # create the return data variable
   piSensors = {'frontPing': 0, 'rearPing': 0,
                'leftPing': 0, 'rightPing': 0, 'compass': 0}
-  piSensors['frontPing'] = getSensorData(0)
+  piSensors['frontPing'] = get_sensor_data(0)
   time.sleep(.00001)
-  piSensors['rearPing'] = getSensorData(3)
+  piSensors['rearPing'] = get_sensor_data(3)
   time.sleep(.00001)
-  piSensors['leftPing'] = getSensorData(1)
+  piSensors['leftPing'] = get_sensor_data(1)
   time.sleep(.00001)
-  piSensors['rightPing'] = getSensorData(2)
+  piSensors['rightPing'] = get_sensor_data(2)
   time.sleep(.00001)
-  piSensors['compass'] = getSensorData(4)
+  piSensors['compass'] = get_sensor_data(4)
 
   return piSensors
 
 def test():
    T = time.time()
-   data =readDevice1Data()
+   data =read_device_1_data()
    T2 = time.time()
    
-   DalekPrint( data) 
-   DalekPrint("time taken {}" .format(T2 - T)) 
+   debug.print_to_all_devices( data) 
+   debug.print_to_all_devices("time taken {}" .format(T2 - T)) 
+def main():
+      debug.print_to_all_devices("\n\nThis file 'dalek.spi.py'  is intended to be imported\n\n")
+
+  
 
 
 #======================================================================	   
     
 if __name__ == "__main__":
-    DalekPrint("\n\nThis file 'DalekSpi.py' cannot be run directly. It is intended to be imported\n\n")
+   main()
 else:
-    DalekPrint("Importing DalekSpi.py")
+    debug.print_to_all_devices("Importing DalekSpi.py")
     
 # End of __main__ Code
 #======================================================================
 
 # init()
-# ff = getMag()
+# ff = get_mag()
 # print(ff )
 
 

@@ -1,11 +1,12 @@
 ## DalekBot code
 ### files you will need:
 
-1. pip install spidev
-2. pip install termcolor
+see requirements.txt for pip packages needed
 
 version 0.1
 
+
+this readme is out of date due to name changes and refactoring of the code.
 
 joystick.py runs on it's own at the moment this should work on your bot.
 basic.py is just for trying out things
@@ -27,7 +28,7 @@ The DalekSpi.py is the file for getting all the data from the Arduino and can be
 
 autoDrive.py is  the file that uses the mag to turn to a given heading, and can be run directly. uncomment the lines at the end of the file to  see what it can do. At the top of the file there are a list of settings that can be edited depending on the surface you are driving on.
   
- 
+  
 
 
 source ~/.profile
