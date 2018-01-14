@@ -62,7 +62,7 @@ class Mp3Player(object):
     def play_sound(self,mp3_to_play):
         # omit the folder and .mp3 file type. The files should be in the Sounds folder
         volumesetting = "volume={}".format(self.volume_level)
-        file_to_play  = "./sound/{}.mp3".format(mp3_to_play)
+        file_to_play  = "./sounds/{}.mp3".format(mp3_to_play)
         try:
             subprocess.Popen(["mplayer",file_to_play, '-af', volumesetting],
                 stdin=subprocess.PIPE,stdout=subprocess.PIPE,  stderr=subprocess.PIPE)
