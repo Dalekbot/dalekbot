@@ -4,7 +4,7 @@ import subprocess
 
 # uses MPlayer 1.3.0
 
-class Mp3Player(object):
+class Mp3Player():
     """
        Plays a sounds with  mplayer  (it needs to be installed
        on the device first.)

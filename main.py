@@ -19,26 +19,12 @@ from dalek import drive          # Import the 4 Motor controller
 from dalek import debug          # Import the debug module that also prints to the robots output device
 from dalek import spi            # Import the Spi Raspi to Arduino libray 
 from dalek import sound_player   # Import the mp3 player module
-from dalek import controller         # Import the PS3 controller
+from dalek import controller     # Import the PS3 controller
+from dalek import settings
 
 # Main Imports and setup constants
-speed = 50               # 0 is stopped, 100 is fastest
-rightspeed = 50          # 0 is stopped, 100 is fastest
-leftspeed = 50           # 0 is stopped, 100 is fastest
-maxspeed = 100           # Set full Power
-minspeed = 0             # Set min power  
-innerturnspeed = 40      # Speed for Inner Wheels in a turn
-outerturnspeed = 80      # Speed for Outer Wheels in a turn
-hRes = 640               # PiCam Horizontal Resolution
-vRes = 480               # PiCam Vertical Resolution
-camera = 0               # Create PiCamera Object
-video_capture = 0        # Create WebCam Object
-sound_volume = 0          # Set Default Sound Volume -15 - 10
-dalek_sounds = sound_player.Mp3Player(True,sound_volume) # initialize the sound player
-
-
-
-
+dalek_settings = settings.Settings()
+dalek_sounds = sound_player.Mp3Player(True) # initialize the sound player
 
 # End of Main Imports and setup constants
 #======================================================================
@@ -66,14 +52,14 @@ def setup():                   # Setup GPIO and Initalise Imports
   
     # this should not be needed as we are only using the value not rebinding a new value to it. 
     # initialize the camera and grab a reference to the raw camera capture
-    global hRes                # Allow Access to PiCam Horizontal Resolution
-    global vRes                # Allow Access to PiCam Vertical Resolution
+    # global hRes                # Allow Access to PiCam Horizontal Resolution
+    # global vRes                # Allow Access to PiCam Vertical Resolution
 
-    # Setup WebCam
-    global video_capture        # Allow Access to WebCam Object
-    video_capture = cv2.VideoCapture(0)
-    video_capture.set(3, hRes)
-    video_capture.set(4, vRes)
+    # # Setup WebCam
+    # global video_capture        # Allow Access to WebCam Object
+    # video_capture = cv2.VideoCapture(0)
+    # video_capture.set(3, hRes)
+    # video_capture.set(4, vRes)
     
     
   
@@ -111,11 +97,8 @@ def destroy():                 # Shutdown GPIO and Cleanup modules
 #======================================================================    
 # Main Control Procedure
     
-def maincontrol(showcam):                  # Main Control Loop
-    controller.use(speed,dalek_sounds)
-
-
-   
+def maincontrol():                  # Main Control Loop
+    controller.use(dalek_settings,dalek_sounds)
 
 # End of Main Control Procedure        
 #======================================================================            
@@ -139,15 +122,15 @@ if __name__ == '__main__': # The Program will start from here
     
     if ((str(args.RightSpeed)) != 'None'):
         debug.print_to_all_devices("\nRight Speed - {}".format(args.RightSpeed))
-        rightspeed = args.RightSpeed
+        dalek_settings.right_speed = args.RightSpeed
 
     if ((str(args.LeftSpeed)) != 'None'):
         debug.print_to_all_devices("\nLeft Speed - {}".format(args.LeftSpeed))
-        leftspeed = args.LeftSpeed
+        dalek_settings.left_speed = args.LeftSpeed
 
     if ((str(args.Speed)) != 'None'):
         debug.print_to_all_devices("\nGeneral Speed - {}".format(args.Speed))
-        speed = args.Speed
+        dalek_settings.speed = args.Speed
     
     if ((str(args.Brightness)) != 'None'):
         debug.print_to_all_devices("\nscrollpHat Brightness - {}".format(args.Brightness))
@@ -155,23 +138,19 @@ if __name__ == '__main__': # The Program will start from here
 
     if ((str(args.InnerTurnSpeed)) != 'None'):
         debug.print_to_all_devices("\nInner Turn Speed - {}".format(args.InnerTurnSpeed))
-        innerturnspeed = args.InnerTurnSpeed
+        dalek_settings.inner_turn_speed = args.InnerTurnSpeed
     
     if ((str(args.OuterTurnSpeed)) != 'None'):
         debug.print_to_all_devices("\nOuter Turn Speed - {}".format(args.OuterTurnSpeed))
-        outerturnspeed = args.OuterTurnSpeed
+        dalek_settings.outer_turn_speed = args.OuterTurnSpeed
  
     if ((str(args.ShowCam)) != 'None'):
         debug.print_to_all_devices("\nShow Cam Image - {}".format(args.ShowCam))
-        showcam = args.ShowCam
-    else:
-        showcam = False
+        dalek_settings.show_cam = args.ShowCam # default is False
 
     if ((str(args.SoundVolume)) != 'None'):
         debug.print_to_all_devices("\nSound Volume - {}".format(args.SoundVolume))
-        sound_volume = args.SoundVolume
-    else:
-        sound_volume = 0
+        dalek_settings.sound_volume = args.SoundVolume # default is 0
     
     debug.print_to_all_devices("\n\nSetting Up ...","Set")
     
@@ -183,7 +162,7 @@ if __name__ == '__main__': # The Program will start from here
 	
     try:
         debug.print_to_all_devices("OK 1")
-        maincontrol(showcam)    # Call main loop
+        maincontrol()    # Call main loop
         debug.print_to_all_devices("OK 2")
 
         destroy()     # Shutdown

@@ -32,12 +32,9 @@ def init():
     debug.print_to_all_devices('Joystick paired. Ok \n', "Prd")
     
 # Ps3 controller settings.
-def use(speed, dalek_sounds):
-
-  dalek_sounds = dalek_sounds
+def use(dalek_settings, dalek_sounds):
 
   current_challenge = 1
-  speed = speed # set in the calling file
 
   # this is the joystick file we stream data from.
   jsdev = open("/dev/input/js0", 'rb')
@@ -61,17 +58,17 @@ def use(speed, dalek_sounds):
   
   def challenge_select(value):
     nonlocal current_challenge
-    numberOfMissions = 7
+    number_of_challenges = 7
     currentChallenge = current_challenge
     
     if value == 0: #Up Button
       if currentChallenge > 1:
         currentChallenge -=1
       else:
-        currentChallenge = numberOfMissions
+        currentChallenge = number_of_challenges
     
     else:         #Down Button
-      if numberOfMissions >= (currentChallenge + 1): # so we dont exceed max number of missions
+      if number_of_challenges >= (currentChallenge + 1): # so we dont exceed max number of missions
         currentChallenge +=1
       else:
         currentChallenge = 1
@@ -88,26 +85,26 @@ def use(speed, dalek_sounds):
       challenge_select(0) 
     else:
       debug.print_to_all_devices('Forwards', "FW") 
-      drive.forward(speed)
+      drive.forward(dalek_settings.speed)
 
   def dpad_down_button_pressed():
     if ps3_ControllerMode == 2: # 2 Mission Select Mode
       challenge_select(1)
     else:
       debug.print_to_all_devices('Backwards', "BW")  
-      drive.backward(speed)
+      drive.backward(dalek_settings.speed)
     
     
   def dpad_right_button_pressed():
     if ps3_ControllerMode != 2:
       debug.print_to_all_devices('Spin Rigrt', "SR") 
-      drive.spinRight(speed)
+      drive.spinRight(dalek_settings.speed)
 
 
   def dpad_left_button_pressed():
     if ps3_ControllerMode != 2:
       debug.print_to_all_devices('Spin Left', "SL") 
-      drive.spinLeft(speed)
+      drive.spinLeft(dalek_settings.speed)
 
   
   def dpad_button_pressed(value,number, _joystickD_padCurrentButton):
@@ -350,7 +347,7 @@ def use(speed, dalek_sounds):
               # debug.print_to_all_devices("right side..")
               rightPaddle= int( value / 327.67)
               tank_drive_mode(leftPaddle , rightPaddle)
-  return speed
+  return dalek_settings.speed
  
 
 def main():
