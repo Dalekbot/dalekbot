@@ -2,6 +2,8 @@
 import spidev
 import time
 from dalek import debug
+import threading
+from statistics import mode
 
 # make sure you install spidev
 # http://www.takaitra.com/posts/492
@@ -78,6 +80,32 @@ def read_device_1_data():
 
   return piSensors
 
+
+class SensorData(threading.Thread):
+    running = True
+
+    def __init__(self):
+        super().__init__()
+        self.frontPing=0
+        self.rearPing = 0
+        self.leftPing = 0
+        self.rightPing = 0
+    
+    def run(self):
+        
+        ## TODO  VAL = mode([1, 1, 2, 3, 3, 3, 3, 4])
+        
+        while self.running:
+            piSensors  = read_device_1_data()
+
+            for i in range(6):
+                print("{} {} {} {} {}".format(piSensors['frontPing'],
+                          piSensors['rearPing'],piSensors['leftPing'],
+                          piSensors['rightPing'],piSensors['compass']))
+                time.sleep(.02) 
+
+
+  
 def test():
    T = time.time()
    data =read_device_1_data()
