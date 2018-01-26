@@ -14,7 +14,7 @@ import RPi.GPIO as GPIO          # Import GPIO divers
 import time                      # Import the Time library
 import argparse                  # Import Argument Parser
 import numpy as np               # Import NumPy Array manipulation
-#import cv2                       # Import OpenCV Vision code
+import cv2                       # Import OpenCV Vision code
 from dalek import drive          # Import the 4 Motor controller
 from dalek import debug          # Import the debug module that also prints to the robots output device
 from dalek import spi            # Import the Spi Raspi to Arduino libray 
@@ -77,7 +77,7 @@ def destroy():                 # Shutdown GPIO and Cleanup modules
     drive.stop()        # Make sure Bot is not moving when program exits
     drive.cleanup()     # Shutdown all motor control
     time.sleep(2)
-#    cv2.destroyAllWindows()    # Shutdown any open windows
+    cv2.destroyAllWindows()    # Shutdown any open windows
     time.sleep(1.5)
     debug.destroy()        # Clear Scroll pHat
     GPIO.cleanup()             # Release GPIO resource
