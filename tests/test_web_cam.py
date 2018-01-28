@@ -1,5 +1,5 @@
-import cv2 ,time
-
+import cv2 
+import time
 
 hRes = 640               # PiCam Horizontal Resolution
 vRes = 480               # PiCam Virtical Resolution
