@@ -1,35 +1,35 @@
-def StraightLine():
+def srtaight_line_speed_test():
 
-    global speed               # Allow access to 'speed' constant
-    global rightspeed          # Allow access to 'rightspeed' constant
-    global leftspeed           # Allow access to 'leftspeed' constant
-    global maxspeed            # Allow access to 'maxspeed' constant
-    global minspeed            # Allow access to 'minspeed' constant
-    global innerturnspeed      # Speed for Inner Wheels in a turn
-    global outerturnspeed      # Speed for Outer Wheels in a turn
-    global wii                 # Allow access to 'Wii' constants
-    global soundvolume         # Allow access to sound volume
-    global TrigPinLeft         # Allow Access to Trigger pin for Left Sensor
-    global EchoPinLeft         # Allow Access to Echo pin for Left Sensor
-    global TrigPinCenter       # Allow Access to Trigger pin for Right Sensor
-    global EchoPinCenter       # Allow Access to Echo pin for Center Sensor
-    global TrigPinRight        # Allow Access to Trigger pin for Right Sensor
-    global EchoPinRight        # Set the Echo pin for Right Sensor
+    # global speed               # Allow access to 'speed' constant
+    # global rightspeed          # Allow access to 'rightspeed' constant
+    # global leftspeed           # Allow access to 'leftspeed' constant
+    # global maxspeed            # Allow access to 'maxspeed' constant
+    # global minspeed            # Allow access to 'minspeed' constant
+    # global innerturnspeed      # Speed for Inner Wheels in a turn
+    # global outerturnspeed      # Speed for Outer Wheels in a turn
+    # global wii                 # Allow access to 'Wii' constants
+    # global soundvolume         # Allow access to sound volume
+    # global TrigPinLeft         # Allow Access to Trigger pin for Left Sensor
+    # global EchoPinLeft         # Allow Access to Echo pin for Left Sensor
+    # global TrigPinCenter       # Allow Access to Trigger pin for Right Sensor
+    # global EchoPinCenter       # Allow Access to Echo pin for Center Sensor
+    # global TrigPinRight        # Allow Access to Trigger pin for Right Sensor
+    # global EchoPinRight        # Set the Echo pin for Right Sensor
     
-    leftdistance = 0           # Prime Left distance variable
-    centerdistance = 0         # Prime Center distance variable
-    rightdistance = 0          # Prime Right distance variable
+    # leftdistance = 0           # Prime Left distance variable
+    # centerdistance = 0         # Prime Center distance variable
+    # rightdistance = 0          # Prime Right distance variable
     
     
         
     
-    DalekPrint("Press 'A' to start Straight Line run","A")
-    DalekPrint('Press "Hm" to return to main menu\n')
+    DalekPrint("Press 'Start' to start Straight Line run","Sta")
+    DalekPrint('Press "ps button" to return to main menu\n')
     time.sleep(.25)
 
     while True:
     
-        buttons = wii.state['buttons']          # Get WiiMote Button Pressed
+        # buttons = wii.state['buttons']          # Get WiiMote Button Pressed
 
         if (buttons & cwiid.BTN_A):
             DalekPrint("Start Straight Line run","SLR")

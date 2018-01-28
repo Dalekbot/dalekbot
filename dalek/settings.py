@@ -1,19 +1,32 @@
 class Settings():
 
     
-    speed = 50               # 0 is stopped, 100 is fastest
-    right_speed = 50          # 0 is stopped, 100 is fastest
-    left_speed = 50           # 0 is stopped, 100 is fastest
-    max_speed = 100           # Set full Power
-    min_speed = 0             # Set min power  
+    speed = 50                 # 0 is stopped, 100 is fastest
+    right_speed = 50           # 0 is stopped, 100 is fastest
+    left_speed = 50            # 0 is stopped, 100 is fastest
+    max_speed = 100            # Set full Power
+    min_speed = 0              # Set min power  
     inner_turn_speed = 40      # Speed for Inner Wheels in a turn
     outer_turn_speed = 80      # Speed for Outer Wheels in a turn
-    hRes = 640               # PiCam Horizontal Resolution
-    vRes = 480               # PiCam Vertical Resolution
-    camera = 0               # Create PiCamera Object
-    video_capture = 0        # Create WebCam Object
-    show_cam = False         # if the camera image is shown to screen of not 
-    sound_volume = 0          # Set Default Sound Volume -15 - 10
+    hRes = 640                 # PiCam Horizontal Resolution
+    vRes = 480                 # PiCam Vertical Resolution
+    camera = 0                 # Create PiCamera Object
+    video_capture = 0          # Create WebCam Object
+    show_cam = False           # if the camera image is shown to screen of not 
+    sound_volume = 0           # Set Default Sound Volume -15 - 10
+    drive = True               # used for stoping bot in while loop
+
+    def slow_mode(self):
+      '''
+      use when testing to slow things down.
+      '''
+      self.inner_turn_speed = 20
+      self.outer_turn_speed= 40
+      self.speed= 30
+      self.max_speed= 20
+
+
+
 
 
     def __init__(self):
