@@ -357,9 +357,9 @@ def BLB(Speed):
 #======================================================================	   
     
 if __name__ == "__main__":
-    print("\n\nThis file cannot be run directly. It is intended to be imported\n\n")
+    print("This file cannot be run directly. It is intended to be imported\n\n")
 else:
-    print("\n\nImporting DalekV2Drive.py")
+    print("Importing dalek.drive.py")
     
 # End of __main__ Code
 #======================================================================

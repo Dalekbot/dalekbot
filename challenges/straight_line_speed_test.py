@@ -8,6 +8,7 @@ if __name__ == "__main__":
    sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
    from dalek import settings
    from dalek import sound_player
+   import RPi.GPIO as GPIO          # Import GPIO divers
 
 import time
 from dalek import spi
@@ -56,6 +57,7 @@ def straight_line_speed_test_0(dalek_settings,dalek_sounds):
     
     arduino_sensor_data.join() ## wait for process to  finish
     debug.print_to_all_devices("Done...")
+
 
 def straight_line_speed_test_1(dalek_settings,dalek_sounds):
     '''
@@ -143,11 +145,23 @@ def straight_line_speed_test_1(dalek_settings,dalek_sounds):
     arduino_sensor_data.join() ## wait for process to  finish
     debug.print_to_all_devices("Done...")
 
+def drive_back(dalek_settings,time_to_drive):
+    '''
+       used when testing so you dont have to keep getting up.
+    '''
+    debug.print_to_all_devices("Start drive back")
+    drive.backward(50)
+    time.sleep(time_to_drive)
+    debug.print_to_all_devices("end drive back")
+
+
 
 def main():
     '''
     This is only run if you run the file directly
     '''
+    GPIO.setmode(GPIO.BOARD)   # Set the GPIO pins as numbering - Also set in drive.py
+    GPIO.setwarnings(False) 
     spi.init()
     dalek_settings = settings.Settings()
     dalek_settings.slow_mode() 
@@ -156,11 +170,18 @@ def main():
     debug.debug_on = True
     debug.print_to_all_devices("working", "OK")
     try:
-        
         straight_line_speed_test_1(dalek_settings,dalek_sounds)
+        time.sleep(1)
     except :
+        print("!!! error")
         drive.cleanup()
 
+    # try:
+    #     drive_back(dalek_settings,2)
+    # except expression as identifier:
+    #     pass
+    
+    
 
 if __name__ == "__main__":
     main()

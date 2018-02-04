@@ -12,7 +12,7 @@ import spidev
 import time
 from dalek import debug
 import threading
-from statistics import mode
+from statistics import mode 
 
 
 '''

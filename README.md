@@ -30,11 +30,11 @@ autoDrive.py is  the file that uses the mag to turn to a given heading, and can 
   
   
 
+things to look at:
 
-source ~/.profile
-workon cv
+https://pypi.python.org/pypi/inputs used to capture keyboard events.
 
-   
+
 
 
  

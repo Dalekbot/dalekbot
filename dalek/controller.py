@@ -1,10 +1,25 @@
 #!/usr/bin/env python
+if __name__ == "__main__":
+   '''
+   This if statement is needed for testing, to locate the modules needed
+   if we are running the file directly.
+   '''
+   import sys
+   from os import path
+   sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
+   from dalek import settings
+   from dalek import sound_player
+   import RPi.GPIO as GPIO  
+   from dalek import spi  
+
 import os.path
 import struct
 import time
 from dalek import drive 
 from dalek import debug
 from dalek import ui
+from challenges import slightly_deranged_golf
+from challenges import the_duck_shoot
 
 ###
 ### SETUP 
@@ -44,8 +59,10 @@ def use(dalek_settings, dalek_sounds):
   # The Main Mode we are in
   # 1 Drive mode
   # 2 Challenge Select Mode
-  # 3 Exterminate Mode
-  ps3_ControllerMode=1            
+   # 3 Exterminate Mode this mode does nothing so is standby and disables the paddles on    
+   #   the controller
+  ps3_ControllerMode=1 
+  tank_drive_on = True           
 
   axisX = 0        # main  axis variables nomalized
   axisY = 0        # main  axis variables nomalized
@@ -54,8 +71,28 @@ def use(dalek_settings, dalek_sounds):
   
   leftPaddle = 0   # raw axis data
   rightPaddle = 0  # raw axis data
+
+  # initialize the challanges
+  # these are classes that implement the threading.Thread module
+  # def current_challenge_thread_create(name=None):
+  #   # if current_challenge_thread.is_alive():
+  #   #   print("thread still alive...")
+
+  #   # if current_challenge_thread.running == True:
+  #   #         # Make sure current thread has stoped.
+  #   #         print("thread stopping...")
+  #   #         current_challenge_thread.stop_runnning()
+  #   #         current_challenge_thread.join()
+
+  #   if name == "7": 
+  #       return slightly_deranged_golf.Challange()
+  #   elif name == None:
+  #       return slightly_deranged_golf.Challange()    
+    
+  # challange_slightly_deranged_golf.start()
   
-  
+  current_challenge_thread = slightly_deranged_golf.Challange(dalek_settings, dalek_sounds)
+
   def challenge_select(value):
     nonlocal current_challenge
     number_of_challenges = 7
@@ -133,7 +170,7 @@ def use(dalek_settings, dalek_sounds):
         if value:
           dpad_left_button_pressed()
   
-  def tank_drive_mode( _leftPaddle, _rightPaddle):
+  def tank_drive( _leftPaddle, _rightPaddle):
     debug.print_to_all_devices("left: {}  Right: {}".format(_leftPaddle,_rightPaddle ))
     
     if (_leftPaddle == 0) and (_rightPaddle == 0):
@@ -156,17 +193,34 @@ def use(dalek_settings, dalek_sounds):
   ###  Symbol Buttons on the Controller                    ##
   ###########################################################
   def button_circle():
+    # if ps3_ControllerMode == 1:
+    #   pass
+    # elif ps3_ControllerMode ==2:
+    if current_challenge_thread.running == True:
+         current_challenge_thread.circle_button_pressed()
+
+    # elif ps3_ControllerMode ==3:
+    #   pass
     dalek_sounds.play_sound("Must Survive")
-    debug.print_to_all_devices("Circle Button Pressed")
+    # debug.print_to_all_devices("Circle Button Pressed")
+
   def button_square():
+    if current_challenge_thread.running == True:
+         current_challenge_thread.square_button_pressed()
     dalek_sounds.play_sound("exterminate")
-    debug.print_to_all_devices("Exterminate...")
+    # debug.print_to_all_devices("Exterminate...")
+
   def button_triangle():
+    if current_challenge_thread.running == True:
+         current_challenge_thread.triangle_button_pressed()
     dalek_sounds.play_sound("Stay")
-    debug.print_to_all_devices("Triangle Button Pressed")
+    # debug.print_to_all_devices("Triangle Button Pressed")
   def button_cross():
+
+    if current_challenge_thread.running == True:
+         current_challenge_thread.cross_button_pressed()
     dalek_sounds.play_sound("Time is right")
-    debug.print_to_all_devices("Cross Button Pressed")
+    # debug.print_to_all_devices("Cross Button Pressed")
   
   ###########################################################
   ###  Lower Butons on the Controller                      ##
@@ -189,32 +243,72 @@ def use(dalek_settings, dalek_sounds):
   ###########################################################
 
   def button_select(ps3_controller_mode):
-    if ps3_controller_mode == 2:
-      os.system('clear')
-      if ps3_controller_mode == 2: # Challenge Select Mode
-          ui.you_selected_challenge(current_challenge)
-             # nothing has been selected yet.
-  
+    nonlocal current_challenge_thread
+    if ps3_controller_mode == 2: # Challenge Select Mode
+
+        
+
+        ui.you_selected_challenge(current_challenge)
+        
+        if current_challenge == 1:  ## output for onboard device
+           debug.print_to_all_devices("TODO: Obstacle Course")
+        elif current_challenge == 2: 
+           debug.print_to_all_devices("TODO: Straight-Line Speed Test")
+        elif current_challenge == 3: 
+           debug.print_to_all_devices("TODO: Minimal Maze")
+        elif current_challenge == 4: 
+           debug.print_to_all_devices("TODO: Somewhere Over The Rainbow ")
+        elif current_challenge == 5: 
+           debug.print_to_all_devices("TODO: PiNoon")
+        elif current_challenge == 6: 
+           os.system('clear') # clear the stout
+           current_challenge_thread = the_duck_shoot.Challange(dalek_settings, dalek_sounds)
+           current_challenge_thread.start()
+
+        elif current_challenge == 7: 
+           tank_drive_on =  True
+          #  dalek_settings.in_challange=True
+           os.system('clear')
+           current_challenge_thread = slightly_deranged_golf.Challange(dalek_settings, dalek_sounds)
+           current_challenge_thread.start()
+
+           
+           
+         
     return 1 # resets ps3_ControllerMode  to Drive Mode
-      
+       
  
-  def button_start():
+  def button_start():  
     debug.print_to_all_devices("Start Button Pressed")
   
   def button_PS3(_ps3_ControllerMode):
+    nonlocal current_challenge_thread
    
      # # change the controller Mode.
-    _ps3_ControllerMode  +=1 
+    _ps3_ControllerMode  +=1  
  
     if _ps3_ControllerMode == 1:
+      tank_drive_on = True
       os.system('clear')
       debug.print_to_all_devices("You are in Drive Mode" .format(_ps3_ControllerMode),"-D")
 
     elif _ps3_ControllerMode == 2:
+      # debug.print_to_all_devices("is_in_chalange({})".format(dalek_settings.in_challange))
+      if current_challenge_thread.running == True:
+        debug.print_to_all_devices("Quiting Challange.")
+        current_challenge_thread.stop_runnning()
+        current_challenge_thread.join() # wait for thread to stop
+
+        # dalek_settings.in_challange = False # end the challange you are in
+        debug.print_to_all_devices("Challang has ended")
+      # else:
+      
       ui.display_selected_challenge(current_challenge)
+      tank_drive_on = False 
 
       
     elif _ps3_ControllerMode == 3:
+      tank_drive_on = False
       _ps3_ControllerMode = 0
       os.system('clear')
       debug.print_to_all_devices("You are in Exterminate Mode" .format(_ps3_ControllerMode),"-E")
@@ -333,27 +427,39 @@ def use(dalek_settings, dalek_sounds):
          
           
           #Tank mode
-          if ps3_ControllerMode == 1:
+          if tank_drive_on == True:
             
             if number == 1:
                #debug.print_to_all_devices("left side {}  {} ".format(leftPaddle , rightPaddle))
              
                leftPaddle= int( value / 327.67)
                
-               tank_drive_mode(leftPaddle , rightPaddle)
+               tank_drive(leftPaddle , rightPaddle)
               
             
             elif number == 3:
               # debug.print_to_all_devices("right side..")
               rightPaddle= int( value / 327.67)
-              tank_drive_mode(leftPaddle , rightPaddle)
+              tank_drive(leftPaddle , rightPaddle)
   return dalek_settings.speed
  
 
-def main():
-  pass
+def main(dalek_settings, dalek_sounds):
+  init()
+  use(dalek_settings, dalek_sounds)
 
 
-if __name__ == '__main__':
-    import time 
-    main()
+if __name__ == "__main__":
+    debug.debug_on = True
+    dalek_settings = settings.Settings()
+    dalek_sounds = sound_player.Mp3Player(True) # initialize the sound player
+    
+    debug.turn_debug_on()                  # use the debug and turn on output 
+    debug.set_output_device("scrollphat")  # if left empty then default is just stout 
+
+    GPIO.setmode(GPIO.BOARD)   # Set the GPIO pins as numbering - Also set in drive.py
+    GPIO.setwarnings(False)    # Turn GPIO warnings off - CAN ALSO BE Set in drive.py
+
+    drive.init()               # Initialise the software to control the motors
+    spi.init()   
+    main(dalek_settings, dalek_sounds)
