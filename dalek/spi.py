@@ -102,9 +102,9 @@ def read_device_1_data():
   time.sleep(.00001)
   piSensors['rearPing'] = get_sensor_data(3)
   time.sleep(.00001)
-  piSensors['leftPing'] = get_sensor_data(1)
+  piSensors['leftPing'] = get_sensor_data(2)
   time.sleep(.00001)
-  piSensors['rightPing'] = get_sensor_data(2)
+  piSensors['rightPing'] = get_sensor_data(1)
   time.sleep(.00001)
   piSensors['compass'] = get_sensor_data(4)
 
@@ -182,11 +182,11 @@ class SensorData(threading.Thread):
 
 
             
-            # print("front:{} right:{} left:{} rear:{} time:{} ".format(front, 
-            #                                                           right, 
-            #                                                           left, 
-            #                                                           rear, 
-            #                                                           time.time() - start_time))
+            print("front:{} right:{} left:{} rear:{} time:{} ".format(front, 
+                                                                      right, 
+                                                                      left, 
+                                                                      rear, 
+                                                                      time.time() - start_time))
             self.frontPing = front
             self.leftPing = left
             self.rightPing = right
