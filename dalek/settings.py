@@ -15,7 +15,7 @@ class Settings():
     show_cam = False           # if the camera image is shown to screen of not 
     sound_volume = 0           # Set Default Sound Volume -15 - 10
     drive = True               # used for stoping bot in while loop
-    in_challange = False       # used for the main loop in the challange.
+    # in_challange = False       #not used used for the main loop in the challange.
 
     def slow_mode(self):
       '''

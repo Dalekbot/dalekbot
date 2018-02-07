@@ -120,6 +120,12 @@ class SensorData(threading.Thread):
         self.rearPing = 0
         self.leftPing = 0
         self.rightPing = 0
+        
+    def stop_runnning(self):
+        '''
+        when this is called it ends this thread
+        '''
+        self.running = False
 
     def run(self):
 

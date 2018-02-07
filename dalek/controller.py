@@ -18,8 +18,10 @@ import time
 from dalek import drive 
 from dalek import debug
 from dalek import ui
+
 from challenges import slightly_deranged_golf
 from challenges import the_duck_shoot
+from challenges import straight_line
 
 ###
 ### SETUP 
@@ -72,26 +74,9 @@ def use(dalek_settings, dalek_sounds):
   leftPaddle = 0   # raw axis data
   rightPaddle = 0  # raw axis data
 
-  # initialize the challanges
-  # these are classes that implement the threading.Thread module
-  # def current_challenge_thread_create(name=None):
-  #   # if current_challenge_thread.is_alive():
-  #   #   print("thread still alive...")
-
-  #   # if current_challenge_thread.running == True:
-  #   #         # Make sure current thread has stoped.
-  #   #         print("thread stopping...")
-  #   #         current_challenge_thread.stop_runnning()
-  #   #         current_challenge_thread.join()
-
-  #   if name == "7": 
-  #       return slightly_deranged_golf.Challange()
-  #   elif name == None:
-  #       return slightly_deranged_golf.Challange()    
-    
-  # challange_slightly_deranged_golf.start()
+  # initialize the current_challenge_thread set it to a default so we don't get errors. 
+  current_challenge_thread = straight_line.Challenge(dalek_settings, dalek_sounds)
   
-  current_challenge_thread = slightly_deranged_golf.Challange(dalek_settings, dalek_sounds)
 
   def challenge_select(value):
     nonlocal current_challenge
@@ -192,52 +177,80 @@ def use(dalek_settings, dalek_sounds):
   ###########################################################
   ###  Symbol Buttons on the Controller                    ##
   ###########################################################
-  def button_circle():
-    # if ps3_ControllerMode == 1:
-    #   pass
-    # elif ps3_ControllerMode ==2:
+  def button_circle_pressed():
     if current_challenge_thread.running == True:
-         current_challenge_thread.circle_button_pressed()
+         current_challenge_thread.button_circle_pressed()
 
-    # elif ps3_ControllerMode ==3:
-    #   pass
-    dalek_sounds.play_sound("Must Survive")
-    # debug.print_to_all_devices("Circle Button Pressed")
+  def button_circle_released():
+      if current_challenge_thread.running == True:
+          current_challenge_thread.button_circle_released()
 
-  def button_square():
-    if current_challenge_thread.running == True:
-         current_challenge_thread.square_button_pressed()
-    dalek_sounds.play_sound("exterminate")
+  def button_square_pressed():
+      if current_challenge_thread.running == True:
+          current_challenge_thread.button_square_pressed()
+    # dalek_sounds.play_sound("exterminate")
     # debug.print_to_all_devices("Exterminate...")
-
-  def button_triangle():
+  def button_square_released():
+      if current_challenge_thread.running == True:
+          current_challenge_thread.button_square_released()
+  
+  
+  def button_triangle_pressed():
     if current_challenge_thread.running == True:
-         current_challenge_thread.triangle_button_pressed()
-    dalek_sounds.play_sound("Stay")
+        current_challenge_thread.button_triangle_pressed()
+    # dalek_sounds.play_sound("Stay")
     # debug.print_to_all_devices("Triangle Button Pressed")
-  def button_cross():
+  def button_triangle_released():
+      if current_challenge_thread.running == True:
+          current_challenge_thread.button_triangle_released()
+  
+  def button_cross_pressed():
 
     if current_challenge_thread.running == True:
-         current_challenge_thread.cross_button_pressed()
-    dalek_sounds.play_sound("Time is right")
+        current_challenge_thread.button_cross_pressed()
+    # dalek_sounds.play_sound("Time is right")
     # debug.print_to_all_devices("Cross Button Pressed")
+  def button_cross_released():
+      if current_challenge_thread.running == True:
+          current_challenge_thread.button_cross_released()
   
   ###########################################################
   ###  Lower Butons on the Controller                      ##
   ###########################################################
-  def button_L1():
-    debug.print_to_all_devices("L1 Button Pressed", "L1")
-   
-  def button_L2():
-    dalek_sounds.decreese_volume_level()
-    debug.print_to_all_devices("L2 Button Pressed" , "L2")
+  def button_L1_pressed():
+    if current_challenge_thread.running == True:
+        current_challenge_thread.button_L1_pressed()
+    else:
+        debug.print_to_all_devices("L1 Button Pressed", "L1")
+  def button_L1_released():
+      if current_challenge_thread.running == True:
+          current_challenge_thread.button_L1_released()
 
-  def button_R1():
-    debug.print_to_all_devices("R1 Button Pressed", "R1")
-    
-  def button_R2():
-    dalek_sounds.increese_volume_level()
-    debug.print_to_all_devices("R2 Button Pressed", "R2" )
+  def button_L2_pressed():
+      if current_challenge_thread.running == True:
+          current_challenge_thread.button_L2_pressed()
+      # dalek_sounds.decreese_volume_level()
+      # debug.print_to_all_devices("L2 Button Pressed" , "L2")
+  def button_L2_released():
+      if current_challenge_thread.running == True:
+          current_challenge_thread.button_L2_released()
+
+  def button_R1_pressed():
+    if current_challenge_thread.running == True:
+          current_challenge_thread.button_R1_pressed()
+
+  def button_R1_released():
+      if current_challenge_thread.running == True:
+          current_challenge_thread.button_R1_released()
+
+  def button_R2_pressed():
+    if current_challenge_thread.running == True:
+          current_challenge_thread.button_R2_pressed()
+    # dalek_sounds.increese_volume_level()
+    # debug.print_to_all_devices("R2 Button Pressed", "R2" )
+  def button_R2_released():
+      if current_challenge_thread.running == True:
+          current_challenge_thread.button_R2_released()
   ###########################################################
   ###  Main Buttons on the Controller                      ## 
   ###########################################################
@@ -252,24 +265,30 @@ def use(dalek_settings, dalek_sounds):
         
         if current_challenge == 1:  ## output for onboard device
            debug.print_to_all_devices("TODO: Obstacle Course")
+
         elif current_challenge == 2: 
-           debug.print_to_all_devices("TODO: Straight-Line Speed Test")
+                os.system('clear') # clear the stout
+                current_challenge_thread = straight_line.Challenge(dalek_settings, dalek_sounds)
+                current_challenge_thread.start()
+
         elif current_challenge == 3: 
            debug.print_to_all_devices("TODO: Minimal Maze")
+
         elif current_challenge == 4: 
            debug.print_to_all_devices("TODO: Somewhere Over The Rainbow ")
+
         elif current_challenge == 5: 
            debug.print_to_all_devices("TODO: PiNoon")
+
         elif current_challenge == 6: 
            os.system('clear') # clear the stout
-           current_challenge_thread = the_duck_shoot.Challange(dalek_settings, dalek_sounds)
+           current_challenge_thread = the_duck_shoot.Challenge(dalek_settings, dalek_sounds)
            current_challenge_thread.start()
 
         elif current_challenge == 7: 
            tank_drive_on =  True
-          #  dalek_settings.in_challange=True
            os.system('clear')
-           current_challenge_thread = slightly_deranged_golf.Challange(dalek_settings, dalek_sounds)
+           current_challenge_thread = slightly_deranged_golf.Challenge(dalek_settings, dalek_sounds)
            current_challenge_thread.start()
 
            
@@ -293,13 +312,10 @@ def use(dalek_settings, dalek_sounds):
       debug.print_to_all_devices("You are in Drive Mode" .format(_ps3_ControllerMode),"-D")
 
     elif _ps3_ControllerMode == 2:
-      # debug.print_to_all_devices("is_in_chalange({})".format(dalek_settings.in_challange))
-      if current_challenge_thread.running == True:
+      if current_challenge_thread.running == True: # we are in a challenge
         debug.print_to_all_devices("Quiting Challange.")
         current_challenge_thread.stop_runnning()
         current_challenge_thread.join() # wait for thread to stop
-
-        # dalek_settings.in_challange = False # end the challange you are in
         debug.print_to_all_devices("Challang has ended")
       # else:
       
@@ -374,46 +390,62 @@ def use(dalek_settings, dalek_sounds):
           # L2 button
           elif number == 8:
             if value:
-              button_L2()   
+                button_L2_pressed()
+            else:
+                button_L2_released() 
           
            # R2 button
           elif number == 9:
             if value:
-              button_R2()
+                button_R2_pressed()
+            else:
+                button_R1_released()
   
           # L1 button
           elif number == 10:
             if value:
-              button_L1()
+                button_L1_pressed()
+            else:
+                button_L1_released()
           # R1 button
           elif number == 11:
             if value:
-              button_R1()
+                button_R1_pressed()
+            else:
+                button_R1_released()
 
           # triangle button
           elif number == 12:
             if value:
-              button_triangle()
+                button_triangle_pressed()
+            else:
+                button_triangle_released()
 
           # circle button
           elif number == 13:
             if value:
-              button_circle()
+                button_circle_pressed()
+            else:
+                button_circle_released()
 
           #  Cross button
           elif number == 15:
             if value:
-              button_square()
+                button_square_pressed()
+            else:
+                button_square_released()
           
           #  Cross button
           elif number == 14:
             if value:
-              button_cross()
+                button_cross_pressed()
+            else:
+                button_cross_released()
 
           #  PS3  button
           elif number == 16:
             if value:
-              ps3_ControllerMode = button_PS3(ps3_ControllerMode)
+                ps3_ControllerMode = button_PS3(ps3_ControllerMode)
  
          
           else :

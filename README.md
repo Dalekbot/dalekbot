@@ -32,6 +32,13 @@ autoDrive.py is  the file that uses the mag to turn to a given heading, and can 
 
 things to look at:
 
+/sys/class/power_supply/sony_controller_battery_00:21:4f:19:34:c2/$ cat uevent
+POWER_SUPPLY_NAME=sony_controller_battery_00:21:4f:19:34:c2
+POWER_SUPPLY_PRESENT=1
+POWER_SUPPLY_CAPACITY=50
+POWER_SUPPLY_SCOPE=Device
+POWER_SUPPLY_STATUS=Discharging
+
 https://pypi.python.org/pypi/inputs used to capture keyboard events.
 
 
