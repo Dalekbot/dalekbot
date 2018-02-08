@@ -44,4 +44,25 @@ https://pypi.python.org/pypi/inputs used to capture keyboard events.
 
 
 
- 
+pi@raspi:/dev/input $ fftest event0
+Force feedback test program.
+HOLD FIRMLY YOUR WHEEL OR JOYSTICK TO PREVENT DAMAGES
+
+Device event0 opened
+Features:
+  * Absolute axes: X, Y, Z, RZ, Misc ,
+    [27 00 00 00 00 FF FF 7F ]
+  * Relative axes:
+    [00 00 ]
+  * Force feedback effects types: Periodic, Rumble, Gain,
+    Force feedback periodic effects: Square, Triangle, Sine,
+    [00 00 00 00 00 00 00 00 00 00 03 07 01 00 00 00 ]
+  * Number of simultaneous effects: 16
+
+Setting master gain to 75% ... OK
+Uploading effect #0 (Periodic sinusoidal) ... OK (id 0)
+Uploading effect #1 (Constant) ... Error: Invalid argument
+Uploading effect #2 (Spring) ... Error: Invalid argument
+Uploading effect #3 (Damper) ... Error: Invalid argument
+Uploading effect #4 (Strong rumble, with heavy motor) ... OK (id 1)
+Uploading effect #5 (Weak rumble, with light motor) ... OK (id 2)

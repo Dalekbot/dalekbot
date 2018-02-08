@@ -1,14 +1,14 @@
 if __name__ == "__main__":
-   '''
-   This if statement is needed for testing, to locate the modules needed
-   if we are running the file directly.
-   '''
-   import sys
-   from os import path
-   sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
-   from dalek import settings
-   from dalek import sound_player
-   import RPi.GPIO as GPIO     
+    '''
+    This if statement is needed for testing, to locate the modules needed
+    if we are running the file directly.
+    '''
+    import sys
+    from os import path
+    sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
+    from dalek import settings
+    from dalek import sound_player
+    import RPi.GPIO as GPIO
 
 # these are the globaly used modules
 from challenges import challenge
@@ -26,14 +26,15 @@ class Challenge(challenge.ChallengeBase):
 
     Look at the ChallengeBase class in challenge.py for all functions that can be called.
     '''
-    def __init__(self,dalek_settings, dalek_sounds):
+
+    def __init__(self, dalek_settings, dalek_sounds):
         super().__init__()
-        
+
         self.dalek_settings = dalek_settings
         self.dalek_sounds = dalek_sounds
         self.arduino_sensor_data = spi.SensorData()
         # self.
-        
+
     def stop_runnning(self):
         '''
         When this is called it ends this thread 
@@ -43,61 +44,49 @@ class Challenge(challenge.ChallengeBase):
         drive.stop()
         if self.arduino_sensor_data.is_alive():
             self.arduino_sensor_data.stop_runnning()
-            self.arduino_sensor_data.join() ## wait for process to  finish
-        self.running = False   
+            self.arduino_sensor_data.join()  # wait for process to  finish
+        self.running = False
         debug.print_to_all_devices("Done...")
-    
+
     def run(self):
-      self.running = True
-      debug.print_to_all_devices("Challenge 'Straight line' Started." )
-      # self.arduino_sensor_data.start() #   starts the new process and runs in the background
+        self.running = True
+        debug.print_to_all_devices("Challenge 'Straight line' Started.")
+        # self.arduino_sensor_data.start() #   starts the new process and runs in the background
 
-      
-      self.arduino_sensor_data.start()
-      time.sleep(0.2)
+        self.arduino_sensor_data.start()
+        time.sleep(0.2)
 
-      
-
-      while self.running:
-        drive.forward(self.dalek_settings.max_speed)
-        time.sleep(.1)
-        
-        # # detects we have finished the challenge. 
-        if self.arduino_sensor_data.frontPing <= 18:
-            drive.stop()
-            debug.print_to_all_devices("Center Distance:{}cm Run Finished"
-                                    .format(self.arduino_sensor_data.frontPing))
-            self.stop_runnning()
-            
-            
- 
-        if self.arduino_sensor_data.leftPing <= 5:
-            debug.print_to_all_devices("turnForwardRight", "TrR" )
-            drive.turnForwardRight(self.dalek_settings.outer_turn_speed,
-                                        self.dalek_settings.inner_turn_speed)
-            time.sleep(.05)
+        while self.running:
             drive.forward(self.dalek_settings.max_speed)
-        
+            time.sleep(.1)
 
-        if self.arduino_sensor_data.rightPing <= 5:
-            debug.print_to_all_devices("turnForwardLeft", "TrL" )
-            drive.turnForwardLeft(self.dalek_settings.inner_turn_speed,
-                                        self.dalek_settings.outer_turn_speed)
-            time.sleep(.05)
-            drive.forward(self.dalek_settings.max_speed) 
+            # # detects we have finished the challenge.
+            if self.arduino_sensor_data.frontPing <= 18:
+                drive.stop()
+                debug.print_to_all_devices("Center Distance:{}cm Run Finished"
+                                           .format(self.arduino_sensor_data.frontPing))
+                self.stop_runnning()
 
-      
-          
+            if self.arduino_sensor_data.leftPing <= 5:
+                debug.print_to_all_devices("turnForwardRight", "TrR")
+                drive.turnForwardRight(self.dalek_settings.outer_turn_speed,
+                                       self.dalek_settings.inner_turn_speed)
+                time.sleep(.05)
+                drive.forward(self.dalek_settings.max_speed)
+
+            if self.arduino_sensor_data.rightPing <= 5:
+                debug.print_to_all_devices("turnForwardLeft", "TrL")
+                drive.turnForwardLeft(self.dalek_settings.inner_turn_speed,
+                                      self.dalek_settings.outer_turn_speed)
+                time.sleep(.05)
+                drive.forward(self.dalek_settings.max_speed)
 
 
-
-
-
-def main(): 
+def main():
     pass
     # pass
     # GPIO.setmode(GPIO.BOARD)   # Set the GPIO pins as numbering - Also set in drive.py
-    # GPIO.setwarnings(False) 
+    # GPIO.setwarnings(False)
 
     # debug.debug_on = True
     # dalek_settings = settings.Settings()
@@ -107,8 +96,6 @@ def main():
 
     # drive.init()
     # dalek_sounds = sound_player.Mp3Player(True) # initialize the sound player
-   
-
 
     # challenge = Challenge(dalek_settings, dalek_sounds)
     # challenge.start()
@@ -118,15 +105,11 @@ def main():
 
     # challenge.join() # wait for thead to finish.
     # debug.print_to_all_devices("\nFINISHED")
-    
-
-    
-
 
 
 if __name__ == "__main__":
     main()
-   
+
 
 else:
     debug.print_to_all_devices('importing Straight Line Challenge')

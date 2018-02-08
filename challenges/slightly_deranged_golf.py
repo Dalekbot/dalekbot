@@ -8,7 +8,7 @@
 #    sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
 #    from dalek import settings
 #    from dalek import sound_player
-#    import RPi.GPIO as GPIO     
+#    import RPi.GPIO as GPIO
 
 # these are the globaly used modules
 from challenges import challenge
@@ -26,30 +26,29 @@ class Challenge(challenge.ChallengeBase):
 
     Look at the ChallengeBase class in challenge.py for all functions that can be called.
     '''
-    def __init__(self,dalek_settings, dalek_sounds):
+
+    def __init__(self, dalek_settings, dalek_sounds):
         super().__init__()
         self.dalek_settings = dalek_settings
         self.dalek_sounds = dalek_sounds
-        
-    
+
     def run(self):
-      self.running = True
-      debug.print_to_all_devices("Challenge 'slightly_deranged_golf' Started." )
-      while self.running:
-          
-          ####################################################
-          #                                                  #
-          # Code for this challange goes in this while loop  #
-          #                                                  #
-          ####################################################
-          debug.print_to_all_devices("Putt! ")  # this line can be removed
-          time.sleep(2)                                  # this line can be removed
+        self.running = True
+        debug.print_to_all_devices(
+            "Challenge 'slightly_deranged_golf' Started.")
+        while self.running:
+
+            ####################################################
+            #                                                  #
+            # Code for this challange goes in this while loop  #
+            #                                                  #
+            ####################################################
+            debug.print_to_all_devices("Putt! ")  # this line can be removed
+            # this line can be removed
+            time.sleep(2)
 
 
-
-
-
-def main(dalek_settings, dalek_sounds): 
+def main(dalek_settings, dalek_sounds):
     pass
     # challenge = Challenge(dalek_settings, dalek_sounds)
     # challenge.start()
@@ -59,9 +58,6 @@ def main(dalek_settings, dalek_sounds):
 
     # challenge.join() # wait for thead to finish.
     # debug.print_to_all_devices("\nFINISHED")
-
-    
-
 
 
 if __name__ == "__main__":
