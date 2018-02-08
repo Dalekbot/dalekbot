@@ -42,7 +42,7 @@ class Battery(threading.Thread):
         self.running = True
 
 
-def foo():
+
 
 
 if __name__ == "__main__":
