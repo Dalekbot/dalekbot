@@ -1,18 +1,18 @@
 #!/usr/bin/python3
 if __name__ == "__main__":
-   '''
-   This if statement is needed for testing, to locate the modules needed
-   if we are running the file directly.
-   '''
-   import sys
-   from os import path
-   sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
+    '''
+    This if statement is needed for testing, to locate the modules needed
+    if we are running the file directly.
+    '''
+    import sys
+    from os import path
+    sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
 import spidev
 import time
 from dalek import debug
 import threading
-from statistics import mode 
+from statistics import mode
 
 
 '''
@@ -60,15 +60,15 @@ def init(speed=None):
     spi.open(0, 0)  # using bus 1
 
     if speed != None:
-      try:
-        spi.max_speed_hz = speed
-        SpiSetup = True
-      except expression as identifier:
-          pass
+        try:
+            spi.max_speed_hz = speed
+            SpiSetup = True
+        except expression as identifier:
+            pass
     else:
-      # set the default value
-      spi.max_speed_hz = 61000
-      SpiSetup = True
+        # set the default value
+        spi.max_speed_hz = 61000
+        SpiSetup = True
 
     spi.mode = 0b00  # another mode is spi.mode = 0b01
     debug.print_to_all_devices(
@@ -93,22 +93,22 @@ def get_mag():
 
 
 def read_device_1_data():
-#   global SpiSetup,spi
+    #   global SpiSetup,spi
 
-  # create the return data variable
-  piSensors = {'frontPing': 0, 'rearPing': 0,
-               'leftPing': 0, 'rightPing': 0, 'compass': 0}
-  piSensors['frontPing'] = get_sensor_data(0)
-  time.sleep(.00001)
-  piSensors['rearPing'] = get_sensor_data(3)
-  time.sleep(.00001)
-  piSensors['leftPing'] = get_sensor_data(2)
-  time.sleep(.00001)
-  piSensors['rightPing'] = get_sensor_data(1)
-  time.sleep(.00001)
-  piSensors['compass'] = get_sensor_data(4)
+    # create the return data variable
+    piSensors = {'frontPing': 0, 'rearPing': 0,
+                 'leftPing': 0, 'rightPing': 0, 'compass': 0}
+    piSensors['frontPing'] = get_sensor_data(0)
+    time.sleep(.00001)
+    piSensors['rearPing'] = get_sensor_data(3)
+    time.sleep(.00001)
+    piSensors['leftPing'] = get_sensor_data(2)
+    time.sleep(.00001)
+    piSensors['rightPing'] = get_sensor_data(1)
+    time.sleep(.00001)
+    piSensors['compass'] = get_sensor_data(4)
 
-  return piSensors
+    return piSensors
 
 
 class SensorData(threading.Thread):
@@ -120,6 +120,12 @@ class SensorData(threading.Thread):
         self.rearPing = 0
         self.leftPing = 0
         self.rightPing = 0
+
+    def stop_runnning(self):
+        '''
+        when this is called it ends this thread
+        '''
+        self.running = False
 
     def run(self):
 
@@ -141,66 +147,59 @@ class SensorData(threading.Thread):
 
             try:
                 front = mode([s1['frontPing'],
-                          s2['frontPing'], 
-                          s3['frontPing'], 
-                          s4['frontPing'], 
-                          s5['frontPing'],
-                          s6['frontPing'],
-                          s7['frontPing']
-                          ])
-    
-                right = mode([s1['rightPing'],  
-                          s2['rightPing'],  
-                          s3['rightPing'],  
-                          s4['rightPing'],  
-                          s5['rightPing'],  
-                          s6['rightPing'],  
-                          s7['rightPing']])
-    
-                left = mode([s1['leftPing'],  
-                          s2['leftPing'],  
-                          s3['leftPing'], 
-                          s4['leftPing'],  
-                          s5['leftPing'],  
-                          s6['leftPing'],  
-                          s7['leftPing']])
-    
-                rear = mode([s1['rearPing'], 
-                          s2['rearPing'],   
-                          s3['rearPing'], 
-                          s4['rearPing'], 
-                          s5['rearPing'], 
-                          s6['rearPing'], 
-                          s7['rearPing']])
-           
-               
-                    
-            
-            except :
-                 print("unknown error.")
+                              s2['frontPing'],
+                              s3['frontPing'],
+                              s4['frontPing'],
+                              s5['frontPing'],
+                              s6['frontPing'],
+                              s7['frontPing']
+                              ])
 
+                right = mode([s1['rightPing'],
+                              s2['rightPing'],
+                              s3['rightPing'],
+                              s4['rightPing'],
+                              s5['rightPing'],
+                              s6['rightPing'],
+                              s7['rightPing']])
 
+                left = mode([s1['leftPing'],
+                             s2['leftPing'],
+                             s3['leftPing'],
+                             s4['leftPing'],
+                             s5['leftPing'],
+                             s6['leftPing'],
+                             s7['leftPing']])
 
-            
-            print("front:{} right:{} left:{} rear:{} time:{} ".format(front, 
-                                                                      right, 
-                                                                      left, 
-                                                                      rear, 
+                rear = mode([s1['rearPing'],
+                             s2['rearPing'],
+                             s3['rearPing'],
+                             s4['rearPing'],
+                             s5['rearPing'],
+                             s6['rearPing'],
+                             s7['rearPing']])
+
+            except:
+                print("unknown error.")
+
+            print("front:{} right:{} left:{} rear:{} time:{} ".format(front,
+                                                                      right,
+                                                                      left,
+                                                                      rear,
                                                                       time.time() - start_time))
             self.frontPing = front
             self.leftPing = left
             self.rightPing = right
             self.rearPing = rear
 
- 
 
-def test(): 
-   T= time.time()
-   data= read_device_1_data()
-   T2= time.time()
+def test():
+    T = time.time()
+    data = read_device_1_data()
+    T2 = time.time()
 
-   debug.print_to_all_devices(data)
-   debug.print_to_all_devices("time taken {}" .format(T2 - T))
+    debug.print_to_all_devices(data)
+    debug.print_to_all_devices("time taken {}" .format(T2 - T))
 
 
 def main():
@@ -209,12 +208,13 @@ def main():
     '''
     init()
     try:
-        sensordata= SensorData()
+        sensordata = SensorData()
         sensordata.start()
     except expression as identifier:
         pass
 
 #######################################################################################
+
 
 if __name__ == "__main__":
     main()

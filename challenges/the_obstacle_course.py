@@ -11,24 +11,24 @@ def ObstacleCourse():
     global soundvolume         # Allow access to sound volume
 
     wii.rpt_mode = cwiid.RPT_BTN
-    
+
     time.sleep(2)
-    
+
     boost = 0                                   # Turn boost off
 
     while True:
         buttons = wii.state['buttons']          # Get WiiMote Button Pressed
         # Choose which task to do
-        
+
         # If Plus and Minus buttons pressed
         # together then rumble and quit.
-        if (buttons - cwiid.BTN_PLUS - cwiid.BTN_MINUS == 0):  
-           break  
+        if (buttons - cwiid.BTN_PLUS - cwiid.BTN_MINUS == 0):
+            break
 
         print speed
         scrollphat.clear()         # Shutdown Scroll pHat
         scrollphat.write_string(str(speed))
-        
+
         if boost == 0 and (buttons & cwiid.BTN_B):
             print 'Boost', maxspeed
             scrollphat.clear()         # Shutdown Scroll pHat
@@ -44,7 +44,7 @@ def ObstacleCourse():
             scrollphat.clear()         # Shutdown Scroll pHat
             scrollphat.write_string("Nor")
             time.sleep(.25)
-        
+
         if (buttons & cwiid.BTN_UP):
             print 'Forward', speed
             scrollphat.clear()         # Shutdown Scroll pHat

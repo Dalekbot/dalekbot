@@ -32,9 +32,37 @@ autoDrive.py is  the file that uses the mag to turn to a given heading, and can 
 
 things to look at:
 
+/sys/class/power_supply/sony_controller_battery_00:21:4f:19:34:c2/$ cat uevent
+POWER_SUPPLY_NAME=sony_controller_battery_00:21:4f:19:34:c2
+POWER_SUPPLY_PRESENT=1
+POWER_SUPPLY_CAPACITY=50
+POWER_SUPPLY_SCOPE=Device
+POWER_SUPPLY_STATUS=Discharging
+
 https://pypi.python.org/pypi/inputs used to capture keyboard events.
 
 
 
 
- 
+pi@raspi:/dev/input $ fftest event0
+Force feedback test program.
+HOLD FIRMLY YOUR WHEEL OR JOYSTICK TO PREVENT DAMAGES
+
+Device event0 opened
+Features:
+  * Absolute axes: X, Y, Z, RZ, Misc ,
+    [27 00 00 00 00 FF FF 7F ]
+  * Relative axes:
+    [00 00 ]
+  * Force feedback effects types: Periodic, Rumble, Gain,
+    Force feedback periodic effects: Square, Triangle, Sine,
+    [00 00 00 00 00 00 00 00 00 00 03 07 01 00 00 00 ]
+  * Number of simultaneous effects: 16
+
+Setting master gain to 75% ... OK
+Uploading effect #0 (Periodic sinusoidal) ... OK (id 0)
+Uploading effect #1 (Constant) ... Error: Invalid argument
+Uploading effect #2 (Spring) ... Error: Invalid argument
+Uploading effect #3 (Damper) ... Error: Invalid argument
+Uploading effect #4 (Strong rumble, with heavy motor) ... OK (id 1)
+Uploading effect #5 (Weak rumble, with light motor) ... OK (id 2)

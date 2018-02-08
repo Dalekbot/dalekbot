@@ -2,6 +2,8 @@
 
 
 def clear():
-  pass
+    pass
+
+
 def write_string(text):
-  print(text)
+    print(text)
