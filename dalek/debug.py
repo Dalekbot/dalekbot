@@ -75,4 +75,4 @@ def destroy():
 if __name__ == "__main__":
     print("\n\ndalek.debug.py cannot be run directly. It is intended to be imported\n\n")
 else:
-    print("Importing dalek.debug.py")
+   pass # print("Importing dalek.debug.py")

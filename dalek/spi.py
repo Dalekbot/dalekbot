@@ -71,8 +71,8 @@ def init(speed=None):
         SpiSetup = True
 
     spi.mode = 0b00  # another mode is spi.mode = 0b01
-    debug.print_to_all_devices(
-        "spi bus speed set to:{} spi mode {}" .format(spi.max_speed_hz, spi.mode))
+    # debug.print_to_all_devices(
+    #     "spi bus speed set to:{} spi mode {}" .format(spi.max_speed_hz, spi.mode))
 
 
 def get_sensor_data(_sensorNumber):
@@ -121,7 +121,7 @@ class SensorData(threading.Thread):
         self.leftPing = 0
         self.rightPing = 0
 
-    def stop_runnning(self):
+    def stop_running(self):
         '''
         when this is called it ends this thread
         '''
@@ -204,7 +204,7 @@ def test():
 
 def main():
     '''
-    This test that things are working, it just prints the arduino's readings to stout.
+    This test that things are working, it just prints the Arduino's readings to stout.
     '''
     init()
     try:

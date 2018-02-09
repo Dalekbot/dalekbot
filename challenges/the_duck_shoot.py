@@ -10,7 +10,7 @@
 #    from dalek import sound_player
 #    import RPi.GPIO as GPIO
 
-# these are the globaly used modules
+# these are the globally used modules
 from challenges import challenge
 import time
 # from dalek import spi
@@ -40,12 +40,12 @@ class Challenge(challenge.ChallengeBase):
             time.sleep(1)
             ####################################################
             #                                                  #
-            # Code for this challange goes in this while loop  #
+            # Code for this challenge goes in this while loop  #
             #                                                  #
             ####################################################
             debug.print_to_all_devices("BANG!!!")  # this line can be removed
             drive.stop()
-            self.stop_runnning()                                 # this line can be removed
+            self.stop_running()                                 # this line can be removed
 
 
 def main(dalek_settings, dalek_sounds):
@@ -54,9 +54,9 @@ def main(dalek_settings, dalek_sounds):
     # challenge.start()
     # time.sleep(4)
     # challenge.button_circle_pressed()
-    # challenge.stop_runnning()
+    # challenge.stop_running()
 
-    # challenge.join() # wait for thead to finish.
+    # challenge.join() # wait for thread to finish.
     # debug.print_to_all_devices("\nFINISHED")
 
 

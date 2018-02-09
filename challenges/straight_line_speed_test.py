@@ -132,7 +132,7 @@ def straight_line_speed_test_1(dalek_settings, dalek_sounds):
 
         # if  -2 <= center_value <= 2:
         #     # if it is between these values
-        #     # streihten up the bot
+        #     # straiten up the bot
         #     if turning_left
 
     arduino_sensor_data.join()  # wait for process to  finish

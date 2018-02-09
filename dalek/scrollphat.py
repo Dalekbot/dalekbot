@@ -6,4 +6,4 @@ def clear():
 
 
 def write_string(text):
-    print(text)
+    pass # print(text)

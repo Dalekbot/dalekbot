@@ -26,7 +26,7 @@ pinMotorBLBackwards = 40
 # General Functions
 #
 
-# init(). Initialises GPIO pins, switches motors and LEDs Off, etc
+# init(). Initializes GPIO pins, switches motors and LEDs Off, etc
 def init():
     global pwmMotorFRSpeed, pwmMotorFLSpeed, pwmMotorBRSpeed, pwmMotorBLSpeed, Stop
 
@@ -58,7 +58,7 @@ def init():
     # print ('Set the GPIO to software PWM at ' + str(Frequency) + ' Hertz - Motor FR')
     pwmMotorFRSpeed = GPIO.PWM(pinMotorFRSpeed, Frequency)
 
-    # print ('Start the software PWM with a duty cycle of 0 (i.e. not moving) - Moter FR')
+    # print ('Start the software PWM with a duty cycle of 0 (i.e. not moving) - Motor FR')
     pwmMotorFRSpeed.start(Stop)
 
     # Setup Motor FL
@@ -70,7 +70,7 @@ def init():
     # print ('Set the GPIO to software PWM at ' + str(Frequency) + ' Hertz - Motor FL')
     pwmMotorFLSpeed = GPIO.PWM(pinMotorFLSpeed, Frequency)
 
-    # print ('Start the /////software PWM with a duty cycle of 0 (i.e. not moving) - Moter FL')
+    # print ('Start the /////software PWM with a duty cycle of 0 (i.e. not moving) - Motor FL')
     pwmMotorFLSpeed.start(Stop)
 
     # Setup Motor BR
@@ -82,7 +82,7 @@ def init():
     # print ('Set the GPIO to software PWM at ' + str(Frequency) + ' Hertz - Motor BR')
     pwmMotorBRSpeed = GPIO.PWM(pinMotorBRSpeed, Frequency)
 
-    # print ('Start the software PWM with a duty cycle of 0 (i.e. not moving) - Moter BR')
+    # print ('Start the software PWM with a duty cycle of 0 (i.e. not moving) - Motor BR')
     pwmMotorBRSpeed.start(Stop)
 
     # Setup Motor BL
@@ -94,7 +94,7 @@ def init():
     # print ('Set the GPIO to software PWM at ' + str(Frequency) + ' Hertz - Motor BL')
     pwmMotorBLSpeed = GPIO.PWM(pinMotorBLSpeed, Frequency)
 
-    # print ('Start the software PWM with a duty cycle of 0 (i.e. not moving) - Moter BL\n')
+    # print ('Start the software PWM with a duty cycle of 0 (i.e. not moving) - Motor BL\n')
     pwmMotorBLSpeed.start(Stop)
 
 # cleanup(). Sets all motors off and sets GPIO to standard values
@@ -385,7 +385,7 @@ def BLB(Speed):
 if __name__ == "__main__":
     print("This file cannot be run directly. It is intended to be imported\n\n")
 else:
-    print("Importing dalek.drive.py")
+   pass # print("Importing dalek.drive.py")
 
 # End of __main__ Code
 #======================================================================
