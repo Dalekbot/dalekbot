@@ -31,10 +31,10 @@ dalek_sounds = sound_player.Mp3Player(True)  # initialize the sound player
 #======================================================================
 
 #======================================================================
-# Initialisation procedures
+# Initialization procedures
 
 
-def setup():                   # Setup GPIO and Initalise Imports
+def setup():                   # Setup GPIO and initialize Imports
 
     debug.turn_debug_on()                  # use the debug and turn on output
     # if left empty then default is just stout
@@ -64,7 +64,7 @@ def setup():                   # Setup GPIO and Initalise Imports
     # video_capture.set(4, vRes)
 
 
-# End of Initialisation procedures
+# End of Initialization procedures
 #======================================================================
 # Clean-up Procedures
 
@@ -171,7 +171,7 @@ if __name__ == '__main__':  # The Program will start from here
             "\nShow Cam Image - {}".format(args.ShowCam))
         dalek_settings.show_cam = args.ShowCam  # default is False
 
-    if ((str(args.SoundVolume)) != 'None'):
+    if ((str(args.SoundVolume)) != 'None'): 
         debug.print_to_all_devices(
             "\nSound Volume - {}".format(args.SoundVolume))
         dalek_settings.sound_volume = args.SoundVolume  # default is 0
@@ -179,23 +179,23 @@ if __name__ == '__main__':  # The Program will start from here
     debug.print_to_all_devices("\n\nSetting Up ...", "Set")
 
     setup()           # Setup all motors
-    debug.print_to_all_devices("\nGo ...\n\n", "Go")
+    # debug.print_to_all_devices("\nGo ...\n\n", "Go")
 
     try:
-        debug.print_to_all_devices("OK 1")
+        # debug.print_to_all_devices("OK 1")
         maincontrol()    # Call main loop
-        debug.print_to_all_devices("OK 2")
+        # debug.print_to_all_devices("OK 2")
 
         destroy()     # Shutdown
-        print("\n\n................... Exit .......................\n\n")
+        print("\n... Exit ...\n")
         exit(0)  # Exit Cleanly
     except KeyboardInterrupt:
         destroy()
-        print("\n\n............... Exit From Keyboard .......................\n\n")
+        print("\n... Exit From Keyboard ...\n")
         exit(0)  # Exit Cleanly
     except Exception as inst:
         print(type(inst))
-        print("\n................SOMETHING WENT WRONG!..................\n")
+        print("\n... SOMETHING WENT WRONG! ...\n")
 
 # End of __Main__ Startup Loop
 #======================================================================

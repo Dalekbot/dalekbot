@@ -10,7 +10,7 @@ if __name__ == "__main__":
     from dalek import sound_player
     import RPi.GPIO as GPIO
 
-# these are the globaly used modules
+# these are the globally used modules
 from challenges import challenge
 import time
 from dalek import spi
@@ -35,7 +35,7 @@ class Challenge(challenge.ChallengeBase):
         self.arduino_sensor_data = spi.SensorData()
         # self.
 
-    def stop_runnning(self):
+    def stop_running(self):
         '''
         When this is called it ends this thread 
         This is also called if the PS3 button is pressed during a challenge,
@@ -43,7 +43,7 @@ class Challenge(challenge.ChallengeBase):
         '''
         drive.stop()
         if self.arduino_sensor_data.is_alive():
-            self.arduino_sensor_data.stop_runnning()
+            self.arduino_sensor_data.stop_running()
             self.arduino_sensor_data.join()  # wait for process to  finish
         self.running = False
         debug.print_to_all_devices("Done...")
@@ -65,7 +65,7 @@ class Challenge(challenge.ChallengeBase):
                 drive.stop()
                 debug.print_to_all_devices("Center Distance:{}cm Run Finished"
                                            .format(self.arduino_sensor_data.frontPing))
-                self.stop_runnning()
+                self.stop_running()
 
             if self.arduino_sensor_data.leftPing <= 5:
                 debug.print_to_all_devices("turnForwardRight", "TrR")
@@ -101,9 +101,9 @@ def main():
     # challenge.start()
     # # time.sleep(4)
     # # challenge.button_circle_pressed()
-    # # challenge.stop_runnning()
+    # # challenge.stop_running()
 
-    # challenge.join() # wait for thead to finish.
+    # challenge.join() # wait for thread to finish.
     # debug.print_to_all_devices("\nFINISHED")
 
 

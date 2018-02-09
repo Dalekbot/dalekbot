@@ -1,4 +1,22 @@
 {
   "python.linting.pylintEnabled": false,
-  "python.formatting.provider": "autopep8"
+  "python.formatting.provider": "autopep8",
+  "cSpell.words": [
+    "arduino",
+    "arduino's",
+    "dalek",
+    "dpad",
+    "gpio",
+    "hat",
+    "jsdev",
+    "leds",
+    "mosi",
+    "numpy",
+    "raspi",
+    "scrollp",
+    "spidev",
+    "struct",
+    "uevent",
+    "xfer"
+  ]
 }

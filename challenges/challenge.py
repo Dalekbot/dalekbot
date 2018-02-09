@@ -45,7 +45,7 @@ class ChallengeBase(threading.Thread):
             debug.print_to_all_devices("challenge base class !!")
             time.sleep(2)                         # this line can be removed
 
-    def stop_runnning(self):
+    def stop_running(self):
         '''
         When this is called it ends this thread 
         This is also called if the PS3 button is pressed during a challenge,
@@ -126,7 +126,7 @@ class ChallengeBase(threading.Thread):
 def main():
     challenge = ChallengeBase()
     challenge.start()
-    challenge.join()  # wait for thead to finish.
+    challenge.join()  # wait for thread to finish.
     debug.print_to_all_devices("\nFINISHED")
 
 
@@ -137,4 +137,4 @@ if __name__ == "__main__":
     main()
 
 else:
-    debug.print_to_all_devices('Challange Base')
+    debug.print_to_all_devices('Challenge Base')
