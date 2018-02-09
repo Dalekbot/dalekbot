@@ -7,7 +7,7 @@ if __name__ == "__main__":
    import sys
    from os import path
    sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
-   from dalek import settings 
+   from dalek import settings
    from dalek import sound_player
    import RPi.GPIO as GPIO  
    from dalek import spi  
