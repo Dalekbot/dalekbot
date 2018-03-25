@@ -10,7 +10,7 @@ GPIO.setwarnings(False)
 DalekV2Drive.init()
 DalekSpi.init()
 
-# TODO # needs kill switch
+
 
 
 # this is the default distance the bot drives to the wall.

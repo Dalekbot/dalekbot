@@ -178,14 +178,24 @@ class SensorData(threading.Thread):
                              s5['rearPing'],
                              s6['rearPing'],
                              s7['rearPing']])
+                
+                compass = mode([s1['compass'],
+                             s2['compass'],
+                             s3['compass'],
+                             s4['compass'],
+                             s5['compass'],
+                             s6['compass'],
+                             s7['compass']])
+
 
             except:
                 print("unknown error.")
 
-            print("front:{} right:{} left:{} rear:{} time:{} ".format(front,
+            print("front:{} right:{} left:{} rear:{} compass:{} time:{} ".format(front,
                                                                       right,
                                                                       left,
                                                                       rear,
+                                                                      compass,
                                                                       time.time() - start_time))
             self.frontPing = front
             self.leftPing = left
