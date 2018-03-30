@@ -21,6 +21,9 @@ pinMotorBLSpeed = 36
 pinMotorBLForwards = 38
 pinMotorBLBackwards = 40
 
+## pin for power to motors.
+## this pin is off when you boot so no spinny wheels
+pin_motor_relay = 31
 
 #======================================================================
 # General Functions
@@ -32,7 +35,7 @@ def init():
 
     # How many times to turn the pin on and off each second
     # print ('Set Frequency')
-    Frequency = 20
+    Frequency = 100
     # How long the pin stays on each cycle, as a percent (here, it's 50%) - AKA Speed
     # print ('Set DutyCycle')
     DutyCycle = 50
@@ -97,12 +100,18 @@ def init():
     # print ('Start the software PWM with a duty cycle of 0 (i.e. not moving) - Motor BL\n')
     pwmMotorBLSpeed.start(Stop)
 
+    # turn on power relay
+    GPIO.setup(pin_motor_relay,GPIO.OUT)
+    GPIO.output(pin_motor_relay, GPIO.HIGH)
+
 # cleanup(). Sets all motors off and sets GPIO to standard values
 
 
 def cleanup():
     stop()
     GPIO.cleanup()
+    # turn off the motor relay
+    GPIO.output(pin_motor_relay, GPIO.LOW)
 
 # End of General Functions
 #======================================================================
