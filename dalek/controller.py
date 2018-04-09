@@ -19,6 +19,7 @@ from dalek import drive
 from dalek import debug
 from dalek import ui
 from dalek import ps3_battery_checker
+from dalek import head_controller
 
 from challenges import slightly_deranged_golf
 from challenges import the_duck_shoot
@@ -36,6 +37,8 @@ from challenges import straight_line
 
 
 def init():
+    head_controller.leds_change_color(head_controller.leds_color['red'])
+    head_controller.leds_flash()
     fn = '/dev/input/js0'
 
     debug.print_to_all_devices("Testing for joystick: {}...".format(fn))
@@ -49,14 +52,20 @@ def init():
         time.sleep(3)
 
     jsdev = open(fn, 'rb')
+    # head_controller.leds_change_color(head_controller.leds_color['green'])
     # debug.print_to_all_devices('Joystick paired. Ok \n', "Prd")
 
 # Ps3 controller settings.
 
 
 def use(dalek_settings, dalek_sounds):
+    head_controller.leds_change_color(head_controller.leds_color['green'])
+    # head_controller.leds_flash()
 
     current_challenge = 1
+
+    # time.sleep(2)
+    
 
     # used for the main loop, when set to false this function ends.
     using_controller = True
@@ -86,6 +95,10 @@ def use(dalek_settings, dalek_sounds):
     # initialize the current_challenge_thread set it to a default so we don't get errors.
     current_challenge_thread = straight_line.Challenge(
         dalek_settings, dalek_sounds)
+    head_controller.head_no()
+    # head_controller.head_move_to_center()
+    head_controller.eye_move_to_center() 
+    head_controller.leds_flash(False)
 
     def check_for_finished_using_controller():
         '''
@@ -261,39 +274,54 @@ def use(dalek_settings, dalek_sounds):
         if current_challenge_thread.running == True:
             current_challenge_thread.button_L1_pressed()
         else:
-            debug.print_to_all_devices("L1 Button Pressed", "L1")
+            head_controller.head_move_left_90deg()
 
     def button_L1_released():
         if current_challenge_thread.running == True:
             current_challenge_thread.button_L1_released()
+        else:
+            head_controller.head_stop()
 
     def button_L2_pressed():
         if current_challenge_thread.running == True:
             current_challenge_thread.button_L2_pressed()
+        else:
+            head_controller.eye_move_to_bottom()
         # dalek_sounds.decreese_volume_level()
         # debug.print_to_all_devices("L2 Button Pressed" , "L2")
 
     def button_L2_released():
         if current_challenge_thread.running == True:
             current_challenge_thread.button_L2_released()
+        else:
+            head_controller.eye_stop()
 
     def button_R1_pressed():
         if current_challenge_thread.running == True:
             current_challenge_thread.button_R1_pressed()
+        else:
+            head_controller.head_move_right_90deg()
+            
 
     def button_R1_released():
         if current_challenge_thread.running == True:
             current_challenge_thread.button_R1_released()
+        else:
+            head_controller.head_stop()
 
     def button_R2_pressed():
         if current_challenge_thread.running == True:
             current_challenge_thread.button_R2_pressed()
+        else:
+            head_controller.eye_move_to_top()
         # dalek_sounds.increese_volume_level()
         # debug.print_to_all_devices("R2 Button Pressed", "R2" )
 
     def button_R2_released():
         if current_challenge_thread.running == True:
             current_challenge_thread.button_R2_released()
+        else:
+            head_controller.eye_stop()
     ###########################################################
     ###  Main Buttons on the Controller                      ##
     ###########################################################
