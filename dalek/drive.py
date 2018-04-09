@@ -35,14 +35,15 @@ def init():
 
     # How many times to turn the pin on and off each second
     # print ('Set Frequency')
-    Frequency = 100
+    Frequency = 25
+    print("freq {}".format(Frequency))
     # How long the pin stays on each cycle, as a percent (here, it's 50%) - AKA Speed
     # print ('Set DutyCycle')
-    DutyCycle = 50
+    DutyCycle = 100
     # Setting the duty cycle to 0 means the motors will not turn
     # print ('Set Stop')
     Stop = 0
-
+   
     # Set the GPIO modes
     # print ('Set the GPIO mode')
     # Use physical pin numbering
@@ -109,9 +110,9 @@ def init():
 
 def cleanup():
     stop()
+    GPIO.output(pin_motor_relay, GPIO.LOW)
     GPIO.cleanup()
     # turn off the motor relay
-    GPIO.output(pin_motor_relay, GPIO.LOW)
 
 # End of General Functions
 #======================================================================
