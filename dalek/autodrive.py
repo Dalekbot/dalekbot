@@ -1,14 +1,26 @@
-#!/usr/bin/env python
+if __name__ == "__main__":
+    '''
+    This if statement is needed for testing, to locate the modules needed
+    if we are running the file directly.
+    '''
+    import sys
+    from os import path
+    sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
+    import RPi.GPIO as GPIO  # Import GPIO divers
+
+    GPIO.setwarnings(False)
+
+
+
+#!/usr/bin/env python3
 import time
-import DalekV2Drive
-import DalekSpi
-import RPi.GPIO as GPIO  # Import GPIO divers
+from  dalek import spi 
+from dalek import drive 
+from dalek import debug
+from dalek import head_controller
 
-from DalekDebug import DalekPrint
+drive.init()
 
-GPIO.setwarnings(False)
-DalekV2Drive.init()
-DalekSpi.init()
 
 
 
@@ -28,14 +40,14 @@ DistanceToWall = 10
 # Carpet settings
 DalekTurnSettings = {
     'sleepTime': 0.4,
-    'TurnSpeedFast': 70,
-    'TurnSpeedNormal': 50,
-    'TurnSpeedSlow': 40,
-    'TurnSpeedFinal': 30,
-    'BotMoveTimeFast': 1.0,
-    'BotMoveTimeNormal': 0.6,
-    'BotMoveTimeSlow': 0.4,
-    'BotMoveTimeFinal': 0.2}
+    'TurnSpeedFast': 80,
+    'TurnSpeedNormal': 60,
+    'TurnSpeedSlow': 60,
+    'TurnSpeedFinal': 60,
+    'BotMoveTimeFast': 0.8,
+    'BotMoveTimeNormal': 0.4,
+    'BotMoveTimeSlow': 0.5,
+    'BotMoveTimeFinal': 0.5}
 
 
 def changeDalekTurnSettings(number=None):
@@ -69,12 +81,12 @@ def changeDalekTurnSettings(number=None):
 def DalekTurn(degreesToTurn):
 
     def getMag():
-        DalekV2Drive.stop()
+        drive.stop()
         time.sleep(DalekTurnSettings['sleepTime'])
         currentMag = -1
         # ensure we get a valid reading must be between 0 and 360
         while not (0 <= currentMag <= 360):
-            currentMag = DalekSpi.getMag()
+            currentMag = spi.get_mag()
         # print("---getStartingMag:{}".format(currentMag))
         return currentMag
 
@@ -174,16 +186,16 @@ def DalekTurn(degreesToTurn):
             botCurrentHeading, finalHeading, botSpeed))
 
         if botTurnClockwise:
-            DalekV2Drive.spinRight(botSpeed)
+            drive.spinRight(botSpeed)
         else:
-            DalekV2Drive.spinLeft(botSpeed)
+            drive.spinLeft(botSpeed)
         time.sleep(botMoveTime)
-        # DalekV2Drive.stop()
+        # drive.stop()
         # time.sleep(.3)
         botTurnClockwise, botSpeed, botCurrentHeading, botMoveTime = calculateTurnDirection(
             finalHeading)
 
-    DalekV2Drive.stop()
+    drive.stop()
     time.sleep(.3)
     botCurrentHeading = getMag()
     print("\n--------------------\n  END \n    currentMag:{} ShouldBe:{} speed:{}".format(
@@ -191,24 +203,24 @@ def DalekTurn(degreesToTurn):
 
 
 def printMag():
-    DalekV2Drive.stop()
+    drive.stop()
     time.sleep(DalekTurnSettings['sleepTime'])
     currentMag = -1
     # ensure we get a valid reading must be between 0 and 360
     while not (0 <= currentMag <= 360):
-        currentMag = DalekSpi.getMag()
+        currentMag = spi.get_mag()
 
     print("---getStartingMag:{}".format(currentMag))
     return currentMag
 
 
 def getMag():
-    DalekV2Drive.stop()
+    drive.stop()
     time.sleep(DalekTurnSettings['sleepTime'])
     currentMag = -1
     # ensure we get a valid reading must be between 0 and 360
     while not (0 <= currentMag <= 360):
-        currentMag = DalekSpi.getMag()
+        currentMag = spi.get_mag()
     return currentMag
 
 
@@ -325,17 +337,17 @@ def CalculateSpeedToDrive(pingDistance, finalDistance):
 def driveForwardsToDistance(distance):
 
     DalekPrint("driveForwards()")
-    dalekData = DalekSpi.readDevice1Data()
+    dalekData = spi.readDevice1Data()
     DalekPrint(dalekData)
     while dalekData['frontPing'] != distance:
 
         dalekSpeed = CalculateSpeedToDrive(dalekData['frontPing'], distance)
 
         if dalekData['frontPing'] <= distance:
-            DalekV2Drive.backward(dalekSpeed)
+            drive.backward(dalekSpeed)
         else:
-            DalekV2Drive.forward(dalekSpeed)
-        dalekData = DalekSpi.readDevice1Data()
+            drive.forward(dalekSpeed)
+        dalekData = spi.readDevice1Data()
 
 # this uses the Rear ultrasonic sensor.
 
@@ -343,16 +355,16 @@ def driveForwardsToDistance(distance):
 def driveBackwardsToDistance(distance):
 
     DalekPrint("driveBackwards()")
-    dalekData = DalekSpi.readDevice1Data()
+    dalekData = spi.readDevice1Data()
 
     while dalekData['rearPing'] != distance:
         dalekSpeed = CalculateSpeedToDrive(dalekData['rearPing'], distance)
 
         if dalekData['rearPing'] <= distance:
-            DalekV2Drive.forward(dalekSpeed)
+            drive.forward(dalekSpeed)
         else:
-            DalekV2Drive.backward(dalekSpeed)
-        dalekData = DalekSpi.readDevice1Data()
+            drive.backward(dalekSpeed)
+        dalekData = spi.readDevice1Data()
 
 # drive parallel  to wall and if we are not within
 # the tolerance given we make the corrections.
@@ -362,11 +374,11 @@ def driveBackwardsToDistance(distance):
 
 def driveParallelToLeftWall(distanceToWall=None):
     DalekPrint("driveParallelToLeftWall()")
-    dalekData = DalekSpi.readDevice1Data()
+    dalekData = spi.readDevice1Data()
     if distanceToWall == None:
         distanceToWall = DistanceToWall
 
-    initialSensorData = DalekSpi.readDevice1Data()
+    initialSensorData = spi.readDevice1Data()
     DalekPrint("initialSensorData:{}".format(initialSensorData))
 
     if initialSensorData['leftPing'] >= distanceToWall:
@@ -382,7 +394,7 @@ def driveParallelToWallsInCenterToFrontPingDistance(distanceToWall=None):
 
 
 def dispose():
-    DalekV2Drive.cleanup()
+    drive.cleanup()
 
 
 # TEST
@@ -408,7 +420,7 @@ def dispose():
 # time.sleep(2)
 
 # DalekTurn(154)
-# DalekV2Drive.stop()
+# drive.stop()
 # DalekTurn(-154)
 # DalekTurn(355)
 # DalekTurn(90)
@@ -420,5 +432,75 @@ def dispose():
 # DalekTurn(-359)
 # DalekTurn(280)
 # time.sleep(.3)
-# DalekV2Drive.stop()
+# drive.stop()
 # printMag()
+
+def main():
+    # # changeDalekTurnSettings(1)
+    # head_controller.leds_change_color(head_controller.leds_color['red'])
+    # head_controller.head_move_to_center()
+    # fw_mag = spi.get_mag()
+    # print("center mag:{}" .format(fw_mag))
+
+    # time.sleep(1)
+    # # print("3")
+    # head_controller.head_move_left_90deg()
+    # time.sleep(2)
+    # left_mag = spi.get_mag()
+    # print("left mag:{}" .format(left_mag))
+    # time.sleep(.5)
+
+    # # head_controller.head_move_right_90deg()
+    # # time.sleep(2)
+    # # right_mag = spi.get_mag()
+    # # print("left mag:{}" .format(right_mag))
+    # head_controller.head_move_to_center()
+    # time.sleep(1)
+    # # head_controller.leds_change_color(head_controller.leds_color['white'])
+    # # DalekTurn(176)
+    # # DalekTurn(354)
+    # turnspeed = 60
+    # print("mag:{}" .format(spi.get_mag()))
+    # drive.spinLeft(turnspeed)
+    # print(turnspeed)
+    # time.sleep(1)
+    # drive.spinLeft(turnspeed-20)
+    # print(turnspeed-20)
+    # time.sleep(1)
+    # print("mag:{}" .format(spi.get_mag())) 
+
+    Compass = spi.CompassData()
+    Compass.start()    
+    turnspeed = 50 
+    while Compass.data > 145:
+        
+        drive.spinLeft(turnspeed)
+        # print(turnspeed)
+        time.sleep(.2)
+    # time.sleep(5)   dri
+    
+    # drive.spinLeft(turnspeed-10)
+    # # print(turnspeed)
+    # time.sleep(1)
+    
+    # drive.spinLeft(turnspeed-20)
+    print(Compass.data)
+    # time.sleep(1)
+    # time.sleep(5)   dri
+    drive.stop() 
+    print("Stop")
+    time.sleep(1)
+    print(Compass.data)
+    Compass.stop_running()
+
+    # drive.spinRight(turnspeed)
+    # print(turnspeed)
+    # time.sleep(2)
+  
+
+
+if __name__ == "__main__": 
+    main()
+    drive.stop()
+    head_controller.leds_change_color(head_controller.leds_color['off'])
+    drive.cleanup() 

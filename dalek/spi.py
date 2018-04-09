@@ -53,27 +53,12 @@ NameError: name 'expression' is not defined
 # SpiSetup = False
 spi = spidev.SpiDev()
 
+# Obsolete
+
 
 def init(device=0):
+    # left here from previous versions
     pass
-    # global  spi
-
-    # spi.open(0, device)  # using bus 1
-
-    # if speed != None:
-    #     try:
-    #         spi.max_speed_hz = speed
-    #         SpiSetup = True
-    #     except expression as identifier:
-    #         pass
-    # else:
-    #     # set the default value
-    # spi.max_speed_hz = 7629
-    # SpiSetup = True
-
-    # spi.mode = 0b00  # another mode is spi.mode = 0b01
-    # debug.print_to_all_devices(
-    #     "spi bus speed set to:{} spi mode {}" .format(spi.max_speed_hz, spi.mode))
 
 
 def open_spi_device(device=0):
@@ -89,7 +74,7 @@ def close_spi_device():
 
 
 def get_sensor_data(_sensorNumber):
-    # global spi
+
     dataToSend = [_sensorNumber, 200, 201, 255]
     try:
 
@@ -108,7 +93,6 @@ def get_mag():
 
 
 def read_device_1_data():
-    #   global SpiSetup,spi
 
     # create the return data variable
     open_spi_device()
@@ -135,16 +119,38 @@ def read_device_2_data():
         'center_laser': 0,
         'right_laser': 0
     }
-    for x in range(0,3):
+    for x in range(0, 3):
         data = get_sensor_data(x)
         while data > 819 or data == 201:
             data = get_sensor_data(x)
-        laser_sensors[x]= int(data)
+        laser_sensors[x] = int(data)
 
-
-    
     close_spi_device()
     return laser_sensors
+
+
+class CompassData(threading.Thread):
+    running = True
+
+    def __init__(self):
+        super().__init__()
+        self.data = 0
+        open_spi_device()
+
+    def stop_running(self):
+        '''
+        when this is called it ends this thread
+        '''
+        close_spi_device()
+        self.running = False
+
+    def run(self):
+        
+        while self.running:
+            
+            self.data = get_sensor_data(4)
+            # print(self.data)
+            time.sleep(.2) 
 
 
 class SensorData(threading.Thread):
@@ -156,6 +162,9 @@ class SensorData(threading.Thread):
         self.rearPing = 0
         self.leftPing = 0
         self.rightPing = 0
+        self.laser_left = 0
+        self.laser_center = 0
+        self.laser_right = 0
 
     def stop_running(self):
         '''
@@ -165,8 +174,8 @@ class SensorData(threading.Thread):
 
     def run(self):
 
-        # TODO  VAL = mode([1, 1, 2, 3, 3, 3, 3, 4])
-
+        # get seven readings and average them out using mode
+        # to get a more accurate reading
         while self.running:
             start_time = time.time()
             s1 = read_device_1_data()
@@ -226,6 +235,7 @@ class SensorData(threading.Thread):
             except:
                 print("unknown error.")
 
+            # now read from the laser sensors
             laser_sensors = read_device_2_data()
 
             # print("left_laser {} center_laser {} right_laser {} front:{} right:{} left:{} rear:{} compass:{} time:{} ".format(
@@ -239,25 +249,30 @@ class SensorData(threading.Thread):
             #                                                                                                             compass,
             #                                                                                                             time.time() - start_time))
 
-            
             # if  laser_sensors[0] == laser_sensors[2]:
-            # print("left_laser center_laser right_laser: {} {}  {}  =====".format( laser_sensors[0], laser_sensors[1], laser_sensors[2])) 
+            #     print("=== {}" .format(laser_sensors[1]))
+            #     print("left_laser center_laser right_laser: {} {}  {}  =====".format( laser_sensors[0], laser_sensors[1], laser_sensors[2]))
             # else:
-            #     print("left_laser center_laser right_laser: {} {}  {} ".format( laser_sensors[0], laser_sensors[1], laser_sensors[2]))       
-            # 
-            if  laser_sensors[1]< 90:
-                if  (laser_sensors[0] == laser_sensors[2]):                                                                             
-                    print("forward {}" .format(laser_sensors[1]))
-                elif laser_sensors[0] > laser_sensors[2]:
-                    
-                    print("right {} {} {} {} {} {}".format( laser_sensors[0], laser_sensors[1], laser_sensors[2],compass, left, right))
-                else:
-                    print("left {} {} {} {} {} {}".format( laser_sensors[0], laser_sensors[1], laser_sensors[2],compass, left, right))
- 
+            #     print("left_laser center_laser right_laser: {} {}  {} ".format( laser_sensors[0], laser_sensors[1], laser_sensors[2]))
+
+            # if  laser_sensors[1]< 90:
+            #     if  (laser_sensors[0] == laser_sensors[2]):
+            #         print("forward {}" .format(laser_sensors[1]))
+            #     elif laser_sensors[0] > laser_sensors[2]:
+
+            #         print("right {} {} {} {} {} {}".format( laser_sensors[0], laser_sensors[1], laser_sensors[2],compass, left, right))
+            #     else:
+            #         print("left {} {} {} {} {} {}".format( laser_sensors[0], laser_sensors[1], laser_sensors[2],compass, left, right))
+
             self.frontPing = front
             self.leftPing = left
             self.rightPing = right
             self.rearPing = rear
+            self.compass = compass
+            self.laser_left = laser_sensors[0]
+            self.laser_center = laser_sensors[1]
+            self.laser_right = laser_sensors[2]
+
             # time.sleep(1)
 
 
