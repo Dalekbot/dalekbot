@@ -18,7 +18,8 @@ def maincontrol():                  # Main Control Loop
   # The Main Mode we are in
   # 1 Drive mode
   # 2 Challenge Select Mode
-  # 3 Exterminate Mode this mode does nothing so is standby and disables the paddles on    #      the controller
+  # 3 Exterminate Mode this mode does nothing so is standby and disables the paddles on
+  #   the controller
  ```
  The PS3 button, controls what mode we are in, each press iterates through the modes.
 
