@@ -50,29 +50,42 @@ NameError: name 'expression' is not defined
 # 30.5 kHz   	30500
 # 15.2 kHz  	15200
 # 7629 Hz   	7629
-SpiSetup = False
+# SpiSetup = False
 spi = spidev.SpiDev()
 
 
-def init(speed=None):
-    global SpiSetup, spi
+def init(device=0):
+    pass
+    # global  spi
 
-    spi.open(0, 0)  # using bus 1
+    # spi.open(0, device)  # using bus 1
 
-    if speed != None:
-        try:
-            spi.max_speed_hz = speed
-            SpiSetup = True
-        except expression as identifier:
-            pass
-    else:
-        # set the default value
-        spi.max_speed_hz = 61000
-        SpiSetup = True
+    # if speed != None:
+    #     try:
+    #         spi.max_speed_hz = speed
+    #         SpiSetup = True
+    #     except expression as identifier:
+    #         pass
+    # else:
+    #     # set the default value
+    # spi.max_speed_hz = 7629
+    # SpiSetup = True
 
-    spi.mode = 0b00  # another mode is spi.mode = 0b01
+    # spi.mode = 0b00  # another mode is spi.mode = 0b01
     # debug.print_to_all_devices(
     #     "spi bus speed set to:{} spi mode {}" .format(spi.max_speed_hz, spi.mode))
+
+
+def open_spi_device(device=0):
+    global spi
+    spi.open(0, device)  # using bus 1
+    spi.max_speed_hz = 61000
+    spi.mode = 0b00
+
+
+def close_spi_device():
+    global spi
+    spi.close()
 
 
 def get_sensor_data(_sensorNumber):
@@ -89,13 +102,16 @@ def get_sensor_data(_sensorNumber):
 
 
 def get_mag():
+    open_spi_device()
     return get_sensor_data(4)
+    close_spi_device()
 
 
 def read_device_1_data():
     #   global SpiSetup,spi
 
     # create the return data variable
+    open_spi_device()
     piSensors = {'frontPing': 0, 'rearPing': 0,
                  'leftPing': 0, 'rightPing': 0, 'compass': 0}
     piSensors['frontPing'] = get_sensor_data(0)
@@ -108,7 +124,27 @@ def read_device_1_data():
     time.sleep(.00001)
     piSensors['compass'] = get_sensor_data(4)
 
+    close_spi_device()
     return piSensors
+
+
+def read_device_2_data():
+    open_spi_device(1)
+    laser_sensors = {
+        'left_laser': 0,
+        'center_laser': 0,
+        'right_laser': 0
+    }
+    for x in range(0,3):
+        data = get_sensor_data(x)
+        while data > 819 or data == 201:
+            data = get_sensor_data(x)
+        laser_sensors[x]= int(data)
+
+
+    
+    close_spi_device()
+    return laser_sensors
 
 
 class SensorData(threading.Thread):
@@ -178,29 +214,51 @@ class SensorData(threading.Thread):
                              s5['rearPing'],
                              s6['rearPing'],
                              s7['rearPing']])
-                
-                compass = mode([s1['compass'],
-                             s2['compass'],
-                             s3['compass'],
-                             s4['compass'],
-                             s5['compass'],
-                             s6['compass'],
-                             s7['compass']])
 
+                compass = mode([s1['compass'],
+                                s2['compass'],
+                                s3['compass'],
+                                s4['compass'],
+                                s5['compass'],
+                                s6['compass'],
+                                s7['compass']])
 
             except:
                 print("unknown error.")
 
-            print("front:{} right:{} left:{} rear:{} compass:{} time:{} ".format(front,
-                                                                      right,
-                                                                      left,
-                                                                      rear,
-                                                                      compass,
-                                                                      time.time() - start_time))
+            laser_sensors = read_device_2_data()
+
+            # print("left_laser {} center_laser {} right_laser {} front:{} right:{} left:{} rear:{} compass:{} time:{} ".format(
+            #                                                                                                             laser_sensors[0],
+            #                                                                                                             laser_sensors[1],
+            #                                                                                                             laser_sensors[2],
+            #                                                                                                             front,
+            #                                                                                                             right,
+            #                                                                                                             left,
+            #                                                                                                             rear,
+            #                                                                                                             compass,
+            #                                                                                                             time.time() - start_time))
+
+            
+            # if  laser_sensors[0] == laser_sensors[2]:
+            # print("left_laser center_laser right_laser: {} {}  {}  =====".format( laser_sensors[0], laser_sensors[1], laser_sensors[2])) 
+            # else:
+            #     print("left_laser center_laser right_laser: {} {}  {} ".format( laser_sensors[0], laser_sensors[1], laser_sensors[2]))       
+            # 
+            if  laser_sensors[1]< 90:
+                if  (laser_sensors[0] == laser_sensors[2]):                                                                             
+                    print("forward {}" .format(laser_sensors[1]))
+                elif laser_sensors[0] > laser_sensors[2]:
+                    
+                    print("right {} {} {} {} {} {}".format( laser_sensors[0], laser_sensors[1], laser_sensors[2],compass, left, right))
+                else:
+                    print("left {} {} {} {} {} {}".format( laser_sensors[0], laser_sensors[1], laser_sensors[2],compass, left, right))
+ 
             self.frontPing = front
             self.leftPing = left
             self.rightPing = right
             self.rearPing = rear
+            # time.sleep(1)
 
 
 def test():
@@ -216,7 +274,8 @@ def main():
     '''
     This test that things are working, it just prints the Arduino's readings to stout.
     '''
-    init()
+
+    # init()
     try:
         sensordata = SensorData()
         sensordata.start()
