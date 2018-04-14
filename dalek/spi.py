@@ -81,30 +81,50 @@ def get_sensor_data(_sensorNumber):
         receivedBytes = spi.xfer(dataToSend)
         sensorValue = (receivedBytes[2] << 8) + receivedBytes[3]
         return sensorValue
-    except expression as identifier:
+    except:
         debug.print_to_all_devices(
             "error geting data from Arduino via spi bus")
+
+def change_mode_on_device_(mode):
+    # mode 10: all data is read
+    # mode 11: left ping only
+    # mode 12: right ping only
+    # mode 13: center ping only
+    # mode 14: compass only
+    # mode 15: all data is read and debug output
+    dataToSend = [10, mode , 0, 0]
+    try:
+
+        receivedBytes = spi.xfer(dataToSend)
+        # sensorValue = (receivedBytes[2] << 8) + receivedBytes[3]
+        # return sensorValue
+    except:
+        debug.print_to_all_devices(
+            "error geting data from Arduino via spi bus")
+    
 
 
 def get_mag():
     open_spi_device()
-    return get_sensor_data(4)
+    data = get_sensor_data(4)
     close_spi_device()
+    return data
 
 
 def read_device_1_data():
 
     # create the return data variable
     open_spi_device()
-    piSensors = {'frontPing': 0, 'rearPing': 0,
-                 'leftPing': 0, 'rightPing': 0, 'compass': 0}
-    piSensors['frontPing'] = get_sensor_data(0)
+    # piSensors = {'frontPing': 0, 'rearPing': 0,
+    #              'left_distance': 0, 'right': 0, 'compass': 0}
+    piSensors = {'rear_distance': 0,'left_distance': 0, 'right_distance': 0, 'compass': 0}
+    # piSensors['frontPing'] = get_sensor_data(0)
+    # time.sleep(.00001)
+    piSensors['rear_distance'] = get_sensor_data(3)
+    # time.sleep(.00001)
+    piSensors['left_distance'] = get_sensor_data(1)
     time.sleep(.00001)
-    piSensors['rearPing'] = get_sensor_data(3)
-    time.sleep(.00001)
-    piSensors['leftPing'] = get_sensor_data(2)
-    time.sleep(.00001)
-    piSensors['rightPing'] = get_sensor_data(1)
+    piSensors['right_distance'] = get_sensor_data(2)
     time.sleep(.00001)
     piSensors['compass'] = get_sensor_data(4)
 
@@ -145,12 +165,33 @@ class CompassData(threading.Thread):
         self.running = False
 
     def run(self):
-        
+
         while self.running:
-            
+
             self.data = get_sensor_data(4)
             # print(self.data)
-            time.sleep(.2) 
+            time.sleep(.2)
+
+
+# class GetLeftSensor(threading.Thread):
+#     running = True
+
+#     def __init__(self):
+#         super().__init__()
+#         self.left_distance = 0
+
+#     def stop_running(self):
+#         '''
+#         when this is called it ends this thread
+#         '''
+#         self.running = False
+        
+#     def run(self):
+#         while self.running:
+#             try:
+#                 pass
+#             except:
+#                 pass
 
 
 class SensorData(threading.Thread):
@@ -158,13 +199,14 @@ class SensorData(threading.Thread):
 
     def __init__(self):
         super().__init__()
-        self.frontPing = 0
-        self.rearPing = 0
-        self.leftPing = 0
-        self.rightPing = 0
-        self.laser_left = 0
-        self.laser_center = 0
-        self.laser_right = 0
+        # self.frontPing = 0
+        self.rear_distance = 0
+        self.left_distance = 0
+        self.right_distance = 0
+        self.laser_front_left = 0
+        self.front_distance = 0
+        self.laser_front_right = 0
+        self.compass = 0
 
     def stop_running(self):
         '''
@@ -177,101 +219,86 @@ class SensorData(threading.Thread):
         # get seven readings and average them out using mode
         # to get a more accurate reading
         while self.running:
-            start_time = time.time()
-            s1 = read_device_1_data()
-            # time.sleep(.02)
-            s2 = read_device_1_data()
-            # time.sleep(.02)
-            s3 = read_device_1_data()
-            # time.sleep(.02)
-            s4 = read_device_1_data()
-            # time.sleep(.02)
-            s5 = read_device_1_data()
-            s6 = read_device_1_data()
-            s7 = read_device_1_data()
+            # start_time = time.time()
+            # s1 = read_device_1_data()
+            # # time.sleep(.02)
+            # s2 = read_device_1_data()
+            # # time.sleep(.02)
+            # s3 = read_device_1_data()
+            # # time.sleep(.02)
+            # s4 = read_device_1_data()
+            # # time.sleep(.02)
+            # s5 = read_device_1_data()
+            # s6 = read_device_1_data()
+            # s7 = read_device_1_data()
 
             try:
-                front = mode([s1['frontPing'],
-                              s2['frontPing'],
-                              s3['frontPing'],
-                              s4['frontPing'],
-                              s5['frontPing'],
-                              s6['frontPing'],
-                              s7['frontPing']
-                              ])
+                # front = mode([s1['frontPing'],
+                #               s2['frontPing'],
+                #               s3['frontPing'],
+                #               s4['frontPing'],
+                #               s5['frontPing'],
+                #               s6['frontPing'],
+                #               s7['frontPing']
+                #               ])
 
-                right = mode([s1['rightPing'],
-                              s2['rightPing'],
-                              s3['rightPing'],
-                              s4['rightPing'],
-                              s5['rightPing'],
-                              s6['rightPing'],
-                              s7['rightPing']])
+                # right = mode([s1['right'],
+                #               s2['right'],
+                #               s3['right'],
+                #               s4['right'],
+                #               s5['right'],
+                #               s6['right'],
+                #               s7['right']])
 
-                left = mode([s1['leftPing'],
-                             s2['leftPing'],
-                             s3['leftPing'],
-                             s4['leftPing'],
-                             s5['leftPing'],
-                             s6['leftPing'],
-                             s7['leftPing']])
+                # left = mode([s1['left_distance'],
+                #              s2['left_distance'],
+                #              s3['left_distance'],
+                #              s4['left_distance'],
+                #              s5['left_distance'],
+                #              s6['left_distance'],
+                #              s7['left_distance']])
 
-                rear = mode([s1['rearPing'],
-                             s2['rearPing'],
-                             s3['rearPing'],
-                             s4['rearPing'],
-                             s5['rearPing'],
-                             s6['rearPing'],
-                             s7['rearPing']])
+                # rear = mode([s1['rearPing'],
+                #              s2['rearPing'],
+                #              s3['rearPing'],
+                #              s4['rearPing'],
+                #              s5['rearPing'],
+                #              s6['rearPing'],
+                #              s7['rearPing']])
 
-                compass = mode([s1['compass'],
-                                s2['compass'],
-                                s3['compass'],
-                                s4['compass'],
-                                s5['compass'],
-                                s6['compass'],
-                                s7['compass']])
+                # compass = mode([s1['compass'],
+                #                 s2['compass'],
+                #                 s3['compass'],
+                #                 s4['compass'],
+                #                 s5['compass'],
+                #                 s6['compass'],
+                #                 s7['compass']])
+                data_dev1 = read_device_1_data()
+                laser_sensors = read_device_2_data()
 
             except:
                 print("unknown error.")
 
             # now read from the laser sensors
-            laser_sensors = read_device_2_data()
 
-            # print("left_laser {} center_laser {} right_laser {} front:{} right:{} left:{} rear:{} compass:{} time:{} ".format(
-            #                                                                                                             laser_sensors[0],
-            #                                                                                                             laser_sensors[1],
-            #                                                                                                             laser_sensors[2],
-            #                                                                                                             front,
-            #                                                                                                             right,
-            #                                                                                                             left,
-            #                                                                                                             rear,
-            #                                                                                                             compass,
-            #                                                                                                             time.time() - start_time))
+            # print("left_laser {} center_laser {} right_laser {} left:{} right:{} compass:{} rear:{}".format(
+            #     laser_sensors[0],
+            #     laser_sensors[1],
+            #     laser_sensors[2],
+            #     data_dev1['left_distance'],
+            #     data_dev1['right_distance'],
+            #     data_dev1['compass'],
+            #     data_dev1['rear_distance']))
 
-            # if  laser_sensors[0] == laser_sensors[2]:
-            #     print("=== {}" .format(laser_sensors[1]))
-            #     print("left_laser center_laser right_laser: {} {}  {}  =====".format( laser_sensors[0], laser_sensors[1], laser_sensors[2]))
-            # else:
-            #     print("left_laser center_laser right_laser: {} {}  {} ".format( laser_sensors[0], laser_sensors[1], laser_sensors[2]))
-
-            # if  laser_sensors[1]< 90:
-            #     if  (laser_sensors[0] == laser_sensors[2]):
-            #         print("forward {}" .format(laser_sensors[1]))
-            #     elif laser_sensors[0] > laser_sensors[2]:
-
-            #         print("right {} {} {} {} {} {}".format( laser_sensors[0], laser_sensors[1], laser_sensors[2],compass, left, right))
-            #     else:
-            #         print("left {} {} {} {} {} {}".format( laser_sensors[0], laser_sensors[1], laser_sensors[2],compass, left, right))
-
-            self.frontPing = front
-            self.leftPing = left
-            self.rightPing = right
-            self.rearPing = rear
-            self.compass = compass
-            self.laser_left = laser_sensors[0]
-            self.laser_center = laser_sensors[1]
-            self.laser_right = laser_sensors[2]
+        
+            # self.frontPing = front
+            self.left_distance = data_dev1['left_distance']
+            self.right_distance = data_dev1['right_distance']
+            self.rear_distance= data_dev1['rear_distance']
+            self.compass = data_dev1['compass']
+            self.laser_front_left= laser_sensors[0]
+            self.front_distance = laser_sensors[1]
+            self.laser_front_right = laser_sensors[2]
 
             # time.sleep(1)
 
@@ -294,7 +321,7 @@ def main():
     try:
         sensordata = SensorData()
         sensordata.start()
-    except expression as identifier:
+    except:
         pass
 
 #######################################################################################

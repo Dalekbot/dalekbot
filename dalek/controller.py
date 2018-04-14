@@ -116,7 +116,7 @@ def use(dalek_settings, dalek_sounds):
                 controller_battery_monitor.stop_running()
                 controller_battery_monitor.join()
 
-            except expression as identifier:
+            except:
                 print("error shutting down")
             using_controller = False
             # print("Exiting controller.py")
@@ -239,6 +239,8 @@ def use(dalek_settings, dalek_sounds):
     def button_square_pressed():
         if current_challenge_thread.running == True:
             current_challenge_thread.button_square_pressed()
+        else:
+            head_controller.leds_cycle_colors()
         # dalek_sounds.play_sound("exterminate")
         # debug.print_to_all_devices("Exterminate...")
 
@@ -249,6 +251,8 @@ def use(dalek_settings, dalek_sounds):
     def button_triangle_pressed():
         if current_challenge_thread.running == True:
             current_challenge_thread.button_triangle_pressed()
+        else:
+            head_controller.leds_toggle_flash()
         # dalek_sounds.play_sound("Stay")
         # debug.print_to_all_devices("Triangle Button Pressed")
 
@@ -398,8 +402,9 @@ def use(dalek_settings, dalek_sounds):
         if _ps3_ControllerMode == 1:
             tank_drive_on = True
             os.system('clear')
-            debug.print_to_all_devices(
-                "You are in Drive Mode" .format(_ps3_ControllerMode), "-D")
+            debug.print_to_all_devices("You are in Drive Mode ", "-D")
+            head_controller.leds_change_color(head_controller.leds_color['green'])
+            head_controller.leds_flash(False)
 
         elif _ps3_ControllerMode == 2:
             stop_current_challenge()
@@ -410,8 +415,7 @@ def use(dalek_settings, dalek_sounds):
             tank_drive_on = False
             _ps3_ControllerMode = 0
             os.system('clear')
-            debug.print_to_all_devices(
-                "You are in Exterminate Mode" .format(_ps3_ControllerMode), "-E")
+            debug.print_to_all_devices("You are in Exterminate Mode", "-E")
 
         return _ps3_ControllerMode
 
@@ -455,8 +459,7 @@ def use(dalek_settings, dalek_sounds):
                 elif number == 0:
 
                     if value:
-                        ps3_ControllerMode = button_select_pressed(
-                            ps3_ControllerMode)
+                        button_select_pressed(ps3_ControllerMode)
                     else:
                         ps3_ControllerMode = button_select_released(
                             ps3_ControllerMode)

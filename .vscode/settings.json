@@ -1,5 +1,5 @@
 {
-  "python.linting.pylintEnabled": false,
+  "python.linting.pylintEnabled": true,
   "python.formatting.provider": "autopep8",
   "cSpell.words": [
     "arduino",
@@ -18,5 +18,7 @@
     "struct",
     "uevent",
     "xfer"
-  ]
+  ],
+  "python.pythonPath": "C:\\Program Files\\Python36\\python.exe",
+  "python.linting.enabled": true
 }

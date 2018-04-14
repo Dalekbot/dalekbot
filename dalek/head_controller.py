@@ -39,10 +39,10 @@ i2c_timeing_delay = .1
 
 # these can be changed to match your servo initial offset position.
 head_device_id = 2  # this is the id on the Arduino
-head_right_90deg_position = 0
-head_left_90deg_position = 163
-head_center_position = 83
-head_movement_speed = 20
+head_right_90deg_position = 16
+head_left_90deg_position = 170
+head_center_position = 93
+head_movement_speed = 10
 
 eye_device_id = 1  # this is the id on the Arduino
 eye_top_max_position = 95    # up
@@ -52,160 +52,111 @@ eye_movement_speed = 10
 
 leds_device_id = 3
 leds_color = { 'off':0, 'green':1, 'red':2, 'yellow':3, 'blue':4,'white':5}
-leds_flash = False
+leds_current_color = 1
+leds_are_flashing = False
+
+def send_data_to_head(int_1=0,int_2=0,int_3=0,int_4=0,int_5=0):
+    #TODO this should be a queue
+    success = False
+
+    try:
+        bus.write_byte(address, int_1) 
+    except:
+        print("i2c sending error 1")
+    try:
+        bus.write_byte(address, int_2) 
+    except:
+        print("i2c sending error 2")
+    try:
+        bus.write_byte(address, int_3) 
+    except:
+        print("i2c sending error 3")
+    try:
+        bus.write_byte(address, int_4) 
+    except:
+        print("i2c sending error 4")
+    try:
+        bus.write_byte(address, int_5) 
+    except:
+        print("i2c sending error 5")
+    
+
+        # not used but sent to complete the 8 bits required.
+    time.sleep(i2c_timeing_delay)
+    try:
+        bus.write_byte(address, 0) 
+    except:
+        print("i2c sending error 6")
+    time.sleep(i2c_timeing_delay)
+    try:
+        bus.write_byte(address, 0) 
+    except:
+        print("i2c sending error 7")
+    time.sleep(i2c_timeing_delay)
+    try:
+        bus.write_byte(address, 0) 
+        # if we get here then it succeeded
+        success = True
+    except:
+        print("i2c sending error 8")
+
+
+        
+    
+    time.sleep(i2c_timeing_delay)
+    return success
+
+########
+# LED's
+
 
 def leds_flash(on=True):
     flash = 1      # start flashing the leds
     if on == False:
         flash =0   # stop flashing the leds
-
-
-    try:
-        bus.write_byte(address, 129)
-        bus.write_byte(address, 254)
-        bus.write_byte(address, 4)
-        bus.write_byte(address, flash)
-        bus.write_byte(address, 0)
-
-        # not used but sent to complete the 8 bits required.
-        time.sleep(i2c_timeing_delay)
-        bus.write_byte(address, 0)
-        time.sleep(i2c_timeing_delay)
-        bus.write_byte(address, 0)
-        time.sleep(i2c_timeing_delay)
-        bus.write_byte(address, 0)
-    except:
-        print("i2c sending error")
-    time.sleep(i2c_timeing_delay)
+    
+    send_data_to_head(129,254,4,flash,0)
 
 def leds_change_color(color):
-    # print(color)
     time.sleep(i2c_timeing_delay)
-    try:
-        bus.write_byte(address, 129)
-        bus.write_byte(address, 254)
-        bus.write_byte(address, leds_device_id)
-        bus.write_byte(address, color)
-        bus.write_byte(address, 0)
+    send_data_to_head(129,254,leds_device_id,color)
 
-        # not used but sent to complete the 8 bits required.
-        time.sleep(i2c_timeing_delay)
-        bus.write_byte(address, 0)
-        time.sleep(i2c_timeing_delay)
-        bus.write_byte(address, 0)
-        time.sleep(i2c_timeing_delay)
-        bus.write_byte(address, 0)
-    except:
-        print("i2c sending error")
-    time.sleep(i2c_timeing_delay*2)
+def leds_cycle_colors():
+    # increment colors, when you reach the end, set to start.
+    global leds_current_color
+    leds_current_color +=1
+    if leds_current_color == 6:
+        leds_current_color = 1
+    send_data_to_head(129,254,leds_device_id,leds_current_color)
 
-
-def head_rotate(new_position,speed=0):
-
-    if (speed == 0):
-        speed = head_movement_speed
-    
-    
-    try:
-        bus.write_byte(address, 129)
-        bus.write_byte(address, 254)
-        bus.write_byte(address, head_device_id)
-        bus.write_byte(address, new_position)
-        bus.write_byte(address, speed)
-
-        # not used but sent to complete the 8 bits required.
-        time.sleep(i2c_timeing_delay)
-        bus.write_byte(address, 0)
-        time.sleep(i2c_timeing_delay)
-        bus.write_byte(address, 0)
-        time.sleep(i2c_timeing_delay)
-        bus.write_byte(address, 0)
-    except:
-        print("i2c sending error")
-    time.sleep(i2c_timeing_delay)
-
-def head_stop():
-    try:
-        bus.write_byte(address, 129)
-        bus.write_byte(address, 254)
-        bus.write_byte(address, 5)
-        bus.write_byte(address, 0)
-        bus.write_byte(address, 0)
-
-        # not used but sent to complete the 8 bits required.
-        time.sleep(i2c_timeing_delay)
-        bus.write_byte(address, 0)
-        time.sleep(i2c_timeing_delay)
-        bus.write_byte(address, 0)
-        time.sleep(i2c_timeing_delay)
-        bus.write_byte(address, 0)
-    except:
-        print("i2c sending error")
-    time.sleep(i2c_timeing_delay)
-
-def eye_move(new_position,speed=0):
-
-    if (speed == 0):
-        speed = eye_movement_speed
-    if new_position > eye_top_max_position:
-        new_position = eye_top_max_position
-    if new_position < eye_bottom_min_position:
-        new_position = eye_bottom_min_position
-    
-    
-    try:
-        bus.write_byte(address, 129)
-        bus.write_byte(address, 254)
-        bus.write_byte(address, eye_device_id)
-        bus.write_byte(address, new_position)
-        bus.write_byte(address, speed)
-
-        # not used but sent to complete the 8 bits required.
-        time.sleep(i2c_timeing_delay)
-        bus.write_byte(address, 0)
-        time.sleep(i2c_timeing_delay)
-        bus.write_byte(address, 0)
-        time.sleep(i2c_timeing_delay)
-        bus.write_byte(address, 0)
-    except:
-        print("i2c sending error")
-    time.sleep(i2c_timeing_delay)
-
-def eye_stop():
-
-    try:
-        bus.write_byte(address, 129)
-        bus.write_byte(address, 254)
-        bus.write_byte(address, 6)
-        bus.write_byte(address, 0)
-        bus.write_byte(address, 0)
-
-        # not used but sent to complete the 8 bits required.
-        time.sleep(i2c_timeing_delay)
-        bus.write_byte(address, 0)
-        time.sleep(i2c_timeing_delay)
-        bus.write_byte(address, 0)
-        time.sleep(i2c_timeing_delay)
-        bus.write_byte(address, 0)
-    except:
-        print("i2c sending error")
-    time.sleep(i2c_timeing_delay)
-
-
-
+def leds_toggle_flash():
+    global leds_are_flashing
+    if leds_are_flashing:
+        leds_are_flashing =False
+        send_data_to_head(129,254,4,0,0)
+    else:
+        leds_are_flashing = True
+        send_data_to_head(129,254,4,1,0)
 
 #### HEAD 
 
-def head_move_to_center():
-    head_rotate(head_center_position)
+def head_rotate(new_position,speed=head_movement_speed):
+    send_data_to_head(129,254,head_device_id,new_position,speed)
+  
+
+def head_stop(): 
+    send_data_to_head(129,254,5)
+
+def head_move_to_center(speed = head_movement_speed):
+    head_rotate(head_center_position,speed)
 
 
-def head_move_right_90deg():
-    head_rotate(head_right_90deg_position)
+def head_move_right_90deg(speed = head_movement_speed):
+    head_rotate(head_right_90deg_position,speed)
 
 
-def head_move_left_90deg():
-    head_rotate(head_left_90deg_position)
+def head_move_left_90deg(speed = head_movement_speed):
+    head_rotate(head_left_90deg_position,speed)
 
 def head_no():
     timing = .6
@@ -220,6 +171,20 @@ def head_no():
     head_rotate(head_center_position) 
 
 #### EYE
+def eye_move(new_position,speed=0):
+
+    if (speed == 0):
+        speed = eye_movement_speed
+    if new_position > eye_top_max_position:
+        new_position = eye_top_max_position
+    if new_position < eye_bottom_min_position:
+        new_position = eye_bottom_min_position
+
+    send_data_to_head(129,254,eye_device_id,new_position,speed)
+
+def eye_stop():
+    send_data_to_head(129,254,6)
+
 def eye_move_to_top():
     eye_move(eye_top_max_position)
 
