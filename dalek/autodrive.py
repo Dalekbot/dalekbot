@@ -29,58 +29,6 @@ DalekSensors = spi.SensorData()
 DalekSensors.start()
 
 
-# all these settings can be altered  depending on the surface you are driving on
-#-- sleepTime allows the bot to stop before a mag reading is taken
-#     if you take a reading when the bot is moving, Acceleration and the motor's magnets will
-#     have an effect on it, so we stop it and take a reading.
-#-- TurnSpeeds can be increased until you notice the bot overshooting and needing
-#     to go in the opposite direction to correct it's self.
-#-- BotMoveTime is the time it moves at the TurnSpeed again check for overshooting
-
-# Carpet settings
-# DalekTurnSettings = {
-#     'sleepTime': 0.4,
-#     'TurnSpeedFast': 80,
-#     'TurnSpeedNormal': 60,
-#     'TurnSpeedSlow': 60,
-#     'TurnSpeedFinal': 60,
-#     'BotMoveTimeFast': 0.8,
-#     'BotMoveTimeNormal': 0.4,
-#     'BotMoveTimeSlow': 0.5,
-#     'BotMoveTimeFinal': 0.5}
-
-
-# def changeDalekTurnSettings(number=None):
-#     # global DalekTurnSettings
-#     if number == None:
-#         # Carpet settings
-#         DalekTurnSettings = {
-#             'sleepTime': 0.4,
-#             'TurnSpeedFast': 70,
-#             'TurnSpeedNormal': 50,
-#             'TurnSpeedSlow': 40,
-#             'TurnSpeedFinal': 30,
-#             'BotMoveTimeFast': 1.0,
-#             'BotMoveTimeNormal': 0.6,
-#             'BotMoveTimeSlow': 0.4,
-#             'BotMoveTimeFinal': 0.2}
-#     elif number == 1:
-#         # Wooden floor settings
-#         DalekTurnSettings = {
-#             'sleepTime': 0.2,
-#             'TurnSpeedFast': 60,
-#             'TurnSpeedNormal': 40,
-#             'TurnSpeedSlow': 20,
-#             'TurnSpeedFinal': 30,
-#             'BotMoveTimeFast': .7,
-#             'BotMoveTimeNormal': 0.4,
-#             'BotMoveTimeSlow': 0.2,
-#             'BotMoveTimeFinal': 0.2}
-
-
-# sensor distance will get bigger then 
-# get smaller again, this is the point you need to find
-# it will then get larger again
 
 def turn_right_90_deg_with_sonic():
     turnspeed = 50
@@ -92,12 +40,83 @@ def turn_right_90_deg_with_sonic():
         drive.spinRight(turnspeed)
         if distance> 30:
             break
+def calculate_degrees_still_to_turn(start_degrees,end_degrees,direction_clockwise=True):
+    current_compass = DalekSensors.compass
+    
+    if direction_clockwise:
+        while 0 < current_compass > 360:
+            current_compass = DalekSensors.compass
+        # we have over shot
+        if ((current_compass > end_degrees) and(current_compass < end_degrees+20)):
+            return end_degrees - current_compass # should be negative number
+        # we need to pass 360 
+        elif current_compass > end_degrees:
+            return 360 - current_compass + end_degrees
+        else:#current_compass >= end:
+            return end_degrees - current_compass
+    else: # anticlockwise
+        pass
+
+
+
+
+
+def get_compass_turn_right_90_deg(saved_position = -1):
+    turnspeed = 40 
+    # take current reading
+    head_controller.head_move_to_center(0)
+    time.sleep(.4)
+    c_f=DalekSensors.compass
+    c_r=-1
+    # we can use previous values from calibrated or previous runs.
+    # this will save a few seconds
+    if saved_position == -1:
+        # take reading right
+        head_controller.head_move_right_90deg(0)
+        time.sleep(.8)
+        c_r= DalekSensors.compass
+    else: 
+        c_r = saved_position
+    # reset head
+    head_controller.head_move_to_center(0)
+    # time.sleep(.4)
+    print("{} {}" .format(c_f,c_r))
+    
+    deg_to_turn = calculate_degrees_still_to_turn(c_f,c_r,True)
+    print(deg_to_turn)
+    # use the between syntax
+    while -20 < deg_to_turn > 20:
+        print("#### FAST #####")
+        
+        if deg_to_turn >0:
+            drive.spinRight(turnspeed)
+        elif deg_to_turn < -1:
+            print("spinLeft")
+            drive.spinLeft(turnspeed)
+        deg_to_turn = calculate_degrees_still_to_turn(c_f,c_r,True)
+    
+    #repeat but slower to get it spot on
+    while -1 < deg_to_turn > 1:
+        print("#### SLOW #####")
+        if deg_to_turn >0:
+            drive.spinRight(turnspeed-10)
+        elif deg_to_turn < -1:
+            print("spinLeft")
+            drive.spinLeft(turnspeed-10)
+        deg_to_turn = calculate_degrees_still_to_turn(c_f,c_r,True)
+       
+    drive.stop()
+    print("END {} {} {}" .format(c_f,c_r,DalekSensors.compass))
+ 
+
+   
 
 
 def turn_right_90_deg():
-    turnspeed = 50
+    turnspeed = 40 
     ## start 162 end 42
     
+
     ##' take new compass readings
     head_controller.head_move_to_center(0)
     time.sleep(.4)
@@ -116,6 +135,8 @@ def turn_right_90_deg():
     # if we need to go past 360 point 
     if compass_positions['forward'] > compass_positions['right']:
         ## while between values to get past 360
+        print("---Past 360")
+        time.sleep(1)
         while compass_positions['forward'] <= DalekSensors.compass <= 360:
             drive.spinRight(turnspeed)
            # time.sleep(.2)
@@ -135,11 +156,7 @@ def turn_right_90_deg():
     time.sleep(1)
     print(DalekSensors.compass)
     
-   
 
-
-    # todo flip all compass values to make forwards forward again
-    
 def gotoHeading(theEndHeading):
     pass
 
@@ -150,9 +167,8 @@ def gotoHeading(theEndHeading):
 def calibrate_compass():
     head_controller.leds_change_color(head_controller.leds_color['yellow'])
     print("point your bot in the forward position.")
-    time.sleep(3)
     head_controller.head_move_to_center()
-    time.sleep(1)
+    time.sleep(3)
     compass_positions['forward'] = DalekSensors.compass
     print("center mag:{}" .format(compass_positions['forward']))
 
@@ -168,7 +184,7 @@ def calibrate_compass():
 
     head_controller.head_move_to_center()
     time.sleep(2)
-    head_controller.leds_change_color(head_controller.leds_color['off'])
+    head_controller.leds_change_color(head_controller.leds_color['green'])
 
     # TODO: turn dalek and get backwards...
 
@@ -200,32 +216,15 @@ def CalculateSpeedToDrive(pingDistance, finalDistance):
 def drive_forwards_to_distance(distance=distance_to_wall):
     # counter =0
     print("drive_forwards_to_distance()")
-
-    
     while DalekSensors.front_distance != distance:
-        
         ## get the speed to drive at
         speed = CalculateSpeedToDrive( DalekSensors.front_distance, distance)
-
         if DalekSensors.front_distance <= distance:
             drive.backward(speed)
             print("drive_backwards()")
         else:
-            # l_speed = speed
-            # r_speed = speed
-            # if(DalekSensors.left_distance > 13):
-
-            #     l_speed -= 10
-            #     # r_speed +=10
-            #     print("LS {}".format(DalekSensors.left_distance))
-            # elif ( DalekSensors.left_distance < 9):
-            #     r_speed -= 10
-            #     l_speed += 10 
-            #     print("RS {}".format(DalekSensors.left_distance))
-            # drive.paddleForward(l_speed,r_speed) 
             drive.paddleForward(speed,speed)
     drive.stop()
-    straighten_up() 
 
 
  
@@ -297,7 +296,59 @@ def driveParallelToWallsInCenterToFrontPingDistance(distanceToWall=None):
 def dispose():
     drive.cleanup()
   
+def turn_right_90_deg_left_laser():
+    lz_left = DalekSensors.laser_front_left
+    lz_center = DalekSensors.front_distance
+    lz_right= DalekSensors.laser_front_right
 
+    print("{} {} {}" .format(lz_left ,lz_center, lz_right))
+
+    while DalekSensors.front_distance < 80:
+        drive.spinRight(40)
+
+
+    while (lz_left < 40 ) :
+        lz_left = DalekSensors.laser_front_left
+        lz_center = DalekSensors.front_distance
+        lz_right= DalekSensors.laser_front_right
+        print("{} {} {}" .format(lz_left ,lz_center, lz_right))
+        drive.spinRight(40)
+
+def turn_left_90_deg_right_laser():
+    lz_left = DalekSensors.laser_front_left
+    lz_center = DalekSensors.front_distance
+    lz_right= DalekSensors.laser_front_right
+
+    print("{} {} {}" .format(lz_left ,lz_center, lz_right))
+
+    while DalekSensors.front_distance < 80:
+        drive.spinLeft(40)
+
+
+    while (lz_right < 50 ) :
+        lz_left = DalekSensors.laser_front_left
+        lz_center = DalekSensors.front_distance
+        lz_right= DalekSensors.laser_front_right
+        print("{} {} {}" .format(lz_left ,lz_center, lz_right))
+        drive.spinLeft(40)
+
+    
+        
+
+    drive.stop()
+def turn_2():
+    turn_right_90_deg()
+    # start_mag = DalekSensors.compass
+    # head_controller.head_move_right_90deg()
+    # time.sleep(1)
+    # dest_mag = DalekSensors.compass
+    # print("{} {}".format(start_mag,dest_mag))
+    # time.sleep(.5)
+    # while 
+    # head_controller.head_move_to_center()
+    # drive.stop() 
+
+         
 def main():
     # print_compass()
 
@@ -315,22 +366,58 @@ def main():
     # time.sleep(.5)
     # print(DalekSensors.compass)
     # head_controller.leds_change_color(head_controller.leds_color['off'])
-    time.sleep(1)
-    turn_right_90_deg_with_sonic()
+    # head_controller.head_move_to_center()
+    # time.sleep(1)
+    get_compass_turn_right_90_deg()
+    get_compass_turn_right_90_deg()
+    get_compass_turn_right_90_deg()
+    get_compass_turn_right_90_deg()
+    # get_compass_turn_right_90_deg()
+    # turn_right_90_deg_with_sonic()
     # drive_backwards_to_distance()
     # drive_forwards_to_distance(15)
     # straighten_up()
-    # drive_forwards_to_distance(10)
     # calibrate_compass()
-    # turn_right_90_deg() 
-    
-    # time.sleep(1)
-    # drive_forwards_to_distance(15)
-    # straighten_up()
-    # drive_forwards_to_distance(10)
-    # # calibrate_compass()
-    # turn_right_90_deg() 
 
+    # waypoint 1
+    # drive_forwards_to_distance(9)
+    # turn_right_90_deg_left_laser() 
+    
+    # waypoint 2
+    # drive_forwards_to_distance(45)
+    # get_compass_turn_right_90_deg()
+   # waypoint 3
+    # drive_forwards_to_distance(8)
+    # straighten_up()
+    # get_compass_turn_right_90_deg()
+    
+    # HALFWAY
+    # waypoint 4
+    # drive_forwards_to_distance(40)
+ 
+    # # waypoint 6
+    # drive_forwards_to_distance(8)
+    # turn_left_90_deg_right_laser()
+
+    # drive_forwards_to_distance(8)
+    # turn_left_90_deg_right_laser()
+
+
+    # drive_forwards_to_distance(10)
+
+    #FINISH
+
+
+
+
+
+
+
+    # STUFF
+    # turn_right_90_deg()
+    # turn_right_90_deg()
+    # turn_right_90_deg()
+    # turn_right_90_deg()
     # time.sleep(1)
     # drive_forwards_to_distance(15)
     # straighten_up()

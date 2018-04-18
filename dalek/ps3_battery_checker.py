@@ -119,7 +119,7 @@ def main():
     time.sleep(3)
     battery.stop_running()
 
-    battery.join()
+    battery.join() 
 
 
 if __name__ == "__main__":

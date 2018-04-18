@@ -289,7 +289,7 @@ class SensorData(threading.Thread):
             #     data_dev1['right_distance'],
             #     data_dev1['compass'],
             #     data_dev1['rear_distance']))
-
+ 
         
             # self.frontPing = front
             self.left_distance = data_dev1['left_distance']
