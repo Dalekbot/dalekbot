@@ -36,7 +36,7 @@ def init():
     # How many times to turn the pin on and off each second
     # print ('Set Frequency')
     Frequency = 25
-    print("freq {}".format(Frequency))
+    # print("freq {}".format(Frequency))
     # How long the pin stays on each cycle, as a percent (here, it's 50%) - AKA Speed
     # print ('Set DutyCycle')
     DutyCycle = 100

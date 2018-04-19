@@ -207,6 +207,11 @@ class SensorData(threading.Thread):
         self.front_distance = 0
         self.laser_front_right = 0
         self.compass = 0
+        self.fast_mode = True
+        # if self.fast_mode:
+        #     print("Spi fast mode")
+        # else:
+        #     print("Spi accurate mode")
 
     def stop_running(self):
         '''
@@ -219,68 +224,108 @@ class SensorData(threading.Thread):
         # get seven readings and average them out using mode
         # to get a more accurate reading
         while self.running:
-            # start_time = time.time()
-            # s1 = read_device_1_data()
-            # # time.sleep(.02)
-            # s2 = read_device_1_data()
-            # # time.sleep(.02)
-            # s3 = read_device_1_data()
-            # # time.sleep(.02)
-            # s4 = read_device_1_data()
-            # # time.sleep(.02)
-            # s5 = read_device_1_data()
-            # s6 = read_device_1_data()
-            # s7 = read_device_1_data()
 
-            try:
-                # front = mode([s1['frontPing'],
-                #               s2['frontPing'],
-                #               s3['frontPing'],
-                #               s4['frontPing'],
-                #               s5['frontPing'],
-                #               s6['frontPing'],
-                #               s7['frontPing']
-                #               ])
-
-                # right = mode([s1['right'],
-                #               s2['right'],
-                #               s3['right'],
-                #               s4['right'],
-                #               s5['right'],
-                #               s6['right'],
-                #               s7['right']])
-
-                # left = mode([s1['left_distance'],
-                #              s2['left_distance'],
-                #              s3['left_distance'],
-                #              s4['left_distance'],
-                #              s5['left_distance'],
-                #              s6['left_distance'],
-                #              s7['left_distance']])
-
-                # rear = mode([s1['rearPing'],
-                #              s2['rearPing'],
-                #              s3['rearPing'],
-                #              s4['rearPing'],
-                #              s5['rearPing'],
-                #              s6['rearPing'],
-                #              s7['rearPing']])
-
-                # compass = mode([s1['compass'],
-                #                 s2['compass'],
-                #                 s3['compass'],
-                #                 s4['compass'],
-                #                 s5['compass'],
-                #                 s6['compass'],
-                #                 s7['compass']])
-                data_dev1 = read_device_1_data()
-                laser_sensors = read_device_2_data()
-
-            except:
-                print("unknown error.")
-
+            if self.fast_mode == False:
+                print("dddd")
+                # we get more accurate results
+                start_time = time.time()
+                s1 = read_device_1_data()
+                # time.sleep(.02)
+                s2 = read_device_1_data()
+                # time.sleep(.02)
+                s3 = read_device_1_data()
+                # time.sleep(.02)
+                s4 = read_device_1_data()
+                # time.sleep(.02)
+                s5 = read_device_1_data()
+                s6 = read_device_1_data()
+                s7 = read_device_1_data()
+    
+                try:
+                    # front = mode([s1['frontPing'],
+                    #               s2['frontPing'],
+                    #               s3['frontPing'],
+                    #               s4['frontPing'],
+                    #               s5['frontPing'],
+                    #               s6['frontPing'],
+                    #               s7['frontPing']
+                    #               ])
+    
+                    right = mode([s1['right_distance'],
+                                  s2['right_distance'],
+                                  s3['right_distance'],
+                                  s4['right_distance'],
+                                  s5['right_distance'],
+                                  s6['right_distance'],
+                                  s7['right_distance']])
+    
+                    left = mode([s1['left_distance'],
+                                 s2['left_distance'],
+                                 s3['left_distance'],
+                                 s4['left_distance'],
+                                 s5['left_distance'],
+                                 s6['left_distance'],
+                                 s7['left_distance']])
+    
+                    rear = mode([s1['rear_distance'],
+                                 s2['rear_distance'],
+                                 s3['rear_distance'],
+                                 s4['rear_distance'],
+                                 s5['rear_distance'],
+                                 s6['rear_distance'],
+                                 s7['rear_distance']])
+    
+                    compass = mode([s1['compass'],
+                                    s2['compass'],
+                                    s3['compass'],
+                                    s4['compass'],
+                                    s5['compass'],
+                                    s6['compass'],
+                                    s7['compass']])
+    
+                    
+                    laser_sensors = read_device_2_data()
+                except:
+                    print("spi err accurate mode")
+            
+                # self.frontPing = front
+                self.left_distance = left
+                self.right_distance = right
+                self.rear_distance= rear
+                self.compass = compass
+                self.laser_front_left= laser_sensors[0]
+                self.front_distance = laser_sensors[1]
+                self.laser_front_right = laser_sensors[2]
             # now read from the laser sensors
 
+                # print("left_laser {} center_laser {} right_laser {} left:{} right:{} compass:{} rear:{}".format(
+                #     laser_sensors[0],
+                #     laser_sensors[1],
+                #     laser_sensors[2],
+                #     left,
+                #     right,
+                #     data_dev1['compass'],
+                #     rear))
+     
+ 
+            else:
+                # fast mode just one read from sensors
+                try:
+                    data_dev1 = read_device_1_data()
+                    laser_sensors = read_device_2_data()
+
+                except :
+                    print("spi err fast mode")
+
+                # self.frontPing = front
+                self.left_distance = data_dev1['left_distance']
+                self.right_distance = data_dev1['right_distance']
+                self.rear_distance= data_dev1['rear_distance']
+                self.compass = data_dev1['compass']
+                self.laser_front_left= laser_sensors[0]
+                self.front_distance = laser_sensors[1]
+                self.laser_front_right = laser_sensors[2]
+            
             # print("left_laser {} center_laser {} right_laser {} left:{} right:{} compass:{} rear:{}".format(
             #     laser_sensors[0],
             #     laser_sensors[1],
@@ -289,16 +334,6 @@ class SensorData(threading.Thread):
             #     data_dev1['right_distance'],
             #     data_dev1['compass'],
             #     data_dev1['rear_distance']))
- 
-        
-            # self.frontPing = front
-            self.left_distance = data_dev1['left_distance']
-            self.right_distance = data_dev1['right_distance']
-            self.rear_distance= data_dev1['rear_distance']
-            self.compass = data_dev1['compass']
-            self.laser_front_left= laser_sensors[0]
-            self.front_distance = laser_sensors[1]
-            self.laser_front_right = laser_sensors[2]
 
             # time.sleep(1)
 
