@@ -55,6 +55,9 @@ leds_color = { 'off':0, 'green':1, 'red':2, 'yellow':3, 'blue':4,'white':5}
 leds_current_color = 1
 leds_are_flashing = False
 
+head_postion =0
+eye_position =0
+
 def send_data_to_head(int_1=0,int_2=0,int_3=0,int_4=0,int_5=0):
     #TODO this should be a queue
     success = False
@@ -205,6 +208,54 @@ def eye_waggle():
     time.sleep(1.2)
     eye_move(eye_mid_position)
 
+
+
+def head_move_left():
+    global head_postion
+
+    if head_postion == 0: # center
+        head_move_left_90deg()
+        head_postion = -1
+
+    elif head_postion == 1:
+        head_move_to_center()
+        head_postion = 0
+    else:
+        pass
+def head_move_right():
+    global head_postion
+
+    if head_postion == 0:# center
+        head_move_right_90deg()
+        head_postion = 1
+    elif head_postion == -1:
+        head_move_to_center()
+        head_postion = 0
+    else:
+        pass 
+
+def eye_move_up():
+    global eye_position
+    if eye_position == -1: # down
+        eye_move_to_center()
+        eye_position = 0
+    elif eye_position == 0:
+        eye_move_to_top()
+        eye_position = 1
+    else:
+        pass
+
+
+def eye_move_down():
+    global eye_position
+    if eye_position == 1: # up
+        eye_move_to_center()
+        eye_position = 0
+    elif eye_position == 0:
+        eye_move_to_bottom()
+        eye_position = -1
+    else:
+        pass
 
 
 def main():

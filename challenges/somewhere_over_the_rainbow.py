@@ -1,220 +1,138 @@
-def Rainbow(showcam):
+if __name__ == "__main__":
+   '''
+   This if statement is needed for testing, to locate the modules needed
+   if we are running the file directly.
+   '''
+   import sys
+   from os import path
+   sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
+   from dalek import settings
+   from dalek import sound_player
+   import RPi.GPIO as GPIO
 
-    global speed               # Allow access to 'speed' constant
-    global rightspeed          # Allow access to 'rightspeed' constant
-    global leftspeed           # Allow access to 'leftspeed' constant
-    global maxspeed            # Allow access to 'maxspeed' constant
-    global minspeed            # Allow access to 'minspeed' constant
-    global innerturnspeed      # Speed for Inner Wheels in a turn
-    global outerturnspeed      # Speed for Outer Wheels in a turn
-    global wii                 # Allow access to 'Wii' constants
-    global hRes                # Allow Access to Cam Horizontal Resolution
-    global vRes                # Allow Access to Cam Vertical Resolution
-    global video_capture       # Allow Access to WebCam Object
-    global soundvolume         # Allow access to sound volume
+# these are the globally used modules
+import os
+from challenges import challenge
+import time
+# from dalek import spi
+from dalek import drive
+from dalek import debug
 
-    turnspeed = 95
+import numpy as np       # Import NumPy Array manipulation
+import cv2               # Import OpenCV Vision code
+from picamera.array import PiRGBArray
+from picamera import PiCamera
+import picamera
 
-    print "Checkpoint: Set up WebCam\n"
-    # initialize the camera and grab a reference to the raw camera capture
+video_capture = 0        
+video_capture = picamera.PiCamera()
 
-    hRes = 320
-    vRes = 240
+hRes = 320
+vRes = 240
 
-    print "default resolution = " + str(video_capture.get(cv2.CAP_PROP_FRAME_WIDTH)) + "x" + str(video_capture.get(cv2.CAP_PROP_FRAME_HEIGHT))
+print ("default resolution = " + str(video_capture.resolution))
+video_capture.resolution = (hRes,vRes)
+print ("updated resolution = " + str(video_capture.resolution))
+video_capture.framerate = 32
+video_capture.hflip = True
+rawCapture = PiRGBArray(video_capture, size=(hRes, vRes))
+# allow the camera to warmup
+time.sleep(0.1)
 
-    video_capture.set(cv2.CAP_PROP_FRAME_WIDTH, hRes)
-    video_capture.set(cv2.CAP_PROP_FRAME_HEIGHT, vRes)
 
-    print "updated resolution = " + str(video_capture.get(cv2.CAP_PROP_FRAME_WIDTH)) + "x" + str(video_capture.get(cv2.CAP_PROP_FRAME_HEIGHT))
+class Challenge(challenge.ChallengeBase):
+    '''
+    Do Not change the class name, it is called in the controller.py.
+    The buttons can be overridden if you need to add functionally to them.
+    The main loop is the run() function, all code goes in it.
 
-#    if video_capture.isOpened() == False:                           # check if VideoCapture object was associated to webcam successfully
-#        print "error: video_capture not accessed successfully\n\n"  # if not, print error message to std out
-#        os.system("pause")                                          # pause until user presses a key so user can see error message
-#        wait = input("PRESS ENTER TO CONTINUE.\n\n")
-#        return                                                      # and exit function (which exits program)
-#    # end if
+    Look at the ChallengeBase class in challenge.py for all functions that can be called.
+    '''
 
-    intXFrameCenter = int(
-        float(video_capture.get(cv2.CAP_PROP_FRAME_WIDTH)) / 2.0)
-    intYFrameCenter = int(
-        float(video_capture.get(cv2.CAP_PROP_FRAME_HEIGHT)) / 2.0)
+    def __init__(self, dalek_settings, dalek_sounds):
+        super().__init__()
+        self.dalek_settings = dalek_settings
+        self.dalek_sounds = dalek_sounds
 
-    # print intXFrameCenter, intYFrameCenter
+    def run(self):
+        self.running = True
+        debug.print_to_all_devices(
+            "Challenge 'somewhere over the rainbow")
 
-    if intXFrameCenter == 0.0:
-        scrollphat.clear()         # Shutdown Scroll pHat
-        scrollphat.write_string('Err')
-        time.sleep(2)
-        return
 
-    panServoPosition = intXFrameCenter
 
-    print'\nPress "A" to Chase the Rainbow'
-    print'Press "Hm" to return to main menu\n'
 
-    scrollphat.clear()         # Shutdown Scroll pHat
-    scrollphat.write_string('"A"')
-    time.sleep(.25)
 
-    # print "Checkpoint: Enter main Loop\n\n"
+        if video_capture._check_camera_open() == False:                           # check if VideoCapture object was associated to webcam successfully
+            print ("error: capWebcam not accessed successfully\n\n")          # if not, print error message to std out
+            os.system("pause")                                              # pause until user presses a key so user can see error message
+            self.running= False # ruturns 
 
-    while True:
+        intXFrameCenter = int(float(hRes) / 2.0)
+        intYFrameCenter = int(float(vRes) / 2.0)
+        
 
-        buttons = wii.state['buttons']          # Get WiiMote Button Pressed
 
-        if (buttons & cwiid.BTN_A):
-            print 'Start Chasing the Rainbow'
-            scrollphat.clear()         # Shutdown Scroll pHat
-            scrollphat.write_string('CtR')
-            time.sleep(.25)
 
-            while True:
+        if intXFrameCenter == 0.0:
+            # scrollphat.clear()         # Shutdown Scroll pHat
+            # scrollphat.write_string('Err')
+            time.sleep(2)
+            self.running= False # ruturns
+     
+        panServoPosition = intXFrameCenter
 
-                # Get WiiMote Button Pressed
-                buttons = wii.state['buttons']
+        # print ('\nPress "A" to Chase the Rainbow')
+        # print ('Press "Hm" to return to main menu\n')
+            
+        # scrollphat.clear()         # Shutdown Scroll pHat
+        # scrollphat.write_string('"A"')
+        
+        time.sleep(.25)
 
-                if (buttons & cwiid.BTN_HOME):
-                    DalekV2Drive.stop()
-                    print'\nPress "A" to Chase the Rainbow 1 '
-                    print'Press "Hm" to return to main menu\n'
-                    scrollphat.clear()         # Shutdown Scroll pHat
-                    scrollphat.write_string('"A"')
-                    time.sleep(.25)
-                    break
+####################################################
+#                                                  #
+# Code for this challenge goes in this while loop  #
+#    call    self.running= False to exit challenge #
+####################################################
+        while self.running:
 
-                # cv2.waitKey(1) != 32 and until the Esc key is pressed or webcam connection is lost
-                while video_capture.isOpened():
-                    blnFrameReadSuccessfully, imgOriginal = video_capture.read()            # read next frame
+            debug.print_to_all_devices("rainbow start ")  # this line can be removed
+            # this line can be removed
+            time.sleep(2)
+  
 
-                    # Get WiiMote Button Pressed
-                    buttons = wii.state['buttons']
 
-                    if (buttons & cwiid.BTN_HOME):
-                        DalekV2Drive.stop()
-                        print'\nPress "A" to Chase the Rainbow 2'
-                        print'Press "Hm" to return to main menu\n'
-                        scrollphat.clear()         # Shutdown Scroll pHat
-                        scrollphat.write_string('"A"')
-                        time.sleep(.25)
-                        break
-                    # end if
 
-                    if not blnFrameReadSuccessfully or imgOriginal is None:             # if frame was not read successfully
-                        # print error message to std out
-                        print "error: frame not read from webcam\n"
-                        # os.system("pause")                                             # pause until user presses a key so user can see error message
-                        # exit while loop (which exits program)
-                        break
-                    # end if
 
-                    # print "Checkpoint: Picture Taken - Starting Analysis"
 
-                    imgHSV = cv2.cvtColor(imgOriginal, cv2.COLOR_BGR2HSV)
+####################################################
+#                                                  #
+# END   of main loop                               #
+#                                                  #
+####################################################
 
-                    imgThreshLow = cv2.inRange(imgHSV, np.array(
-                        [0, 135, 135]), np.array([19, 255, 255]))
-                    imgThreshHigh = cv2.inRange(imgHSV, np.array(
-                        [168, 135, 135]), np.array([179, 255, 255]))
+def main(dalek_settings, dalek_sounds):
+    # pass
+    challenge = Challenge(dalek_settings, dalek_sounds)
+    challenge.start()
+    time.sleep(2) 
+    # challenge.button_circle_pressed()
+    challenge.stop_running()
 
-                    imgThresh = cv2.add(imgThreshLow, imgThreshHigh)
+    # challenge.join() # wait for thread to finish.
+    debug.print_to_all_devices("\nFINISHED")
+    drive.cleanup()
 
-                    imgThresh = cv2.GaussianBlur(imgThresh, (3, 3), 2)
 
-                    imgThresh = cv2.dilate(
-                        imgThresh, np.ones((5, 5), np.uint8))
-                    imgThresh = cv2.erode(imgThresh, np.ones((5, 5), np.uint8))
+if __name__ == "__main__":
+    # pass
+    GPIO.setwarnings(False)
+    drive.init()
+    debug.debug_on = True
+    dalek_settings = settings.Settings()
+    dalek_sounds = sound_player.Mp3Player(True) # initialize the sound player
+    main(dalek_settings, dalek_sounds)
 
-                    intRows, intColumns = imgThresh.shape
-
-                    # print "Checkpoint : 2"
-
-                    # fill variable circles with all circles in the processed image
-                    circles = cv2.HoughCircles(
-                        imgThresh, cv2.HOUGH_GRADIENT, 3, intRows / 4)
-
-                    # this line is necessary to keep program from crashing on next line if no circles were found
-                    if circles is not None:
-
-                        sortedCircles = sorted(
-                            circles[0], key=itemgetter(2), reverse=True)
-
-                        largestCircle = sortedCircles[0]
-
-                        # break out x, y, and radius
-                        x, y, radius = largestCircle
-                        # print ball position and radius
-                        print "ball position x = " + str(x) + ", y = " + str(y) + ", radius = " + str(radius)
-
-                        scrollphat.clear()
-                        scrollphat.write_string("Red")
-                        DalekV2Drive.forward(speed)
-
-                        if x < intXFrameCenter and panServoPosition >= 2:
-                            panServoPosition = panServoPosition - 2
-                            print "Turn Left: ", panServoPosition
-                            scrollphat.clear()         # Shutdown Scroll pHat
-                            scrollphat.write_string("TrL")
-                            DalekV2Drive.spinLeft(turnspeed)
-                            time.sleep(.25)
-                            DalekV2Drive.stop()
-                        elif x > intXFrameCenter and panServoPosition <= 178:
-                            panServoPosition = panServoPosition + 2
-                            print "Turn Right: ", panServoPosition
-                            scrollphat.clear()         # Shutdown Scroll pHat
-                            scrollphat.write_string("TrR")
-                            DalekV2Drive.spinRight(turnspeed)
-                            time.sleep(.25)
-                            DalekV2Drive.stop()
-                        # end if else
-
-                        if showcam == True:
-                            # draw small green circle at center of detected object
-                            cv2.circle(imgOriginal, (x, y), 3, (0, 255, 0), -1)
-                            # draw red circle around the detected object
-                            cv2.circle(imgOriginal, (x, y),
-                                       radius, (0, 0, 255), 3)
-                            # show windows
-                            cv2.imshow("imgOriginal", imgOriginal)
-                            cv2.imshow("imgThresh", imgThresh)
-                        # end if
-                    else:
-                        panServoPosition = panServoPosition - 2
-                        print "Turn Right: ", panServoPosition
-                        scrollphat.clear()         # Shutdown Scroll pHat
-                        scrollphat.write_string("TrR")
-                        DalekV2Drive.spinRight(turnspeed)
-                        time.sleep(.25)
-                        DalekV2Drive.stop()
-                        if showcam == True:
-                            # show windows
-                            cv2.imshow("imgOriginal", imgOriginal)
-                            cv2.imshow("imgThresh", imgThresh)
-                        # end if
-                    # end if
-
-#                    	if showcam == True:
-#                        	cv2.imshow("imgOriginal", imgOriginal)                        # show windows
-#                        	cv2.imshow("imgThresh", imgThresh)
-#                     	end if
-
-                # end while
-            # end while
-            # cv2.destroyAllWindows()
-
-        elif (buttons & cwiid.BTN_HOME):
-            DalekV2Drive.stop()
-            scrollphat.clear()         # Shutdown Scroll pHat
-            scrollphat.write_string("Hm")
-            print "\n\nReturning to Main Menu\n\n"
-            time.sleep(1)
-            print "Main Menu"               # Show we are on main menu
-            print '\nUp    - ObstacleCourse'
-            print 'Down  - StreightLine'
-            print 'Left  - MinimaMaze'
-            print 'Right - Chase the Rainbow'
-            print '1     - Line Follow'
-#            print '2     - xxxxxx'
-            print 'Home  - Exit\n'
-            print "Ready"
-            break
+else:
+    debug.print_to_all_devices('importing slightly_deranged_golf Challenge')

@@ -51,7 +51,7 @@ class ChallengeBase(threading.Thread):
         This is also called if the PS3 button is pressed during a challenge,
         so add any cleanup code here.
         '''
-        drive.stop()
+        # drive.stop()
         self.running = False
         debug.print_to_all_devices("Done...")
 

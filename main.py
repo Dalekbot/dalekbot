@@ -23,6 +23,7 @@ from dalek import sound_player   # Import the mp3 player module
 from dalek import controller     # Import the PS3 controller
 from dalek import settings
 
+
 # Main Imports and setup constants
 dalek_settings = settings.Settings()
 dalek_sounds = sound_player.Mp3Player(True)  # initialize the sound player
@@ -72,9 +73,10 @@ def destroy():                 # Shutdown GPIO and Cleanup modules
 
              # Allow access to sound volume
     global dalek_sounds
-
-    debug.print_to_all_devices("\n... Shutting Down...\n", "Ext")
-    dalek_sounds.play_sound("Grow_stronger")
+    
+   
+    debug.print_to_all_devices("\n... Shutting Down...\n", "Ext") 
+    dalek_sounds.play_sound("Grow_stronger") 
     drive.stop()        # Make sure Bot is not moving when program exits
     drive.cleanup()     # Shutdown all motor control
     # time.sleep(2)
@@ -89,7 +91,7 @@ def destroy():                 # Shutdown GPIO and Cleanup modules
 #======================================================================
 # Task Procedures
 
-# challenge_ObstacleCourse.py
+# challenge_ObstacleCourse.py 
 # challenge_StraightLine.py:
 # challenge_MinimalMaze.py:
 # challenge_LineFollow.py
@@ -154,7 +156,7 @@ if __name__ == '__main__':  # The Program will start from here
     if ((str(args.Brightness)) != 'None'):
         debug.print_to_all_devices(
             "\nscrollpHat Brightness - {}".format(args.Brightness))
-        DalekDebugSetBrightness(int(args.Brightness))
+        # DalekDebugSetBrightness(int(args.Brightness))
 
     if ((str(args.InnerTurnSpeed)) != 'None'):
         debug.print_to_all_devices(

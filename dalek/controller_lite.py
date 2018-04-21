@@ -127,22 +127,22 @@ def start(speed=80):
             elif number == 5:
                 if value:
                     dpad_right_button_pressed()
-                else:
-                    dpad_right_button_released()
+                # else:
+                #     dpad_right_button_released()
 
             # Down button
             elif number == 6:
                 if value:
                     dpad_down_button_pressed()
-                else:
-                    dpad_down_button_released()
+                # else:
+                #     dpad_down_button_released()
 
             # Left button
             elif number == 7:
                 if value:
                     dpad_left_button_pressed()
-                else:
-                    dpad_left_button_released()
+                # else:
+                #     dpad_left_button_released()
 
     def tank_drive(_leftPaddle, _rightPaddle):
         debug.print_to_all_devices(

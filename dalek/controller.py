@@ -24,6 +24,7 @@ from dalek import head_controller
 from challenges import slightly_deranged_golf
 from challenges import the_duck_shoot
 from challenges import straight_line
+from challenges import somewhere_over_the_rainbow
 
 ###
 # SETUP
@@ -158,26 +159,41 @@ def use(dalek_settings, dalek_sounds):
     def dpad_up_button_pressed():
         if ps3_ControllerMode == 2:  # 2 Mission Select Mode
             challenge_select(0)
-        else:
+        elif ps3_ControllerMode == 1:
             debug.print_to_all_devices('Forwards', "FW")
             drive.forward(dalek_settings.speed)
+        else:
+            head_controller.eye_move_up()
 
     def dpad_down_button_pressed():
         if ps3_ControllerMode == 2:  # 2 Mission Select Mode
             challenge_select(1)
-        else:
+        elif ps3_ControllerMode == 1:
             debug.print_to_all_devices('Backwards', "BW")
             drive.backward(dalek_settings.speed)
+        else:
+             head_controller.eye_move_down()
 
     def dpad_right_button_pressed():
-        if ps3_ControllerMode != 2:
+        if ps3_ControllerMode == 1:
             debug.print_to_all_devices('Spin Right', "SR")
             drive.spinRight(dalek_settings.speed)
+        elif ps3_ControllerMode == 2:
+            debug.print_to_all_devices('Spin Right', "SR")
+            drive.spinRight(dalek_settings.speed)
+        else:
+            head_controller.head_move_right()    
+
 
     def dpad_left_button_pressed():
-        if ps3_ControllerMode != 2:
+        if ps3_ControllerMode == 1:
             debug.print_to_all_devices('Spin Left', "SL")
             drive.spinLeft(dalek_settings.speed)
+        elif ps3_ControllerMode == 2:
+            debug.print_to_all_devices('Spin Left', "SL")
+            drive.spinLeft(dalek_settings.speed)
+        else:
+            head_controller.head_move_left()
 
     def dpad_button_pressed(value, number, _joystickD_padCurrentButton):
         if (value == 0) and (number == _joystickD_padCurrentButton):
@@ -353,9 +369,12 @@ def use(dalek_settings, dalek_sounds):
             elif current_challenge == 3:
                 debug.print_to_all_devices("TODO: Minimal Maze")
 
-            elif current_challenge == 4:
-                debug.print_to_all_devices(
-                    "TODO: Somewhere Over The Rainbow ")
+            elif current_challenge == 4: # somewhere_over_the_rainbow
+                os.system('clear')  # clear the stout
+                tank_drive_on = False
+                current_challenge_thread = somewhere_over_the_rainbow.Challenge(
+                    dalek_settings, dalek_sounds)
+                current_challenge_thread.start()
 
             elif current_challenge == 5:
                 debug.print_to_all_devices("TODO: PiNoon")
@@ -412,7 +431,7 @@ def use(dalek_settings, dalek_sounds):
             tank_drive_on = False
 
         elif _ps3_ControllerMode == 3:
-            tank_drive_on = False
+            tank_drive_on = True
             _ps3_ControllerMode = 0
             os.system('clear')
             debug.print_to_all_devices("You are in Exterminate Mode", "-E")
@@ -423,10 +442,12 @@ def use(dalek_settings, dalek_sounds):
     ###  paddle Buttons on the Controller                    ##
     ###########################################################
     def button_left_paddle():
-        debug.print_to_all_devices("Left Paddle Button Pressed")
+        # debug.print_to_all_devices("Left Paddle Button Pressed")
+        head_controller.leds_cycle_colors()
 
     def button_right_paddle():
-        debug.print_to_all_devices("Right Paddle Button Pressed")
+        # debug.print_to_all_devices("Right Paddle Button Pressed")
+        head_controller.leds_toggle_flash()
 
     #####################################################################
     ###                            Main loop                           ##
