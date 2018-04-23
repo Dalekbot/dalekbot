@@ -606,40 +606,60 @@ def turn_left_90_deg_right_laser():
 # waypoint starts when you arrive at the point, not to get there
 
 def start():
-    calibrate_compass()
+    # calibrate_compass()
     drive_forwards_to_distance(9)
-
-
-def waypoint_1():
     turn_right_90_deg_left_laser()
-    drive_forwards_to_distance(25)
+    drive_forwards_to_distance(9)
+    time.sleep(1)
 
-
-def waypoint_2():
-    turn_right_90_deg()
-    drive_forwards_to_distance(8)
-
-
-
-def waypoint_3():
-    straighten_up()
-    turn_right_90_deg()
-    drive_forwards_to_distance(40)
-
-
-def waypoint_4():
-    turn_left_90_deg()
-    drive_forwards_to_distance(10)
-
-
-def waypoint_5():
-    turn_left_90_deg()
-    drive_forwards_to_distance(10)
-
-
-def waypoint_6():
     turn_right_90_deg_left_laser()
-    drive_forwards_to_distance(8)
+    drive_forwards_to_distance(9)
+    time.sleep(1)
+
+    turn_right_90_deg_left_laser()
+    drive_forwards_to_distance(9)
+    time.sleep(1)
+
+    turn_right_90_deg_left_laser()
+    drive_forwards_to_distance(9)
+    time.sleep(1)
+    
+    turn_right_90_deg_left_laser()
+    drive_forwards_to_distance(9)
+    time.sleep(1)
+
+
+
+
+
+# def waypoint_1():
+#     drive_forwards_to_distance(45)
+
+
+# def waypoint_2():
+#     turn_right_90_deg()
+#     drive_forwards_to_distance(8)
+
+
+# def waypoint_3():
+#     straighten_up()
+#     turn_right_90_deg()
+#     drive_forwards_to_distance(40)
+
+
+# def waypoint_4():
+#     turn_left_90_deg()
+#     drive_forwards_to_distance(10)
+
+
+# def waypoint_5():
+#     turn_left_90_deg()
+#     drive_forwards_to_distance(10)
+
+
+# def waypoint_6():
+#     turn_right_90_deg_left_laser()
+#     drive_forwards_to_distance(8)
 
 
 def main():
@@ -688,13 +708,13 @@ def main():
     # straighten_up()
     # calibrate_compass()
 
-    start()
-    waypoint_1()
-    waypoint_2()
-    waypoint_3()
-    waypoint_4()
-    waypoint_5()
-    waypoint_6()
+    # start()
+    # waypoint_1()
+    # waypoint_2()
+    # waypoint_3()
+    # waypoint_4()
+    # waypoint_5()
+    # waypoint_6()
 
 
 def print_compass():

@@ -403,6 +403,9 @@ def use(dalek_settings, dalek_sounds):
     def button_start_pressed():
         nonlocal button_start_status
         button_start_status = True
+        if current_challenge_thread.running == True:
+            current_challenge_thread.button_start_pressed()
+       
         check_for_finished_using_controller()
         # debug.print_to_all_devices("Start Button Pressed")
 

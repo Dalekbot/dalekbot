@@ -15,7 +15,7 @@ import threading
 from statistics import mode
 
 
-'''
+''' 
 If you get an error like the following you forgot to call the init() function.
 
 Traceback (most recent call last):

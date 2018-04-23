@@ -19,35 +19,40 @@ from dalek import debug
 # This is just to get things going
 
 
-def straight_line_speed_test_0(dalek_settings, dalek_sounds):
+def straight_line_speed_test(dalek_settings, dalek_sounds):
     arduino_sensor_data = spi.SensorData()
     arduino_sensor_data.start()  # starts the new process and runs in the background
     time.sleep(0.2)
+    start_button = False
+
+    def button_start_pressed():
+        print("from straighe line challenge")
+
 
     while dalek_settings.drive:
         '''
         TODO:
         The dalek_settings.drive can be turned off with the controller 
-        '''
+        ''' 
 
         drive.forward(dalek_settings.max_speed)
 
         # detects we have finished the challenge.
-        if arduino_sensor_data.frontPing <= 10:
+        if arduino_sensor_data.front_distance<= 10:
             drive.cleanup()
             debug.print_to_all_devices("Center Distance:{}cm Run Finished"
                                        .format(arduino_sensor_data.frontPing))
             arduino_sensor_data.running = False
             break
 
-        if arduino_sensor_data.leftPing <= 5:
+        if arduino_sensor_data.left_ping <= 5:
             debug.print_to_all_devices("turnForwardRight", "TrR")
             drive.turnForwardRight(dalek_settings.outer_turn_speed,
                                    dalek_settings.inner_turn_speed)
             time.sleep(.1)
             drive.forward(dalek_settings.max_speed)
 
-        if arduino_sensor_data.rightPing <= 5:
+        if arduino_sensor_data.right_distance <= 5:
             debug.print_to_all_devices("turnForwardLeft", "TrL")
             drive.turnForwardLeft(dalek_settings.inner_turn_speed,
                                   dalek_settings.outer_turn_speed)
@@ -68,8 +73,10 @@ def straight_line_speed_test_1(dalek_settings, dalek_sounds):
 
     turning_left = False
     turning_right = False
-    previous_center_value = arduino_sensor_data.leftPing - arduino_sensor_data.rightPing
+    previous_center_value = arduino_sensor_data.left_ping - arduino_sensor_data.right_distance
     counter = 0
+
+
     while dalek_settings.drive:
         '''
         TODO:
@@ -87,7 +94,7 @@ def straight_line_speed_test_1(dalek_settings, dalek_sounds):
             arduino_sensor_data.running = False
             break
 
-        center_value = arduino_sensor_data.leftPing - arduino_sensor_data.rightPing
+        center_value = arduino_sensor_data.left_ping - arduino_sensor_data.right_distance
         print(center_value)
 
         # if  (center_value - 1) <= previous_center_value <= (center_value + 1) :
@@ -153,8 +160,7 @@ def main():
     '''
     This is only run if you run the file directly
     '''
-    GPIO.setmode(
-        GPIO.BOARD)   # Set the GPIO pins as numbering - Also set in drive.py
+    GPIO.setmode( GPIO.BOARD)   # Set the GPIO pins as numbering - Also set in drive.py
     GPIO.setwarnings(False)
     spi.init()
     dalek_settings = settings.Settings()
@@ -164,7 +170,7 @@ def main():
     debug.debug_on = True
     debug.print_to_all_devices("working", "OK")
     try:
-        straight_line_speed_test_1(dalek_settings, dalek_sounds)
+        straight_line_speed_test(dalek_settings, dalek_sounds)
         time.sleep(1)
     except:
         print("!!! error")

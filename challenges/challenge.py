@@ -121,7 +121,10 @@ class ChallengeBase(threading.Thread):
     def button_R2_released(self):
         debug.print_to_all_devices(
             "R2_released() in challenges/ChallengeBase class")
-
+    def button_start_pressed():
+        debug.print_to_all_devices(
+            "R2_released() in challenges/ChallengeBase class")
+   
 
 def main():
     challenge = ChallengeBase()
